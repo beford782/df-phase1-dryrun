@@ -1,0 +1,7 @@
+# Git hook scripts must keep LF endings on Windows, or /bin/sh chokes on \r.
+tools/hooks/* text eol=lf
+
+# Generated Daybreak Black Friday demo bundle: build_black_friday_demo.py
+# emits LF-only bytes on every platform and its --check compares
+# byte-for-byte, so the checkout must be LF on Windows too.
+demo/black-friday/** text eol=lf

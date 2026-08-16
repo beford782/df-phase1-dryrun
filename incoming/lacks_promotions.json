@@ -1,0 +1,14 @@
+{
+  "_meta": {
+    "editableSource": true,
+    "note": "Canonical Daybreak promotions source. Edit this file and rebuild the workbook and generated configuration. Production ships with no current-event scenarios until approved campaign terms, evidence, bilingual review, and governed runtime activation are complete. Illustrative campaigns live only in separate demo fixtures."
+  },
+  "promotions": {
+    "schemaVersion": 1,
+    "activeScenario": null,
+    "allowedSourceHosts": [
+      "lacks.com"
+    ],
+    "scenarios": {}
+  }
+}

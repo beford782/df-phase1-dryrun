@@ -1,0 +1,10 @@
+{
+  "name": "DreamFinder - Lacks Furniture",
+  "short_name": "DreamFinder",
+  "description": "Personalized sleep consultation for Lacks Furniture",
+  "start_url": "/LacksFurniture/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#000000",
+  "theme_color": "#000000"
+}

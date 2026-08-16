@@ -1,0 +1,383 @@
+#!/usr/bin/env python3
+"""Generated EN/ES headlines for promotional financing plans.
+
+WHY THIS MODULE EXISTS
+Promotional plans carry BOTH structured terms (`apr`, `termMonths`) and a
+customer-visible `headline` that restates them in prose. When both were
+authored by hand, nothing tied them together: a headline could be edited to
+"4.99% APR for 12 months" while `apr` stayed 9.99 and every validator, test and
+build step still passed. The prose is what the customer reads, so the drift was
+customer-visible and silent.
+
+The rule this module implements: **the structured fields are authoritative and
+the promotional headline is DERIVED from them.** The template lives here once,
+and here only. `incoming/build_lacks_workbook.py` calls it to generate the
+headline at build time; `tools/validation.py` calls it to recompute the
+expected headline and demand exact equality of what actually shipped; the test
+suites call it to pin formatting. No caller may restate the template.
+
+SCOPE — deliberately narrow
+Generation applies to the PROMOTIONAL PRESENTATION GROUP only: plans whose
+`kind` is "open-end-promotional-credit" and that declare no
+`presentationScenario`. Every other headline in the financing block stays
+AUTHORED, because it is orientation or scenario language rather than a
+restatement of terms:
+
+  * closed-end installment  -> "Lacks In-House Credit"
+  * lease-to-own            -> "Lease-to-own"
+  * credit-builder          -> "Build My Credit"
+  * mexico-delivery scenario-> "Purchasing for delivery to Mexico?"
+
+The last two of those carry `apr`/`termMonths` in some deployments (Mexico
+carries apr=24, termMonths=24) and still must NOT be generated: their headline
+is a question or a program name, and their exact terms belong in the gated
+`detail` / `representativeExample` fields. Deriving a headline there would put
+a rate in a card title that renders OUTSIDE the exact-terms gate.
+
+WHAT THE HEADLINE IS ALLOWED TO SAY
+Rate and term, nothing else. `minimumPurchase` and `provider` are deliberately
+NOT in the template: the minimum is a condition that belongs in the adjacent
+`detail` (where it renders with its "on one receipt" qualifier), and the
+provider already renders in the card title above the headline.
+
+"APR" stays "APR" in the Spanish string. That is the shipped, reviewed
+terminology on lacks.com's own Spanish-language material and in the approved
+Spanish disclosures ("la tasa APR de compra es 34.99%"); translating it here
+would silently change customer-visible approved copy.
+
+This module is PURE and dependency-light: standard library only, no I/O, no
+repo imports. That is what lets validation, the workbook builder and the tests
+share it without an import cycle.
+"""
+from __future__ import annotations
+
+import math
+
+# The one plan kind whose headline is generated. It is the same kind that
+# tools/validation.py's _plan_group() maps to the "promotional" group and that
+# index.html's finPlanGroup() renders as a promotional card. The precise
+# pinning — exact to validation, agreeing with the runtime on every shippable
+# configuration, and explicitly NOT claiming agreement on malformed scenarios —
+# is stated on is_promotional_presentation() below.
+PROMOTIONAL_KIND = "open-end-promotional-credit"
+
+LANGS = ("en", "es")
+
+# THE SUPPORTED STRUCTURED RANGE — one authority for the whole repository.
+# tools/validation.py imports these rather than restating 0..100 / 1..120, so
+# the range this module will format and the range validate_financing accepts
+# cannot drift apart. (Its self-test pins the two boundaries equal.)
+APR_MIN, APR_MAX = 0, 100
+TERM_MIN, TERM_MAX = 1, 120
+
+# (singular, plural) per language. Singular is used only when termMonths == 1.
+# Adding a language means adding a row here and nowhere else.
+_TEMPLATES = {
+    "en": ("{apr}% APR for {term} month", "{apr}% APR for {term} months"),
+    "es": ("{apr}% APR por {term} mes", "{apr}% APR por {term} meses"),
+}
+
+
+class HeadlineError(ValueError):
+    """A promotional plan cannot produce a headline from its structured fields.
+
+    Always fatal to the build and always an error in validation: a promotional
+    plan that cannot state its own terms must never ship with authored prose
+    standing in for them."""
+
+
+def is_promotional_presentation(plan) -> bool:
+    """True for the plans whose headline is GENERATED.
+
+    Classification is semantic — `kind` plus the absence of a declared
+    `presentationScenario` — and never keys off a plan id, array position,
+    provider or the presence of exact terms. A scenario plan is excluded even
+    when its kind matches, because a scenario renders its own card with an
+    authored, rate-free title.
+
+    WHAT THIS IS PINNED TO, PRECISELY:
+
+      * Against VALIDATION it is pinned to `_plan_group(plan) == "promotional"`
+        for every STRUCTURALLY VALID plan object — that is the guarantee, and
+        it is what keeps "generated by the builder" and "gated by the
+        validator" the same set. A non-string scenario reads as absent
+        (falling through to `kind`) and any truthy scenario string,
+        whitespace-only or unrecognised, is NOT promotional. Mirroring rather
+        than importing keeps this module free of repo dependencies, which is
+        what lets the workbook builder, the validator and the tests share it
+        without an import cycle.
+
+      * Against the RUNTIME (index.html's finPlanGroup()) it agrees for every
+        SHIPPABLE configuration. That is the guarantee that matters in
+        production: what the builder generates a headline for is what the
+        runtime renders as a promotional card.
+
+      * MALFORMED plan shapes are claimed for neither. They are rejected by
+        validate_financing — which since Commit J returns a named error for
+        every JSON shape rather than raising — so such a plan never reaches a
+        build artifact or a customer. This function still answers for them
+        (it is total), but that answer is not asserted to match validation's
+        or the runtime's, and no caller may rely on it: the correct handling
+        of a malformed plan is the validation error, not its classification.
+
+      * For any configuration that can actually SHIP, it also agrees with
+        index.html's finPlanGroup(). That is the guarantee that matters: what
+        the builder generates a headline for is what the runtime renders as a
+        promotional card.
+
+      * It does NOT claim to classify a MALFORMED presentationScenario the way
+        the runtime does, and no such claim should be made. On a present
+        non-string scenario this function and _plan_group() fall through to
+        `kind`, while finPlanGroup() falls closed to no group at all. That
+        divergence is unreachable rather than reconciled: validate_financing
+        rejects a non-string or unsupported scenario outright, so the build
+        fails and the plan never reaches a customer. Reconciling it would mean
+        changing Commit G's runtime taxonomy, which no shipping path
+        currently justifies."""
+    if not isinstance(plan, dict):
+        return False
+    scenario = plan.get("presentationScenario")
+    if not isinstance(scenario, str):
+        scenario = ""
+    if scenario:
+        return False
+    return plan.get("kind") == PROMOTIONAL_KIND
+
+
+def short_repr(value, limit: int = 40) -> str:
+    """repr() bounded for error text — and TOTAL, like everything else here.
+
+    A rejected APR may be a 400-digit integer, and an error message read by a
+    human must not become the number. It may also be a 100,000-digit integer,
+    where repr() ITSELF raises ValueError under CPython's int->str conversion
+    limit (sys.get_int_max_str_digits(), 4300 by default), or an object whose
+    __repr__ raises. Either would have escaped as a non-HeadlineError from
+    inside the REJECTION path — the formatting of a refusal must never be the
+    thing that crashes. Large integers are described rather than rendered, so
+    the digit limit is never reached in the first place.
+
+    KeyboardInterrupt and SystemExit are deliberately not swallowed."""
+    try:
+        if isinstance(value, int) and not isinstance(value, bool):
+            # ~128 bits is about 39 digits, i.e. already past `limit`.
+            if value.bit_length() > 128:
+                return f"<{value.bit_length()}-bit integer>"
+        text = repr(value)
+    except Exception:                       # noqa: BLE001 - hostile __repr__
+        try:
+            return f"<unprintable {type(value).__name__}>"
+        except Exception:                   # noqa: BLE001 - hostile metaclass
+            return "<unprintable value>"
+    return text if len(text) <= limit else text[:limit] + f"...({len(text)} chars)"
+
+
+# WHY EXACT TYPES, NOT isinstance.
+# These predicates screen author-supplied JSON, and json.loads() produces
+# exactly `int` and `float` — never a subclass. Testing `type(x) is int`
+# rather than isinstance() therefore accepts every value that can actually
+# arrive, while refusing subclasses OUTRIGHT instead of trusting their
+# dunders. That matters because a subclass can lie: one overriding __float__
+# passes a finiteness test on its own value and then converts to inf
+# ("inf% APR for 48 months"); one overriding __int__ formats a different
+# number than the one that was range-checked; one overriding __ge__ or
+# __repr__ raises from inside the check or from inside the rejection message.
+# Exact typing makes all of those a plain, fail-closed HeadlineError before
+# any borrowed dunder runs — a smaller rule with a stronger guarantee.
+# (bool is screened separately first, only so its refusal names the reason.)
+
+
+def finite_number(value) -> bool:
+    """True for an exact JSON number that can be stated to a customer: `int` or
+    `float`, not a boolean, not NaN and not ±Infinity.
+
+    TOTAL over every value JSON can supply. This is the shared numeric-sanity
+    floor for EVERY financing number, not just APR — validate_financing applies
+    it to minimumPurchase and publishedPaymentFactor too, so one rule governs
+    what counts as a real number and each field adds only its own range.
+
+    NaN and ±Infinity are refused for a concrete reason, not tidiness:
+    json.dumps writes them as the bare tokens NaN / Infinity, which are not
+    JSON, so such a value reaching data/store-config.json produces a file the
+    browser's JSON.parse rejects outright — the app would fail to load."""
+    if value is None or isinstance(value, bool):
+        return False
+    if type(value) is int:
+        return True
+    if type(value) is float:
+        return math.isfinite(value)
+    return False
+
+
+def apr_in_domain(value) -> bool:
+    """True when `value` is an APR this repository supports: an `int` or
+    `float` exactly, not a boolean, finite, within APR_MIN..APR_MAX inclusive.
+
+    TOTAL over every value JSON can supply — it answers, it never raises. That
+    is the whole point: a huge JSON integer must produce a verdict, not an
+    exception. Integers are range-checked as INTEGERS, so 10**400 is compared
+    exactly and is never handed to a C double (math.isfinite() and float() both
+    raise OverflowError on it, which is how an uncaught OverflowError once
+    escaped validate_financing instead of a named error).
+
+    This is the DOMAIN question only. Whether an in-domain value can be
+    PRESENTED to a customer is format_rate()'s separate concern — 1e-05 is a
+    legitimate APR that this repository declines to print."""
+    # finite_number() screens type/bool/NaN/inf; only the range is added here,
+    # and integers are compared as integers so 10**400 never becomes a double.
+    return finite_number(value) and APR_MIN <= value <= APR_MAX
+
+
+def term_in_domain(value) -> bool:
+    """True when `value` is a supported term: an exact non-boolean `int` within
+    TERM_MIN..TERM_MAX inclusive. Total over every value JSON can supply; a
+    term is a COUNT, so 48.0 is not one."""
+    if value is None or isinstance(value, bool):
+        return False
+    if type(value) is not int:
+        return False
+    return TERM_MIN <= value <= TERM_MAX
+
+
+def format_rate(value) -> str:
+    """Format an APR for display: '0', '9.99', '12.5' — never '0.0' or '9.990'.
+
+    The rule is "print exactly the number JSON gave us, and nothing it did not".
+    A JSON `0` and a JSON `0.0` are the same double and both print '0'; a
+    trailing zero the input never carried is never invented, because inventing
+    one would state a precision the verified source did not publish.
+
+    Uses Python's shortest-round-trip float repr, which is the same algorithm
+    json.dumps uses — so the printed rate always round-trips back to the stored
+    value.
+
+    TOTAL over every value JSON can supply: every rejection is a HeadlineError
+    naming the reason, never an OverflowError, TypeError or other
+    implementation exception leaking to a caller that expected a verdict —
+    including from the code that formats the refusal. Rejects None, booleans,
+    non-numerics, int/float SUBCLASSES (see the note above apr_in_domain),
+    NaN/±inf, anything outside APR_MIN..APR_MAX (including arbitrarily large
+    integers of either sign), and any in-domain value that would print in
+    exponent notation."""
+    if value is None:
+        raise HeadlineError("apr is required to generate a promotional headline")
+    # bool is a subclass of int: True would otherwise print as '1% APR'.
+    if isinstance(value, bool):
+        raise HeadlineError(f"apr {short_repr(value)} must be a number, "
+                            f"not a boolean")
+    if type(value) not in (int, float):
+        raise HeadlineError(f"apr {short_repr(value)} must be a number "
+                            f"(got {type(value).__name__})")
+    # Finiteness is asked of floats ONLY. math.isfinite(10**400) raises
+    # OverflowError, so asking it of an int would defeat this function's
+    # totality guarantee on exactly the input it exists to reject.
+    if type(value) is float and not math.isfinite(value):
+        raise HeadlineError(f"apr {short_repr(value)} must be a finite number "
+                            f"(NaN and infinity cannot be stated to a customer)")
+    if not apr_in_domain(value):
+        raise HeadlineError(f"apr {short_repr(value)} is outside the supported range "
+                            f"{APR_MIN}-{APR_MAX} inclusive")
+    if type(value) is int:
+        return str(value)
+    if value.is_integer():
+        return str(int(value))
+    text = repr(value)
+    if "e" in text or "E" in text:
+        raise HeadlineError(f"apr {short_repr(value)} formats in exponent notation "
+                            f"({text!r}), which is not customer-presentable")
+    return text
+
+
+def format_term(value) -> str:
+    """Format a term in whole months.
+
+    TOTAL over every value JSON can supply, like format_rate. Rejects None,
+    booleans, int subclasses, non-integers (including 48.0 — a term is a count,
+    not a measurement) and anything outside TERM_MIN..TERM_MAX inclusive, which
+    covers arbitrarily large integers without converting them to a float."""
+    if value is None:
+        raise HeadlineError("termMonths is required to generate a promotional headline")
+    if isinstance(value, bool):
+        raise HeadlineError(f"termMonths {short_repr(value)} must be an integer, "
+                            f"not a boolean")
+    if type(value) is not int:
+        raise HeadlineError(f"termMonths {short_repr(value)} must be a whole number of "
+                            f"months (got {type(value).__name__})")
+    if not term_in_domain(value):
+        raise HeadlineError(f"termMonths {short_repr(value)} is outside the supported "
+                            f"range {TERM_MIN}-{TERM_MAX} inclusive")
+    return str(value)
+
+
+def promotional_headline(apr, term_months) -> dict:
+    """Build the bilingual headline from the two authoritative fields.
+
+    Returns {"en": ..., "es": ...}. Raises HeadlineError on any input the
+    templates cannot state exactly."""
+    apr_text = format_rate(apr)
+    term_text = format_term(term_months)
+    singular = term_months == 1
+    return {lang: forms[0 if singular else 1].format(apr=apr_text, term=term_text)
+            for lang, forms in _TEMPLATES.items()}
+
+
+def headline_for_plan(plan) -> dict:
+    """Generated headline for one promotional plan, read from its own fields."""
+    if not isinstance(plan, dict):
+        raise HeadlineError("plan must be an object")
+    try:
+        return promotional_headline(plan.get("apr"), plan.get("termMonths"))
+    except HeadlineError as exc:
+        # short_repr, not bare !r: the plan id is author-supplied and a long
+        # one would otherwise BECOME the diagnostic. The inner message is
+        # already bounded — every raise in this module goes through
+        # short_repr — so wrapping only has to bound the id it adds.
+        raise HeadlineError(f"plan {short_repr(plan.get('id'))}: {exc}") from exc
+
+
+def insert_generated_headline(plan) -> dict:
+    """Return a copy of `plan` carrying its generated headline.
+
+    Placement is deterministic so the shipped artifact stays diff-clean and the
+    generated string reads where an authored one used to: immediately before
+    the adjacent-conditions field (`detail`), else before `disclosure`, else
+    appended. All three of headline/detail/disclosure render together inside
+    the exact-terms gate, so keeping them adjacent matches the contract.
+
+    Raises HeadlineError if the plan already carries an authored headline —
+    authored prose must never override or sit beside the generated value."""
+    if "headline" in plan:
+        # Both interpolations are author-supplied and both go through
+        # short_repr: the id and the rejected headline are each capable of
+        # being megabytes of JSON, and a refusal must stay readable.
+        raise HeadlineError(
+            f"plan {short_repr(plan.get('id'))} is a promotional plan and carries a "
+            f"hand-authored headline {short_repr(plan.get('headline'), 120)}. Promotional "
+            f"headlines are GENERATED from apr/termMonths — delete the authored "
+            f"headline from the canonical source. (Non-promotional plans keep "
+            f"their authored headlines.)")
+    generated = headline_for_plan(plan)
+    out = {}
+    placed = False
+    for key, value in plan.items():
+        if not placed and key in ("detail", "disclosure"):
+            out["headline"] = generated
+            placed = True
+        out[key] = value
+    if not placed:
+        out["headline"] = generated
+    return out
+
+
+def apply_to_financing(financing) -> None:
+    """Generate promotional headlines in-place across a financing block.
+
+    Used by the workbook builder (on a deep copy of the canonical source) and
+    by the smoke parity check, so the canonical->shipped transform is expressed
+    exactly once. Raises HeadlineError on any promotional plan that carries an
+    authored headline or cannot produce one."""
+    plans = financing.get("plans")
+    if not isinstance(plans, list):
+        return
+    for i, plan in enumerate(plans):
+        if is_promotional_presentation(plan):
+            plans[i] = insert_generated_headline(plan)

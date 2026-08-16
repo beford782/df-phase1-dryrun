@@ -1,0 +1,1448 @@
+{
+    "gold":  [
+                 {
+                     "id":  "g1",
+                     "name":  "The Roma",
+                     "brand":  "Chattam \u0026 Wells",
+                     "subBrand":  "Roma",
+                     "pitchKey":  "",
+                     "archetype":  "Natural-fiber luxury firm",
+                     "displayPriority":  1,
+                     "firmness":  7,
+                     "firmnessLabel":  "Firm",
+                     "locallyMade":  true,
+                     "features":  [
+                                      "support",
+                                      "firm",
+                                      "durability",
+                                      "hybrid",
+                                      "responsive",
+                                      "zoned"
+                                  ],
+                     "tags":  [
+                                  "Luxury Natural Fibers",
+                                  "Firm",
+                                  "Euro-Top"
+                              ],
+                     "highlight":  "Handcrafted firm luxury in Merino wool and cashmere",
+                     "tags_es":  [
+                                     "Fibras Naturales de Lujo",
+                                     "Firme",
+                                     "Euro-Top"
+                                 ],
+                     "highlight_es":  "Lujo firme artesanal en lana Merino y cachemira",
+                     "imageUrl":  "images/mattresses/the roma.jpg",
+                     "reasons":  {
+                                     "default":  "Merino wool, cashmere, and graphite latex over multiple coil layers — firm support that breathes and lasts."
+                                 },
+                     "reasons_es":  {
+                                        "default":  "Lana Merino, cachemira y látex de grafito sobre múltiples capas de resortes — soporte firme que respira y dura."
+                                    },
+                     "differentiators":  [
+                                             {
+                                                 "title":  {
+                                                               "en":  "Natural fiber comfort layers",
+                                                               "es":  "Capas de confort de fibras naturales"
+                                                           },
+                                                 "detail":  {
+                                                                "en":  "Merino wool, camel hair, and cashmere breathe and temper heat in a way synthetic foams can\u0027t.",
+                                                                "es":  "La lana Merino, el pelo de camello y la cachemira respiran y regulan el calor como las espumas sintéticas no pueden."
+                                                            }
+                                             },
+                                             {
+                                                 "title":  {
+                                                               "en":  "Coil-on-coil with graphite latex",
+                                                               "es":  "Doble resorte con látex de grafito"
+                                                           },
+                                                 "detail":  {
+                                                                "en":  "Responsive lift and stability instead of the slow sink of memory foam.",
+                                                                "es":  "Elevación receptiva y estabilidad en lugar del hundimiento lento de la espuma viscoelástica."
+                                                            }
+                                             }
+                                         ],
+                     "topPickReason":  {
+                                           "en":  "Handcrafted natural-fiber luxury with firm, breathable coil-on-coil support.",
+                                           "es":  "Lujo artesanal de fibras naturales con soporte firme de doble resorte que respira."
+                                       }
+                 },
+                 {
+                     "id":  "g2",
+                     "name":  "The Saint Pierre",
+                     "brand":  "Chattam \u0026 Wells",
+                     "subBrand":  "Saint Pierre",
+                     "pitchKey":  "",
+                     "archetype":  "Plush natural-fiber luxury",
+                     "displayPriority":  1,
+                     "firmness":  3,
+                     "firmnessLabel":  "Plush",
+                     "locallyMade":  true,
+                     "features":  [
+                                      "plush",
+                                      "soft",
+                                      "pressurerelief",
+                                      "durability",
+                                      "hybrid"
+                                  ],
+                     "tags":  [
+                                  "Luxury Natural Fibers",
+                                  "Plush",
+                                  "Euro-Top"
+                              ],
+                     "highlight":  "",
+                     "tags_es":  [
+                                     "Fibras Naturales de Lujo",
+                                     "Suave",
+                                     "Euro-Top"
+                                 ],
+                     "highlight_es":  "",
+                     "imageUrl":  "images/mattresses/the saint pierre.jpg",
+                     "reasons":  {
+                                     "default":  "A deep plush euro-top of wool and cashmere over layered coils — indulgent softness that never loses its support."
+                                 },
+                     "reasons_es":  {
+                                        "default":  "Un euro-top suave y profundo de lana y cachemira sobre capas de resortes — suavidad indulgente que nunca pierde su soporte."
+                                    },
+                     "differentiators":  [
+                                             {
+                                                 "title":  {
+                                                               "en":  "Deep plush euro-top",
+                                                               "es":  "Euro-top suave y profundo"
+                                                           },
+                                                 "detail":  {
+                                                                "en":  "",
+                                                                "es":  ""
+                                                            }
+                                             },
+                                             {
+                                                 "title":  {
+                                                               "en":  "Breathable natural fill",
+                                                               "es":  "Relleno natural transpirable"
+                                                           },
+                                                 "detail":  {
+                                                                "en":  "Wool and cashmere keep the plush layers cooler than dense foam pillow-tops.",
+                                                                "es":  "La lana y la cachemira mantienen las capas suaves más frescas que los pillow-tops de espuma densa."
+                                                            }
+                                             }
+                                         ]
+                 },
+                 {
+                     "id":  "g3",
+                     "name":  "The Palermo",
+                     "brand":  "Chattam \u0026 Wells",
+                     "subBrand":  "Palermo",
+                     "pitchKey":  "",
+                     "archetype":  "Hand-tufted firm pillowtop",
+                     "displayPriority":  1,
+                     "firmness":  7,
+                     "firmnessLabel":  "Firm",
+                     "locallyMade":  true,
+                     "features":  [
+                                      "support",
+                                      "firm",
+                                      "durability",
+                                      "zoned",
+                                      "hybrid"
+                                  ],
+                     "tags":  [
+                                  "4,294 Coils",
+                                  "Firm",
+                                  "Hand-Tufted"
+                              ],
+                     "highlight":  "4,294 coils of hand-tufted firm support",
+                     "tags_es":  [
+                                     "4,294 Resortes",
+                                     "Firme",
+                                     "Copetudo a Mano"
+                                 ],
+                     "highlight_es":  "4,294 resortes de soporte firme copetudo a mano",
+                     "imageUrl":  "images/mattresses/the palermo.jpg",
+                     "reasons":  {
+                                     "default":  "4,294 coils, Merino wool, and a hand-tufted build — firm alignment engineered to hold for decades."
+                                 },
+                     "reasons_es":  {
+                                        "default":  "4,294 resortes, lana Merino y construcción copetuda a mano — alineación firme diseñada para durar décadas."
+                                    },
+                     "differentiators":  [
+                                             {
+                                                 "title":  {
+                                                               "en":  "4,294-coil support system",
+                                                               "es":  "Sistema de 4,294 resortes"
+                                                           },
+                                                 "detail":  {
+                                                                "en":  "Several times the coil count of a standard bed — finer, more contoured firm support.",
+                                                                "es":  "Varias veces los resortes de una cama estándar — soporte firme más fino y contorneado."
+                                                            }
+                                             },
+                                             {
+                                                 "title":  {
+                                                               "en":  "Hand-tufted construction",
+                                                               "es":  "Construcción copetuda a mano"
+                                                           },
+                                                 "detail":  {
+                                                                "en":  "",
+                                                                "es":  ""
+                                                            }
+                                             }
+                                         ],
+                     "topPickReason":  {
+                                           "en":  "Massive 4,294-coil count with hand-tufted craftsmanship for firm, lasting alignment.",
+                                           "es":  "Enorme cantidad de 4,294 resortes con artesanía copetuda a mano para una alineación firme y duradera."
+                                       }
+                 },
+                 {
+                     "id":  "g4",
+                     "name":  "Tempur-LuxeBreeze 2.0 Soft",
+                     "brand":  "Tempur-Pedic",
+                     "subBrand":  "LuxeBreeze",
+                     "pitchKey":  "",
+                     "archetype":  "Maximum-cooling soft memory foam",
+                     "displayPriority":  1,
+                     "firmness":  2,
+                     "firmnessLabel":  "Soft",
+                     "locallyMade":  false,
+                     "features":  [
+                                      "cooling",
+                                      "soft",
+                                      "plush",
+                                      "pressurerelief",
+                                      "motionisolation"
+                                  ],
+                     "tags":  [
+                                  "Cooling",
+                                  "Soft",
+                                  "Memory Foam"
+                              ],
+                     "highlight":  "",
+                     "tags_es":  [
+                                     "Frescura",
+                                     "Suave",
+                                     "Espuma Viscoelástica"
+                                 ],
+                     "highlight_es":  "",
+                     "imageUrl":  "images/mattresses/tempur-luxebreeze 2.0 soft.jpg",
+                     "reasons":  {
+                                     "default":  "Tempur-Pedic\u0027s coolest mattress — Pure Cool Plus material pulls heat away while soft TEMPUR cradles every curve."
+                                 },
+                     "reasons_es":  {
+                                        "default":  "El colchón más fresco de Tempur-Pedic — el material Pure Cool Plus disipa el calor mientras el TEMPUR suave abraza cada curva."
+                                    },
+                     "differentiators":  [
+                                             {
+                                                 "title":  {
+                                                               "en":  "Soft TEMPUR contour",
+                                                               "es":  "Contorno TEMPUR suave"
+                                                           },
+                                                 "detail":  {
+                                                                "en":  "Slowly settles around pressure points instead of pushing back like coils.",
+                                                                "es":  "Se acomoda lentamente alrededor de los puntos de presión en lugar de empujar como los resortes."
+                                                            }
+                                             }
+                                         ]
+                 },
+                 {
+                     "id":  "g5",
+                     "name":  "Tempur-ProBreeze 2.0 Medium Hybrid",
+                     "brand":  "Tempur-Pedic",
+                     "subBrand":  "ProBreeze",
+                     "pitchKey":  "",
+                     "archetype":  "Cooling adaptive hybrid",
+                     "displayPriority":  1,
+                     "firmness":  5,
+                     "firmnessLabel":  "Medium",
+                     "locallyMade":  false,
+                     "features":  [
+                                      "cooling",
+                                      "medium",
+                                      "hybrid",
+                                      "pressurerelief",
+                                      "support"
+                                  ],
+                     "tags":  [
+                                  "Cooling",
+                                  "Hybrid",
+                                  "Medium"
+                              ],
+                     "highlight":  "",
+                     "tags_es":  [
+                                     "Frescura",
+                                     "Híbrido",
+                                     "Medio"
+                                 ],
+                     "highlight_es":  "",
+                     "imageUrl":  "images/mattresses/tempur-probreeze 2.0 medium hybrid.jpg",
+                     "reasons":  {
+                                     "default":  "Cool-to-the-touch Breeze cover and Pure Cool material over a hybrid coil base — cooling plus true TEMPUR pressure relief."
+                                 },
+                     "reasons_es":  {
+                                        "default":  "Funda Breeze fresca al tacto y material Pure Cool sobre una base híbrida de resortes — frescura más el verdadero alivio de presión TEMPUR."
+                                    },
+                     "differentiators":  [
+                                             {
+                                                 "title":  {
+                                                               "en":  "Cool-to-touch Breeze cover",
+                                                               "es":  "Funda Breeze fresca al tacto"
+                                                           },
+                                                 "detail":  {
+                                                                "en":  "Noticeably cooler on contact than standard TEMPUR models.",
+                                                                "es":  "Notablemente más fresco al contacto que los modelos TEMPUR estándar."
+                                                            }
+                                             },
+                                             {
+                                                 "title":  {
+                                                               "en":  "Hybrid coil base",
+                                                               "es":  "Base híbrida de resortes"
+                                                           },
+                                                 "detail":  {
+                                                                "en":  "Adds airflow and a touch of responsiveness under the memory foam.",
+                                                                "es":  "Agrega ventilación y un toque de respuesta bajo la espuma viscoelástica."
+                                                            }
+                                             }
+                                         ]
+                 },
+                 {
+                     "id":  "g6",
+                     "name":  "Reserve Mayfair Plush",
+                     "brand":  "Restonic",
+                     "subBrand":  "Reserve",
+                     "pitchKey":  "",
+                     "archetype":  "",
+                     "displayPriority":  1,
+                     "firmness":  3,
+                     "firmnessLabel":  "Plush",
+                     "locallyMade":  true,
+                     "features":  [
+                                      "plush",
+                                      "soft",
+                                      "pressurerelief",
+                                      "hybrid",
+                                      "durability"
+                                  ],
+                     "tags":  [
+                                  "Plush"
+                              ],
+                     "highlight":  "",
+                     "tags_es":  [
+                                     "Suave"
+                                 ],
+                     "highlight_es":  "",
+                     "imageUrl":  "images/mattresses/reserve mayfair plush.jpg",
+                     "reasons":  {
+
+                                 },
+                     "reasons_es":  {
+
+                                    },
+                     "differentiators":  [
+
+                                         ]
+                 },
+                 {
+                     "id":  "g7",
+                     "name":  "Reserve Mayfair Medium",
+                     "brand":  "Restonic",
+                     "subBrand":  "Reserve",
+                     "pitchKey":  "",
+                     "archetype":  "",
+                     "displayPriority":  1,
+                     "firmness":  5,
+                     "firmnessLabel":  "Medium",
+                     "locallyMade":  true,
+                     "features":  [
+                                      "medium",
+                                      "support",
+                                      "hybrid",
+                                      "durability",
+                                      "pressurerelief"
+                                  ],
+                     "tags":  [
+                                  "Medium"
+                              ],
+                     "highlight":  "",
+                     "tags_es":  [
+                                     "Medio"
+                                 ],
+                     "highlight_es":  "",
+                     "imageUrl":  "images/mattresses/reserve mayfair medium.jpg",
+                     "reasons":  {
+
+                                 },
+                     "reasons_es":  {
+
+                                    },
+                     "differentiators":  [
+
+                                         ]
+                 },
+                 {
+                     "id":  "g8",
+                     "name":  "Royal Reserve Extra Firm",
+                     "brand":  "Restonic",
+                     "subBrand":  "Royal Reserve",
+                     "pitchKey":  "",
+                     "archetype":  "",
+                     "displayPriority":  1,
+                     "firmness":  8,
+                     "firmnessLabel":  "Extra Firm",
+                     "locallyMade":  true,
+                     "features":  [
+                                      "firm",
+                                      "support",
+                                      "durability",
+                                      "hybrid"
+                                  ],
+                     "tags":  [
+                                  "Extra Firm"
+                              ],
+                     "highlight":  "",
+                     "tags_es":  [
+                                     "Extra Firme"
+                                 ],
+                     "highlight_es":  "",
+                     "imageUrl":  "images/mattresses/royal reserve extra firm.jpg",
+                     "reasons":  {
+
+                                 },
+                     "reasons_es":  {
+
+                                    },
+                     "differentiators":  [
+
+                                         ]
+                 },
+                 {
+                     "id":  "g9",
+                     "name":  "Copper Cushion Firm",
+                     "brand":  "Spring Air",
+                     "subBrand":  "Copper",
+                     "pitchKey":  "",
+                     "archetype":  "",
+                     "displayPriority":  1,
+                     "firmness":  6,
+                     "firmnessLabel":  "Cushion Firm",
+                     "locallyMade":  false,
+                     "features":  [
+                                      "cooling",
+                                      "medium",
+                                      "support",
+                                      "hybrid",
+                                      "responsive"
+                                  ],
+                     "tags":  [
+                                  "Cushion Firm"
+                              ],
+                     "highlight":  "",
+                     "tags_es":  [
+                                     "Cushion Firm"
+                                 ],
+                     "highlight_es":  "",
+                     "imageUrl":  "images/mattresses/copper cushion firm.jpg",
+                     "reasons":  {
+
+                                 },
+                     "reasons_es":  {
+
+                                    },
+                     "differentiators":  [
+
+                                         ]
+                 }
+             ],
+    "silver":  [
+                   {
+                       "id":  "s1",
+                       "name":  "Platinum Paige Firm",
+                       "brand":  "Restonic",
+                       "subBrand":  "Platinum",
+                       "pitchKey":  "",
+                       "archetype":  "Luxury firm box-top hybrid",
+                       "displayPriority":  1,
+                       "firmness":  7,
+                       "firmnessLabel":  "Firm",
+                       "locallyMade":  true,
+                       "features":  [
+                                        "firm",
+                                        "support",
+                                        "zoned",
+                                        "hybrid",
+                                        "durability"
+                                    ],
+                       "tags":  [
+                                    "Marvelous Middle",
+                                    "Firm",
+                                    "Box Top"
+                                ],
+                       "highlight":  "Luxury 16-inch box top with firm zoned support",
+                       "tags_es":  [
+                                       "Marvelous Middle",
+                                       "Firme",
+                                       "Box Top"
+                                   ],
+                       "highlight_es":  "Box top de lujo de 16 pulgadas con soporte firme zonificado",
+                       "imageUrl":  "images/mattresses/platinum paige firm.jpg",
+                       "reasons":  {
+                                       "default":  "Patented Marvelous Middle delivers 25% more support in the center third — where your body needs it most."
+                                   },
+                       "reasons_es":  {
+                                          "default":  "El patentado Marvelous Middle brinda 25% más soporte en el tercio central — donde tu cuerpo más lo necesita."
+                                      },
+                       "differentiators":  [
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Marvelous Middle zoning",
+                                                                 "es":  "Zonificación Marvelous Middle"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "25% more support under hips and lower back, where most beds sag first.",
+                                                                  "es":  "25% más soporte bajo caderas y espalda baja, donde la mayoría de las camas se hunden primero."
+                                                              }
+                                               },
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Luxury box-top build",
+                                                                 "es":  "Construcción box-top de lujo"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "A tailored 16-inch profile with plush surface layers over a firm core.",
+                                                                  "es":  "Un perfil de 16 pulgadas con capas superficiales suaves sobre un núcleo firme."
+                                                              }
+                                               }
+                                           ],
+                       "topPickReason":  {
+                                             "en":  "Luxury box-top comfort with firm, zoned center-third support.",
+                                             "es":  "Confort box-top de lujo con soporte firme zonificado en el centro."
+                                         }
+                   },
+                   {
+                       "id":  "s2",
+                       "name":  "Platinum Paige Extra Firm",
+                       "brand":  "Restonic",
+                       "subBrand":  "Platinum",
+                       "pitchKey":  "",
+                       "archetype":  "Luxury extra-firm hybrid",
+                       "displayPriority":  1,
+                       "firmness":  8,
+                       "firmnessLabel":  "Extra Firm",
+                       "locallyMade":  true,
+                       "features":  [
+                                        "firm",
+                                        "support",
+                                        "zoned",
+                                        "hybrid"
+                                    ],
+                       "tags":  [
+                                    "Marvelous Middle",
+                                    "Extra Firm",
+                                    "Hybrid"
+                                ],
+                       "highlight":  "Maximum support with luxury Paige comfort layers",
+                       "tags_es":  [
+                                       "Marvelous Middle",
+                                       "Extra Firme",
+                                       "Híbrido"
+                                   ],
+                       "highlight_es":  "Máximo soporte con capas de confort de lujo Paige",
+                       "imageUrl":  "images/mattresses/platinum paige extra firm.jpg",
+                       "reasons":  {
+                                       "default":  "Extra-firm hybrid support with Marvelous Middle zoning — maximum lift without giving up the luxury layers."
+                                   },
+                       "reasons_es":  {
+                                          "default":  "Soporte híbrido extra firme con zonificación Marvelous Middle — máxima elevación sin renunciar a las capas de lujo."
+                                      },
+                       "differentiators":  [
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Extra-firm support core",
+                                                                 "es":  "Núcleo de soporte extra firme"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "Noticeably firmer than the Paige Firm — for sleepers who want no sink at all.",
+                                                                  "es":  "Notablemente más firme que el Paige Firme — para quienes no quieren hundirse nada."
+                                                              }
+                                               },
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Zoned center third",
+                                                                 "es":  "Tercio central zonificado"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "",
+                                                                  "es":  ""
+                                                              }
+                                               }
+                                           ],
+                       "topPickReason":  {
+                                             "en":  "The firmest Platinum — extra-firm zoned support in a luxury build.",
+                                             "es":  "El Platinum más firme — soporte extra firme zonificado en construcción de lujo."
+                                         }
+                   },
+                   {
+                       "id":  "s3",
+                       "name":  "Platinum Maria Plush",
+                       "brand":  "Restonic",
+                       "subBrand":  "Platinum",
+                       "pitchKey":  "",
+                       "archetype":  "",
+                       "displayPriority":  1,
+                       "firmness":  3,
+                       "firmnessLabel":  "Plush",
+                       "locallyMade":  true,
+                       "features":  [
+                                        "plush",
+                                        "soft",
+                                        "pressurerelief",
+                                        "zoned",
+                                        "hybrid",
+                                        "motionisolation"
+                                    ],
+                       "tags":  [
+                                    "Plush Box Top"
+                                ],
+                       "highlight":  "",
+                       "tags_es":  [
+                                       "Box Top Suave"
+                                   ],
+                       "highlight_es":  "",
+                       "imageUrl":  "images/mattresses/platinum maria plush.jpg",
+                       "reasons":  {
+
+                                   },
+                       "reasons_es":  {
+
+                                      },
+                       "differentiators":  [
+
+                                           ]
+                   },
+                   {
+                       "id":  "s4",
+                       "name":  "Platinum Maria Firm",
+                       "brand":  "Restonic",
+                       "subBrand":  "Platinum",
+                       "pitchKey":  "",
+                       "archetype":  "Firm box-top zoned hybrid",
+                       "displayPriority":  1,
+                       "firmness":  7,
+                       "firmnessLabel":  "Firm",
+                       "locallyMade":  true,
+                       "features":  [
+                                        "firm",
+                                        "support",
+                                        "zoned",
+                                        "hybrid",
+                                        "durability"
+                                    ],
+                       "tags":  [
+                                    "Firm Box Top",
+                                    "Zoned Coils",
+                                    "Edge Support"
+                                ],
+                       "highlight":  "Firm box-top comfort with zoned coil support",
+                       "tags_es":  [
+                                       "Box Top Firme",
+                                       "Resortes Zonificados",
+                                       "Soporte de Borde"
+                                   ],
+                       "highlight_es":  "Confort box-top firme con soporte de resortes zonificados",
+                       "imageUrl":  "images/mattresses/platinum maria firm.jpg",
+                       "reasons":  {
+
+                                   },
+                       "reasons_es":  {
+
+                                      },
+                       "differentiators":  [
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Firm with a finished top",
+                                                                 "es":  "Firme con acabado superior"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "Firm alignment without the bare, hard feel of a tight-top firm.",
+                                                                  "es":  "Alineación firme sin la sensación dura y desnuda de un firme tight-top."
+                                                              }
+                                               },
+                                               {
+                                                   "title":  {
+                                                                 "en":  "3-inch edge encasement",
+                                                                 "es":  "Encasado de borde de 3 pulgadas"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "High-density foam rails keep the sleeping surface usable to the very edge.",
+                                                                  "es":  "Rieles de espuma de alta densidad mantienen la superficie útil hasta el borde."
+                                                              }
+                                               }
+                                           ],
+                       "topPickReason":  {
+                                             "en":  "Firm zoned support in a box-top build with lasting edge-to-edge comfort.",
+                                             "es":  "Soporte firme zonificado en construcción box-top con confort de borde a borde."
+                                         }
+                   },
+                   {
+                       "id":  "s5",
+                       "name":  "Platinum Summit Firm",
+                       "brand":  "Restonic",
+                       "subBrand":  "Platinum",
+                       "pitchKey":  "",
+                       "archetype":  "Cool-gel firm hybrid",
+                       "displayPriority":  1,
+                       "firmness":  7,
+                       "firmnessLabel":  "Firm",
+                       "locallyMade":  true,
+                       "features":  [
+                                        "firm",
+                                        "cooling",
+                                        "support",
+                                        "hybrid",
+                                        "pressurerelief"
+                                    ],
+                       "tags":  [
+                                    "Cool Gel",
+                                    "Firm",
+                                    "Hybrid"
+                                ],
+                       "highlight":  "Cool gel memory foam over firm hybrid support",
+                       "tags_es":  [
+                                       "Gel Fresco",
+                                       "Firme",
+                                       "Híbrido"
+                                   ],
+                       "highlight_es":  "Espuma viscoelástica con gel fresco sobre soporte híbrido firme",
+                       "imageUrl":  "images/mattresses/platinum summit firm.jpg",
+                       "reasons":  {
+                                       "default":  "A full layer of cool-gel memory foam over a firm hybrid core — pressure relief with a cooling effect and solid alignment."
+                                   },
+                       "reasons_es":  {
+                                          "default":  "Una capa completa de espuma con gel fresco sobre un núcleo híbrido firme — alivio de presión con efecto refrescante y alineación sólida."
+                                      },
+                       "differentiators":  [
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Cool-gel memory foam layer",
+                                                                 "es":  "Capa de espuma con gel fresco"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "Adds cooling comfort a plain firm innerspring doesn\u0027t have.",
+                                                                  "es":  "Agrega confort refrescante que un firme de resortes común no tiene."
+                                                              }
+                                               },
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Firm hybrid core",
+                                                                 "es":  "Núcleo híbrido firme"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "",
+                                                                  "es":  ""
+                                                              }
+                                               }
+                                           ],
+                       "topPickReason":  {
+                                             "en":  "Firm hybrid support topped with cooling gel memory foam.",
+                                             "es":  "Soporte híbrido firme coronado con espuma viscoelástica de gel fresco."
+                                         }
+                   },
+                   {
+                       "id":  "s6",
+                       "name":  "Platinum Summit Medium",
+                       "brand":  "Restonic",
+                       "subBrand":  "Platinum",
+                       "pitchKey":  "",
+                       "archetype":  "",
+                       "displayPriority":  1,
+                       "firmness":  5,
+                       "firmnessLabel":  "Medium",
+                       "locallyMade":  true,
+                       "features":  [
+                                        "medium",
+                                        "cooling",
+                                        "pressurerelief",
+                                        "hybrid",
+                                        "support"
+                                    ],
+                       "tags":  [
+                                    "Medium",
+                                    "Hybrid"
+                                ],
+                       "highlight":  "",
+                       "tags_es":  [
+                                       "Medio",
+                                       "Híbrido"
+                                   ],
+                       "highlight_es":  "",
+                       "imageUrl":  "images/mattresses/platinum summit medium.jpg",
+                       "reasons":  {
+
+                                   },
+                       "reasons_es":  {
+
+                                      },
+                       "differentiators":  [
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Crowd-pleasing medium",
+                                                                 "es":  "Medio que agrada a todos"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "The feel most couples agree on — balanced give and support.",
+                                                                  "es":  "La sensación en la que la mayoría de las parejas están de acuerdo — equilibrio entre suavidad y soporte."
+                                                              }
+                                               }
+                                           ]
+                   },
+                   {
+                       "id":  "s7",
+                       "name":  "Platinum Summit Plush",
+                       "brand":  "Restonic",
+                       "subBrand":  "Platinum",
+                       "pitchKey":  "",
+                       "archetype":  "",
+                       "displayPriority":  1,
+                       "firmness":  3,
+                       "firmnessLabel":  "Plush",
+                       "locallyMade":  true,
+                       "features":  [
+                                        "plush",
+                                        "soft",
+                                        "cooling",
+                                        "pressurerelief",
+                                        "hybrid"
+                                    ],
+                       "tags":  [
+                                    "Plush",
+                                    "Hybrid"
+                                ],
+                       "highlight":  "",
+                       "tags_es":  [
+                                       "Suave",
+                                       "Híbrido"
+                                   ],
+                       "highlight_es":  "",
+                       "imageUrl":  "images/mattresses/platinum summit plush.jpg",
+                       "reasons":  {
+
+                                   },
+                       "reasons_es":  {
+
+                                      },
+                       "differentiators":  [
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Supported softness",
+                                                                 "es":  "Suavidad con soporte"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "",
+                                                                  "es":  ""
+                                                              }
+                                               }
+                                           ]
+                   },
+                   {
+                       "id":  "s8",
+                       "name":  "Kendall Firm Euro Top",
+                       "brand":  "Restonic",
+                       "subBrand":  "ComfortCare",
+                       "pitchKey":  "",
+                       "archetype":  "Zoned firm euro-top hybrid",
+                       "displayPriority":  1,
+                       "firmness":  7,
+                       "firmnessLabel":  "Firm",
+                       "locallyMade":  true,
+                       "features":  [
+                                        "firm",
+                                        "support",
+                                        "zoned",
+                                        "hybrid"
+                                    ],
+                       "tags":  [
+                                    "Marvelous Middle",
+                                    "Firm",
+                                    "Euro Top"
+                                ],
+                       "highlight":  "",
+                       "tags_es":  [
+                                       "Marvelous Middle",
+                                       "Firme",
+                                       "Euro Top"
+                                   ],
+                       "highlight_es":  "",
+                       "imageUrl":  "images/mattresses/kendall firm euro top.jpg",
+                       "reasons":  {
+
+                                   },
+                       "reasons_es":  {
+
+                                      },
+                       "differentiators":  [
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Euro-top over firm coils",
+                                                                 "es":  "Euro-top sobre resortes firmes"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "A sewn-under cushion layer takes the edge off a true firm feel.",
+                                                                  "es":  "Una capa de cojín cosida por debajo suaviza la sensación de un firme verdadero."
+                                                              }
+                                               },
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Thicker center-third coils",
+                                                                 "es":  "Resortes centrales más gruesos"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "Restonic\u0027s signature zoning holds hips level where beds break down first.",
+                                                                  "es":  "La zonificación distintiva de Restonic mantiene las caderas niveladas donde las camas fallan primero."
+                                                              }
+                                               }
+                                           ],
+                       "topPickReason":  {
+                                             "en":  "Zoned firm support with a euro-top finish — firm without feeling bare.",
+                                             "es":  "Soporte firme zonificado con acabado euro-top — firme sin sentirse desnudo."
+                                         }
+                   },
+                   {
+                       "id":  "s9",
+                       "name":  "Kendall Luxury Medium",
+                       "brand":  "Restonic",
+                       "subBrand":  "ComfortCare",
+                       "pitchKey":  "",
+                       "archetype":  "Motion-isolating medium hybrid",
+                       "displayPriority":  1,
+                       "firmness":  5,
+                       "firmnessLabel":  "Medium",
+                       "locallyMade":  true,
+                       "features":  [
+                                        "medium",
+                                        "motionisolation",
+                                        "pressurerelief",
+                                        "hybrid",
+                                        "support"
+                                    ],
+                       "tags":  [
+                                    "Hybrid",
+                                    "Medium",
+                                    "Motion Isolation"
+                                ],
+                       "highlight":  "Conforming luxury medium that stays still all night",
+                       "tags_es":  [
+                                       "Híbrido",
+                                       "Medio",
+                                       "Aislamiento de Movimiento"
+                                   ],
+                       "highlight_es":  "Medio de lujo que se adapta y permanece quieto toda la noche",
+                       "imageUrl":  "images/mattresses/kendall luxury medium.jpg",
+                       "reasons":  {
+                                       "default":  "Layers of conforming foam over wrapped coils — balanced medium comfort that absorbs a partner\u0027s movement."
+                                   },
+                       "reasons_es":  {
+                                          "default":  "Capas de espuma adaptable sobre resortes envueltos — confort medio equilibrado que absorbe el movimiento de la pareja."
+                                      },
+                       "differentiators":  [
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Wrapped-coil motion isolation",
+                                                                 "es":  "Aislamiento de movimiento con resortes envueltos"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "",
+                                                                  "es":  ""
+                                                              }
+                                               },
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Conforming comfort layers",
+                                                                 "es":  "Capas de confort adaptables"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "Foam layers contour without the deep sink of memory-foam beds.",
+                                                                  "es":  "Las capas de espuma se contornean sin el hundimiento profundo de las camas viscoelásticas."
+                                                              }
+                                               }
+                                           ]
+                   },
+                   {
+                       "id":  "s10",
+                       "name":  "Kendall Extra Firm",
+                       "brand":  "Restonic",
+                       "subBrand":  "ComfortCare",
+                       "pitchKey":  "",
+                       "archetype":  "Zoned extra-firm hybrid",
+                       "displayPriority":  1,
+                       "firmness":  8,
+                       "firmnessLabel":  "Extra Firm",
+                       "locallyMade":  true,
+                       "features":  [
+                                        "firm",
+                                        "support",
+                                        "zoned",
+                                        "hybrid",
+                                        "durability"
+                                    ],
+                       "tags":  [
+                                    "Marvelous Middle",
+                                    "Extra Firm",
+                                    "Tight Top"
+                                ],
+                       "highlight":  "Extra-firm zoned support at a working price",
+                       "tags_es":  [
+                                       "Marvelous Middle",
+                                       "Extra Firme",
+                                       "Tight Top"
+                                   ],
+                       "highlight_es":  "Soporte extra firme zonificado a un precio accesible",
+                       "imageUrl":  "images/mattresses/kendall extra firm.jpg",
+                       "reasons":  {
+
+                                   },
+                       "reasons_es":  {
+
+                                      },
+                       "differentiators":  [
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Extra-firm tight top",
+                                                                 "es":  "Tight top extra firme"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "A flat, supportive surface with no plush give — for sleepers who want solid.",
+                                                                  "es":  "Una superficie plana y de soporte sin suavidad — para quienes quieren algo sólido."
+                                                              }
+                                               },
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Zoned center support",
+                                                                 "es":  "Soporte central zonificado"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "Thicker center coils protect the firm feel from early body impressions.",
+                                                                  "es":  "Resortes centrales más gruesos protegen la firmeza de las marcas corporales tempranas."
+                                                              }
+                                               }
+                                           ]
+                   }
+               ],
+    "bronze":  [
+                   {
+                       "id":  "b1",
+                       "name":  "Giselle Plush",
+                       "brand":  "Restonic",
+                       "subBrand":  "Giselle",
+                       "pitchKey":  "",
+                       "archetype":  "Everyday plush comfort",
+                       "displayPriority":  1,
+                       "firmness":  3,
+                       "firmnessLabel":  "Plush",
+                       "locallyMade":  true,
+                       "features":  [
+                                        "plush",
+                                        "soft",
+                                        "pressurerelief"
+                                    ],
+                       "tags":  [
+                                    "Plush",
+                                    "12.5-Inch",
+                                    "Value"
+                                ],
+                       "highlight":  "Soft, welcoming plush at an everyday price",
+                       "tags_es":  [
+                                       "Suave",
+                                       "12.5 Pulgadas",
+                                       "Valor"
+                                   ],
+                       "highlight_es":  "Suavidad acogedora a un precio cotidiano",
+                       "imageUrl":  "images/mattresses/giselle plush.jpg",
+                       "reasons":  {
+                                       "default":  "A 12.5-inch plush build that cushions shoulders and hips — easy softness at a price that makes sense."
+                                   },
+                       "reasons_es":  {
+                                          "default":  "Una construcción suave de 12.5 pulgadas que acolcha hombros y caderas — suavidad fácil a un precio razonable."
+                                      },
+                       "differentiators":  [
+                                               {
+                                                   "title":  {
+                                                                 "en":  "True plush surface",
+                                                                 "es":  "Superficie verdaderamente suave"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "Softer than the Gracie — made for sleepers who want cushion first.",
+                                                                  "es":  "Más suave que el Gracie — hecho para quienes buscan acolchado primero."
+                                                              }
+                                               },
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Everyday value",
+                                                                 "es":  "Valor cotidiano"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "Restonic quality without the Platinum price.",
+                                                                  "es":  "Calidad Restonic sin el precio Platinum."
+                                                              }
+                                               }
+                                           ]
+                   },
+                   {
+                       "id":  "b2",
+                       "name":  "Giselle Firm",
+                       "brand":  "Restonic",
+                       "subBrand":  "Giselle",
+                       "pitchKey":  "",
+                       "archetype":  "Everyday firm support",
+                       "displayPriority":  1,
+                       "firmness":  7,
+                       "firmnessLabel":  "Firm",
+                       "locallyMade":  true,
+                       "features":  [
+                                        "firm",
+                                        "support",
+                                        "durability"
+                                    ],
+                       "tags":  [
+                                    "Firm",
+                                    "12.5-Inch",
+                                    "Value"
+                                ],
+                       "highlight":  "Straightforward firm support at an everyday price",
+                       "tags_es":  [
+                                       "Firme",
+                                       "12.5 Pulgadas",
+                                       "Valor"
+                                   ],
+                       "highlight_es":  "Soporte firme directo a un precio cotidiano",
+                       "imageUrl":  "images/mattresses/giselle firm.jpg",
+                       "reasons":  {
+                                       "default":  "A no-nonsense 12.5-inch firm that keeps your spine aligned — dependable support night after night."
+                                   },
+                       "reasons_es":  {
+                                          "default":  "Un firme de 12.5 pulgadas sin rodeos que mantiene tu columna alineada — soporte confiable noche tras noche."
+                                      },
+                       "differentiators":  [
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Straightforward firm feel",
+                                                                 "es":  "Sensación firme directa"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "Solid support without plush layers softening the surface.",
+                                                                  "es":  "Soporte sólido sin capas suaves que ablanden la superficie."
+                                                              }
+                                               },
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Everyday value",
+                                                                 "es":  "Valor cotidiano"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "The affordable path to a true firm mattress.",
+                                                                  "es":  "El camino accesible a un colchón firme verdadero."
+                                                              }
+                                               }
+                                           ],
+                       "topPickReason":  {
+                                             "en":  "Dependable firm alignment at an everyday price.",
+                                             "es":  "Alineación firme confiable a precio cotidiano."
+                                         }
+                   },
+                   {
+                       "id":  "b3",
+                       "name":  "Genesis Euro Top",
+                       "brand":  "Genesis",
+                       "subBrand":  "Kingdom Mattress",
+                       "pitchKey":  "",
+                       "archetype":  "USA-engineered family hybrid",
+                       "displayPriority":  2,
+                       "firmness":  5,
+                       "firmnessLabel":  "Medium",
+                       "locallyMade":  false,
+                       "features":  [
+                                        "medium",
+                                        "hybrid",
+                                        "support",
+                                        "durability",
+                                        "pressurerelief"
+                                    ],
+                       "tags":  [
+                                    "Hybrid",
+                                    "Euro Top",
+                                    "Made in USA"
+                                ],
+                       "highlight":  "Family-built euro-top hybrid, engineered in the USA",
+                       "tags_es":  [
+                                       "Híbrido",
+                                       "Euro Top",
+                                       "Hecho en EE. UU."
+                                   ],
+                       "highlight_es":  "Híbrido euro-top de empresa familiar, diseñado en EE. UU.",
+                       "imageUrl":  "images/mattresses/genesis euro top.jpg",
+                       "reasons":  {
+                                       "default":  "Thirty years of Kingdom Mattress family know-how in a euro-top hybrid engineered entirely in the USA."
+                                   },
+                       "reasons_es":  {
+                                          "default":  "Treinta años de experiencia familiar de Kingdom Mattress en un híbrido euro-top diseñado completamente en EE. UU."
+                                      },
+                       "differentiators":  [
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Euro-top comfort layer",
+                                                                 "es":  "Capa de confort euro-top"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "A cushioned top the plain Genesis Firm doesn\u0027t have.",
+                                                                  "es":  "Una superficie acolchada que el Genesis Firme no tiene."
+                                                              }
+                                               },
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Built-to-last engineering",
+                                                                 "es":  "Ingeniería para durar"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "Designed by a 30-year family company for durability first.",
+                                                                  "es":  "Diseñado por una empresa familiar de 30 años con la durabilidad primero."
+                                                              }
+                                               }
+                                           ],
+                       "topPickReason":  {
+                                             "en":  "A family-company euro-top hybrid built to take years of real life.",
+                                             "es":  "Un híbrido euro-top de empresa familiar hecho para aguantar años de vida real."
+                                         }
+                   },
+                   {
+                       "id":  "b4",
+                       "name":  "Genesis Firm",
+                       "brand":  "Genesis",
+                       "subBrand":  "Kingdom Mattress",
+                       "pitchKey":  "",
+                       "archetype":  "USA-engineered firm value",
+                       "displayPriority":  2,
+                       "firmness":  7,
+                       "firmnessLabel":  "Firm",
+                       "locallyMade":  false,
+                       "features":  [
+                                        "firm",
+                                        "hybrid",
+                                        "support",
+                                        "durability"
+                                    ],
+                       "tags":  [
+                                    "Hybrid",
+                                    "Firm",
+                                    "Made in USA"
+                                ],
+                       "highlight":  "Firm family-built hybrid at the best value",
+                       "tags_es":  [
+                                       "Híbrido",
+                                       "Firme",
+                                       "Hecho en EE. UU."
+                                   ],
+                       "highlight_es":  "Híbrido firme de empresa familiar al mejor valor",
+                       "imageUrl":  "images/mattresses/genesis firm.jpg",
+                       "reasons":  {
+                                       "default":  "A firm hybrid engineered entirely in the USA by a 30-year family company — solid support at the best value in the store."
+                                   },
+                       "reasons_es":  {
+                                          "default":  "Un híbrido firme diseñado completamente en EE. UU. por una empresa familiar de 30 años — soporte sólido al mejor valor de la tienda."
+                                      },
+                       "differentiators":  [
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Firm hybrid core",
+                                                                 "es":  "Núcleo híbrido firme"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "Coil support with a firm surface — more responsive than foam value beds.",
+                                                                  "es":  "Soporte de resortes con superficie firme — más receptivo que las camas de espuma de valor."
+                                                              }
+                                               },
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Best-value firm",
+                                                                 "es":  "Firme del mejor valor"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "The most affordable true firm hybrid in the lineup.",
+                                                                  "es":  "El híbrido firme verdadero más accesible de la línea."
+                                                              }
+                                               }
+                                           ],
+                       "topPickReason":  {
+                                             "en":  "Firm hybrid support, family-built and priced to make sense.",
+                                             "es":  "Soporte híbrido firme, de empresa familiar y a un precio razonable."
+                                         }
+                   },
+                   {
+                       "id":  "b5",
+                       "name":  "Angelina Plush",
+                       "brand":  "Restonic",
+                       "subBrand":  "ComfortCare",
+                       "pitchKey":  "",
+                       "archetype":  "Zoned plush for side sleepers",
+                       "displayPriority":  1,
+                       "firmness":  3,
+                       "firmnessLabel":  "Plush",
+                       "locallyMade":  true,
+                       "features":  [
+                                        "plush",
+                                        "soft",
+                                        "pressurerelief",
+                                        "zoned"
+                                    ],
+                       "tags":  [
+                                    "Marvelous Middle",
+                                    "Plush",
+                                    "Side Sleeper"
+                                ],
+                       "highlight":  "",
+                       "tags_es":  [
+                                       "Marvelous Middle",
+                                       "Suave",
+                                       "Para Dormir de Lado"
+                                   ],
+                       "highlight_es":  "",
+                       "imageUrl":  "images/mattresses/angelina plush.jpg",
+                       "reasons":  {
+
+                                   },
+                       "reasons_es":  {
+
+                                      },
+                       "differentiators":  [
+                                               {
+                                                   "title":  {
+                                                                 "en":  "3-inch edge encasement",
+                                                                 "es":  "Encasado de borde de 3 pulgadas"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "High-density foam rails give a bigger usable sleep surface than value plush beds.",
+                                                                  "es":  "Rieles de espuma de alta densidad dan más superficie útil que las camas suaves de valor."
+                                                              }
+                                               }
+                                           ]
+                   },
+                   {
+                       "id":  "b6",
+                       "name":  "Angelina Extra Firm",
+                       "brand":  "Restonic",
+                       "subBrand":  "ComfortCare",
+                       "pitchKey":  "",
+                       "archetype":  "Zoned extra-firm value hybrid",
+                       "displayPriority":  1,
+                       "firmness":  8,
+                       "firmnessLabel":  "Extra Firm",
+                       "locallyMade":  true,
+                       "features":  [
+                                        "firm",
+                                        "support",
+                                        "zoned",
+                                        "hybrid"
+                                    ],
+                       "tags":  [
+                                    "Marvelous Middle",
+                                    "Extra Firm",
+                                    "Hybrid"
+                                ],
+                       "highlight":  "Extra-firm hybrid support at a value price",
+                       "tags_es":  [
+                                       "Marvelous Middle",
+                                       "Extra Firme",
+                                       "Híbrido"
+                                   ],
+                       "highlight_es":  "Soporte híbrido extra firme a precio de valor",
+                       "imageUrl":  "images/mattresses/angelina extra firm.jpg",
+                       "reasons":  {
+
+                                   },
+                       "reasons_es":  {
+
+                                      },
+                       "differentiators":  [
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Value extra-firm",
+                                                                 "es":  "Extra firme de valor"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "The firmest feel in the bronze tier — no plush give at all.",
+                                                                  "es":  "La sensación más firme del nivel bronce — sin nada de suavidad."
+                                                              }
+                                               },
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Zoned hybrid core",
+                                                                 "es":  "Núcleo híbrido zonificado"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "Center-third reinforcement most value firm beds skip.",
+                                                                  "es":  "Refuerzo del tercio central que la mayoría de las camas firmes de valor omiten."
+                                                              }
+                                               }
+                                           ],
+                       "topPickReason":  {
+                                             "en":  "The value path to real extra-firm zoned support.",
+                                             "es":  "El camino de valor al verdadero soporte extra firme zonificado."
+                                         }
+                   },
+                   {
+                       "id":  "b7",
+                       "name":  "Gracie Medium",
+                       "brand":  "Restonic",
+                       "subBrand":  "Grace",
+                       "pitchKey":  "",
+                       "archetype":  "Everyday balanced innerspring",
+                       "displayPriority":  1,
+                       "firmness":  5,
+                       "firmnessLabel":  "Medium",
+                       "locallyMade":  true,
+                       "features":  [
+                                        "medium",
+                                        "support",
+                                        "zoned",
+                                        "responsive"
+                                    ],
+                       "tags":  [
+                                    "Innerspring",
+                                    "Medium",
+                                    "Best Value"
+                                ],
+                       "highlight":  "Balanced medium comfort at the friendliest price",
+                       "tags_es":  [
+                                       "Resortes",
+                                       "Medio",
+                                       "Mejor Valor"
+                                   ],
+                       "highlight_es":  "Confort medio equilibrado al precio más amigable",
+                       "imageUrl":  "images/mattresses/gracie medium.jpg",
+                       "reasons":  {
+                                       "default":  "A balanced medium innerspring with Restonic\u0027s thicker center coils — real quality at the friendliest price in the store."
+                                   },
+                       "reasons_es":  {
+                                          "default":  "Un colchón de resortes medio equilibrado con los resortes centrales más gruesos de Restonic — calidad real al precio más amigable de la tienda."
+                                      },
+                       "differentiators":  [
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Responsive innerspring feel",
+                                                                 "es":  "Sensación de resortes receptiva"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "Classic coil bounce that\u0027s easy to move on — no stuck-in-foam feeling.",
+                                                                  "es":  "Rebote clásico de resortes fácil para moverse — sin sensación de quedar atrapado en espuma."
+                                                              }
+                                               },
+                                               {
+                                                   "title":  {
+                                                                 "en":  "Friendliest price",
+                                                                 "es":  "El precio más amigable"
+                                                             },
+                                                   "detail":  {
+                                                                  "en":  "The most affordable way into a zoned Restonic build.",
+                                                                  "es":  "La forma más accesible de entrar a una construcción Restonic zonificada."
+                                                              }
+                                               }
+                                           ],
+                       "topPickReason":  {
+                                             "en":  "Easy balanced comfort with zoned support — the smart starter pick.",
+                                             "es":  "Confort equilibrado fácil con soporte zonificado — la elección inteligente para empezar."
+                                         }
+                   }
+               ]
+}

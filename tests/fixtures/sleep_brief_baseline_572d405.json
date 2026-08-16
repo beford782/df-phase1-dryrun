@@ -1,0 +1,790 @@
+{
+ "C": {
+  "en": {
+   "priorities": [
+    {
+     "title": "Comfortable elevation",
+     "desc": "A raised upper body may be worth experiencing as part of the complete sleep setup.",
+     "tagClass": "tag-high",
+     "tag": "Worth comparing",
+     "test": "Try the finalist flat, then with the head gently raised on an adjustable base."
+    },
+    {
+     "title": "Motion control",
+     "desc": "Movement on the other side is already affecting your sleep.",
+     "tagClass": "tag-key",
+     "tag": "Must solve",
+     "test": "Have the other sleeper change positions and notice how much movement reaches your side."
+    },
+    {
+     "title": "Consistent support",
+     "desc": "Your current mattress has lost shape, so stability across the sleep surface matters.",
+     "tagClass": "tag-key",
+     "tag": "Must solve",
+     "test": "Compare the center and edge, then roll between positions and notice any weak or uneven areas."
+    }
+   ],
+   "prioritiesHtml": "<li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Comfortable elevation</div><div class=\"noct-profile-priority-desc\">A raised upper body may be worth experiencing as part of the complete sleep setup.</div></div><div class=\"noct-profile-priority-tag tag-high\">Worth comparing</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Try the finalist flat, then with the head gently raised on an adjustable base.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Motion control</div><div class=\"noct-profile-priority-desc\">Movement on the other side is already affecting your sleep.</div></div><div class=\"noct-profile-priority-tag tag-key\">Must solve</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Have the other sleeper change positions and notice how much movement reaches your side.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Consistent support</div><div class=\"noct-profile-priority-desc\">Your current mattress has lost shape, so stability across the sleep surface matters.</div></div><div class=\"noct-profile-priority-tag tag-key\">Must solve</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Compare the center and edge, then roll between positions and notice any weak or uneven areas.</div></li>",
+   "summary": "Your starting point: comfortable elevation, motion control, and consistent support.",
+   "heading": "What we will test together",
+   "intro": "Use these signals to compare each mattress instead of relying on first impressions alone.",
+   "briefByLang": {
+    "en": "Sleep brief · comfortable elevation, motion control, and consistent support",
+    "es": "Resumen de sueño · elevación cómoda, control de movimiento y soporte consistente"
+   },
+   "trialFocus": [
+    {
+     "en": "Comfortable elevation",
+     "es": "Elevación cómoda"
+    },
+    {
+     "en": "Motion control",
+     "es": "Control de movimiento"
+    },
+    {
+     "en": "Consistent support",
+     "es": "Soporte consistente"
+    }
+   ],
+   "resultsTrialFocus": "<span class=\"results-trial-focus__label\">Your trial focus</span><span>Comfortable elevation · Motion control · Consistent support</span>",
+   "eyebrow": "Personalized from your answers",
+   "profileName": "Your Sleep Brief",
+   "subtitle": "Cozy Combo Sleeper · Family Bed",
+   "reflection": "You are shopping for a Queen, share a family bed, change positions through the night, and prefer a plush feel.",
+   "reassurance": "This brief guides where we start. Your comfort during the test decides what stays.",
+   "planLabel": "Your guided trial",
+   "metaStrip": "<div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Size</dt><dd class=\"noct-profile-meta-value\">Queen</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Feel</dt><dd class=\"noct-profile-meta-value\">Plush</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Temperature</dt><dd class=\"noct-profile-meta-value\">Sleeps cold</dd></div>",
+   "journeyHeading": "What happens next",
+   "journeySteps": "<div class=\"profile-launch__journey-step\" data-step=\"1\">Compare your matches</div><div class=\"profile-launch__journey-step\" data-step=\"2\">Record what feels best</div><div class=\"profile-launch__journey-step\" data-step=\"3\">Build around the finalist</div>",
+   "journeyCopy": "Then we will explore Adjustability, Support, Pillow, and Protection. Every choice is optional.",
+   "secondary": "← Edit my answers",
+   "cta": "See My Matches →"
+  },
+  "es": {
+   "priorities": [
+    {
+     "title": "Elevación cómoda",
+     "desc": "Puede valer la pena probar una posición elevada como parte del sistema de descanso completo.",
+     "tagClass": "tag-high",
+     "tag": "Vale comparar",
+     "test": "Prueba el finalista plano y luego con la cabeza ligeramente elevada en una base ajustable."
+    },
+    {
+     "title": "Control de movimiento",
+     "desc": "El movimiento del otro lado ya está afectando tu sueño.",
+     "tagClass": "tag-key",
+     "tag": "Debe resolver",
+     "test": "Pide a la otra persona que cambie de posición y nota cuánto movimiento llega a tu lado."
+    },
+    {
+     "title": "Soporte consistente",
+     "desc": "Tu colchón actual ha perdido su forma, por lo que importa la estabilidad en toda la superficie.",
+     "tagClass": "tag-key",
+     "tag": "Debe resolver",
+     "test": "Compara el centro y el borde, luego cambia de posición y nota cualquier zona débil o irregular."
+    }
+   ],
+   "prioritiesHtml": "<li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Elevación cómoda</div><div class=\"noct-profile-priority-desc\">Puede valer la pena probar una posición elevada como parte del sistema de descanso completo.</div></div><div class=\"noct-profile-priority-tag tag-high\">Vale comparar</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Prueba el finalista plano y luego con la cabeza ligeramente elevada en una base ajustable.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Control de movimiento</div><div class=\"noct-profile-priority-desc\">El movimiento del otro lado ya está afectando tu sueño.</div></div><div class=\"noct-profile-priority-tag tag-key\">Debe resolver</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Pide a la otra persona que cambie de posición y nota cuánto movimiento llega a tu lado.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Soporte consistente</div><div class=\"noct-profile-priority-desc\">Tu colchón actual ha perdido su forma, por lo que importa la estabilidad en toda la superficie.</div></div><div class=\"noct-profile-priority-tag tag-key\">Debe resolver</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Compara el centro y el borde, luego cambia de posición y nota cualquier zona débil o irregular.</div></li>",
+   "summary": "Tu punto de partida: elevación cómoda, control de movimiento y soporte consistente.",
+   "heading": "Lo que probaremos juntos",
+   "intro": "Usa estas señales para comparar cada colchón en lugar de depender solo de una primera impresión.",
+   "briefByLang": {
+    "en": "Sleep brief · comfortable elevation, motion control, and consistent support",
+    "es": "Resumen de sueño · elevación cómoda, control de movimiento y soporte consistente"
+   },
+   "trialFocus": [
+    {
+     "en": "Comfortable elevation",
+     "es": "Elevación cómoda"
+    },
+    {
+     "en": "Motion control",
+     "es": "Control de movimiento"
+    },
+    {
+     "en": "Consistent support",
+     "es": "Soporte consistente"
+    }
+   ],
+   "resultsTrialFocus": "<span class=\"results-trial-focus__label\">Enfoque de la prueba</span><span>Elevación cómoda · Control de movimiento · Soporte consistente</span>",
+   "eyebrow": "Personalizado con tus respuestas",
+   "profileName": "Tu Resumen de Sueño",
+   "subtitle": "Friolento Combinación · Cama Familiar",
+   "reflection": "Buscas un colchón Queen, compartes una cama familiar, cambias de posición durante la noche y prefieres una sensación suave.",
+   "reassurance": "Este resumen define por dónde empezamos. Tu comodidad durante la prueba decide qué se queda.",
+   "planLabel": "Tu prueba guiada",
+   "metaStrip": "<div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Tamaño</dt><dd class=\"noct-profile-meta-value\">Queen</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Sensación</dt><dd class=\"noct-profile-meta-value\">Suave</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Temperatura</dt><dd class=\"noct-profile-meta-value\">Duerme con frío</dd></div>",
+   "journeyHeading": "Lo que sigue",
+   "journeySteps": "<div class=\"profile-launch__journey-step\" data-step=\"1\">Comparar tus opciones</div><div class=\"profile-launch__journey-step\" data-step=\"2\">Registrar qué se siente mejor</div><div class=\"profile-launch__journey-step\" data-step=\"3\">Construir alrededor del finalista</div>",
+   "journeyCopy": "Después exploraremos Ajustabilidad, Soporte, Almohada y Protección. Cada elección es opcional.",
+   "secondary": "← Editar mis respuestas",
+   "cta": "Ver Mis Opciones →"
+  }
+ },
+ "E": {
+  "en": {
+   "priorities": [
+    {
+     "title": "Motion control",
+     "desc": "Movement on the other side is already affecting your sleep.",
+     "tagClass": "tag-key",
+     "tag": "Must solve",
+     "test": "Have the other sleeper change positions and notice how much movement reaches your side."
+    },
+    {
+     "title": "Consistent support",
+     "desc": "Your current mattress has lost shape, so stability across the sleep surface matters.",
+     "tagClass": "tag-key",
+     "tag": "Must solve",
+     "test": "Compare the center and edge, then roll between positions and notice any weak or uneven areas."
+    },
+    {
+     "title": "Comfortable alignment",
+     "desc": "Your normal sleep position needs steady support without creating new pressure.",
+     "tagClass": "tag-key",
+     "tag": "Must solve",
+     "test": "Lie in your usual position and notice whether your waist and lower back feel naturally supported."
+    }
+   ],
+   "prioritiesHtml": "<li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Motion control</div><div class=\"noct-profile-priority-desc\">Movement on the other side is already affecting your sleep.</div></div><div class=\"noct-profile-priority-tag tag-key\">Must solve</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Have the other sleeper change positions and notice how much movement reaches your side.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Consistent support</div><div class=\"noct-profile-priority-desc\">Your current mattress has lost shape, so stability across the sleep surface matters.</div></div><div class=\"noct-profile-priority-tag tag-key\">Must solve</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Compare the center and edge, then roll between positions and notice any weak or uneven areas.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Comfortable alignment</div><div class=\"noct-profile-priority-desc\">Your normal sleep position needs steady support without creating new pressure.</div></div><div class=\"noct-profile-priority-tag tag-key\">Must solve</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Lie in your usual position and notice whether your waist and lower back feel naturally supported.</div></li>",
+   "summary": "Your starting point: motion control, consistent support, and comfortable alignment.",
+   "heading": "What we will test together",
+   "intro": "Use these signals to compare each mattress instead of relying on first impressions alone.",
+   "briefByLang": {
+    "en": "Sleep brief · motion control, consistent support, and comfortable alignment",
+    "es": "Resumen de sueño · control de movimiento, soporte consistente y alineación cómoda"
+   },
+   "trialFocus": [
+    {
+     "en": "Motion control",
+     "es": "Control de movimiento"
+    },
+    {
+     "en": "Consistent support",
+     "es": "Soporte consistente"
+    },
+    {
+     "en": "Comfortable alignment",
+     "es": "Alineación cómoda"
+    }
+   ],
+   "resultsTrialFocus": "<span class=\"results-trial-focus__label\">Your trial focus</span><span>Motion control · Consistent support · Comfortable alignment</span>",
+   "eyebrow": "Personalized from your answers",
+   "profileName": "Your Sleep Brief",
+   "subtitle": "Cozy Stomach Sleeper · Shared Bed",
+   "reflection": "You are shopping for a King, share the bed with a partner, sleep mostly on your stomach, and prefer a firm feel.",
+   "reassurance": "This brief guides where we start. Your comfort during the test decides what stays.",
+   "planLabel": "Your guided trial",
+   "metaStrip": "<div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Size</dt><dd class=\"noct-profile-meta-value\">King</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Feel</dt><dd class=\"noct-profile-meta-value\">Firm</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Temperature</dt><dd class=\"noct-profile-meta-value\">Sleeps cold</dd></div>",
+   "journeyHeading": "What happens next",
+   "journeySteps": "<div class=\"profile-launch__journey-step\" data-step=\"1\">Compare your matches</div><div class=\"profile-launch__journey-step\" data-step=\"2\">Record what feels best</div><div class=\"profile-launch__journey-step\" data-step=\"3\">Build around the finalist</div>",
+   "journeyCopy": "Then we will explore Adjustability, Support, Pillow, and Protection. Every choice is optional.",
+   "secondary": "← Edit my answers",
+   "cta": "See My Matches →"
+  },
+  "es": {
+   "priorities": [
+    {
+     "title": "Control de movimiento",
+     "desc": "El movimiento del otro lado ya está afectando tu sueño.",
+     "tagClass": "tag-key",
+     "tag": "Debe resolver",
+     "test": "Pide a la otra persona que cambie de posición y nota cuánto movimiento llega a tu lado."
+    },
+    {
+     "title": "Soporte consistente",
+     "desc": "Tu colchón actual ha perdido su forma, por lo que importa la estabilidad en toda la superficie.",
+     "tagClass": "tag-key",
+     "tag": "Debe resolver",
+     "test": "Compara el centro y el borde, luego cambia de posición y nota cualquier zona débil o irregular."
+    },
+    {
+     "title": "Alineación cómoda",
+     "desc": "Tu posición habitual necesita soporte estable sin crear nueva presión.",
+     "tagClass": "tag-key",
+     "tag": "Debe resolver",
+     "test": "Acuéstate en tu posición habitual y nota si tu cintura y espalda baja se sienten apoyadas naturalmente."
+    }
+   ],
+   "prioritiesHtml": "<li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Control de movimiento</div><div class=\"noct-profile-priority-desc\">El movimiento del otro lado ya está afectando tu sueño.</div></div><div class=\"noct-profile-priority-tag tag-key\">Debe resolver</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Pide a la otra persona que cambie de posición y nota cuánto movimiento llega a tu lado.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Soporte consistente</div><div class=\"noct-profile-priority-desc\">Tu colchón actual ha perdido su forma, por lo que importa la estabilidad en toda la superficie.</div></div><div class=\"noct-profile-priority-tag tag-key\">Debe resolver</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Compara el centro y el borde, luego cambia de posición y nota cualquier zona débil o irregular.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Alineación cómoda</div><div class=\"noct-profile-priority-desc\">Tu posición habitual necesita soporte estable sin crear nueva presión.</div></div><div class=\"noct-profile-priority-tag tag-key\">Debe resolver</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Acuéstate en tu posición habitual y nota si tu cintura y espalda baja se sienten apoyadas naturalmente.</div></li>",
+   "summary": "Tu punto de partida: control de movimiento, soporte consistente y alineación cómoda.",
+   "heading": "Lo que probaremos juntos",
+   "intro": "Usa estas señales para comparar cada colchón en lugar de depender solo de una primera impresión.",
+   "briefByLang": {
+    "en": "Sleep brief · motion control, consistent support, and comfortable alignment",
+    "es": "Resumen de sueño · control de movimiento, soporte consistente y alineación cómoda"
+   },
+   "trialFocus": [
+    {
+     "en": "Motion control",
+     "es": "Control de movimiento"
+    },
+    {
+     "en": "Consistent support",
+     "es": "Soporte consistente"
+    },
+    {
+     "en": "Comfortable alignment",
+     "es": "Alineación cómoda"
+    }
+   ],
+   "resultsTrialFocus": "<span class=\"results-trial-focus__label\">Enfoque de la prueba</span><span>Control de movimiento · Soporte consistente · Alineación cómoda</span>",
+   "eyebrow": "Personalizado con tus respuestas",
+   "profileName": "Tu Resumen de Sueño",
+   "subtitle": "Friolento Boca Abajo · Cama Compartida",
+   "reflection": "Buscas un colchón King, compartes la cama con tu pareja, duermes principalmente boca abajo y prefieres una sensación firme.",
+   "reassurance": "Este resumen define por dónde empezamos. Tu comodidad durante la prueba decide qué se queda.",
+   "planLabel": "Tu prueba guiada",
+   "metaStrip": "<div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Tamaño</dt><dd class=\"noct-profile-meta-value\">King</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Sensación</dt><dd class=\"noct-profile-meta-value\">Firme</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Temperatura</dt><dd class=\"noct-profile-meta-value\">Duerme con frío</dd></div>",
+   "journeyHeading": "Lo que sigue",
+   "journeySteps": "<div class=\"profile-launch__journey-step\" data-step=\"1\">Comparar tus opciones</div><div class=\"profile-launch__journey-step\" data-step=\"2\">Registrar qué se siente mejor</div><div class=\"profile-launch__journey-step\" data-step=\"3\">Construir alrededor del finalista</div>",
+   "journeyCopy": "Después exploraremos Ajustabilidad, Soporte, Almohada y Protección. Cada elección es opcional.",
+   "secondary": "← Editar mis respuestas",
+   "cta": "Ver Mis Opciones →"
+  }
+ },
+ "F": {
+  "en": {
+   "priorities": [
+    {
+     "title": "Different sleep temperatures",
+     "desc": "A shared bed needs to feel comfortable for one warmer and one cooler sleeper.",
+     "tagClass": "tag-high",
+     "tag": "Worth comparing",
+     "test": "Both sleepers should stay on the mattress long enough to compare how quickly each side warms."
+    },
+    {
+     "title": "A cleaner sleep surface",
+     "desc": "Managing allergens should be considered when choosing both the mattress and its protection.",
+     "tagClass": "tag-high",
+     "tag": "Worth comparing",
+     "test": "Notice how the cover feels against your skin and flag protection as part of the final setup."
+    },
+    {
+     "title": "Easy movement",
+     "desc": "Changing positions should feel natural instead of requiring effort.",
+     "tagClass": "tag-high",
+     "tag": "Worth comparing",
+     "test": "Roll through two or three normal positions and notice whether the mattress moves with you."
+    }
+   ],
+   "prioritiesHtml": "<li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Different sleep temperatures</div><div class=\"noct-profile-priority-desc\">A shared bed needs to feel comfortable for one warmer and one cooler sleeper.</div></div><div class=\"noct-profile-priority-tag tag-high\">Worth comparing</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Both sleepers should stay on the mattress long enough to compare how quickly each side warms.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">A cleaner sleep surface</div><div class=\"noct-profile-priority-desc\">Managing allergens should be considered when choosing both the mattress and its protection.</div></div><div class=\"noct-profile-priority-tag tag-high\">Worth comparing</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Notice how the cover feels against your skin and flag protection as part of the final setup.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Easy movement</div><div class=\"noct-profile-priority-desc\">Changing positions should feel natural instead of requiring effort.</div></div><div class=\"noct-profile-priority-tag tag-high\">Worth comparing</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Roll through two or three normal positions and notice whether the mattress moves with you.</div></li>",
+   "summary": "Your starting point: temperature balance, allergen protection, and easy movement.",
+   "heading": "What we will test together",
+   "intro": "Use these signals to compare each mattress instead of relying on first impressions alone.",
+   "briefByLang": {
+    "en": "Sleep brief · temperature balance, allergen protection, and easy movement",
+    "es": "Resumen de sueño · equilibrio de temperatura, protección contra alérgenos y movimiento fácil"
+   },
+   "trialFocus": [
+    {
+     "en": "Different sleep temperatures",
+     "es": "Temperaturas de sueño diferentes"
+    },
+    {
+     "en": "A cleaner sleep surface",
+     "es": "Una superficie de descanso más limpia"
+    },
+    {
+     "en": "Easy movement",
+     "es": "Movimiento fácil"
+    }
+   ],
+   "resultsTrialFocus": "<span class=\"results-trial-focus__label\">Your trial focus</span><span>Different sleep temperatures · A cleaner sleep surface · Easy movement</span>",
+   "eyebrow": "Personalized from your answers",
+   "profileName": "Your Sleep Brief",
+   "subtitle": "Combo Sleeper · Shared Bed",
+   "reflection": "You are shopping for a Full, share the bed with a partner, change positions through the night, and prefer a plush feel.",
+   "reassurance": "This brief guides where we start. Your comfort during the test decides what stays.",
+   "planLabel": "Your guided trial",
+   "metaStrip": "<div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Size</dt><dd class=\"noct-profile-meta-value\">Full</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Feel</dt><dd class=\"noct-profile-meta-value\">Plush</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Temperature</dt><dd class=\"noct-profile-meta-value\">Different sleep temperatures</dd></div>",
+   "journeyHeading": "What happens next",
+   "journeySteps": "<div class=\"profile-launch__journey-step\" data-step=\"1\">Compare your matches</div><div class=\"profile-launch__journey-step\" data-step=\"2\">Record what feels best</div><div class=\"profile-launch__journey-step\" data-step=\"3\">Build around the finalist</div>",
+   "journeyCopy": "Then we will explore Adjustability, Support, Pillow, and Protection. Every choice is optional.",
+   "secondary": "← Edit my answers",
+   "cta": "See My Matches →"
+  },
+  "es": {
+   "priorities": [
+    {
+     "title": "Temperaturas de sueño diferentes",
+     "desc": "Una cama compartida debe sentirse cómoda para una persona calurosa y otra friolenta.",
+     "tagClass": "tag-high",
+     "tag": "Vale comparar",
+     "test": "Ambos deben permanecer el tiempo suficiente para comparar qué tan rápido se calienta cada lado."
+    },
+    {
+     "title": "Una superficie de descanso más limpia",
+     "desc": "El control de alérgenos debe considerarse al elegir el colchón y su protección.",
+     "tagClass": "tag-high",
+     "tag": "Vale comparar",
+     "test": "Nota cómo se siente la cubierta en tu piel e incluye protección en la configuración final."
+    },
+    {
+     "title": "Movimiento fácil",
+     "desc": "Cambiar de posición debe sentirse natural y no requerir esfuerzo.",
+     "tagClass": "tag-high",
+     "tag": "Vale comparar",
+     "test": "Cambia entre dos o tres posiciones normales y nota si el colchón acompaña tu movimiento."
+    }
+   ],
+   "prioritiesHtml": "<li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Temperaturas de sueño diferentes</div><div class=\"noct-profile-priority-desc\">Una cama compartida debe sentirse cómoda para una persona calurosa y otra friolenta.</div></div><div class=\"noct-profile-priority-tag tag-high\">Vale comparar</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Ambos deben permanecer el tiempo suficiente para comparar qué tan rápido se calienta cada lado.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Una superficie de descanso más limpia</div><div class=\"noct-profile-priority-desc\">El control de alérgenos debe considerarse al elegir el colchón y su protección.</div></div><div class=\"noct-profile-priority-tag tag-high\">Vale comparar</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Nota cómo se siente la cubierta en tu piel e incluye protección en la configuración final.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Movimiento fácil</div><div class=\"noct-profile-priority-desc\">Cambiar de posición debe sentirse natural y no requerir esfuerzo.</div></div><div class=\"noct-profile-priority-tag tag-high\">Vale comparar</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Cambia entre dos o tres posiciones normales y nota si el colchón acompaña tu movimiento.</div></li>",
+   "summary": "Tu punto de partida: equilibrio de temperatura, protección contra alérgenos y movimiento fácil.",
+   "heading": "Lo que probaremos juntos",
+   "intro": "Usa estas señales para comparar cada colchón en lugar de depender solo de una primera impresión.",
+   "briefByLang": {
+    "en": "Sleep brief · temperature balance, allergen protection, and easy movement",
+    "es": "Resumen de sueño · equilibrio de temperatura, protección contra alérgenos y movimiento fácil"
+   },
+   "trialFocus": [
+    {
+     "en": "Different sleep temperatures",
+     "es": "Temperaturas de sueño diferentes"
+    },
+    {
+     "en": "A cleaner sleep surface",
+     "es": "Una superficie de descanso más limpia"
+    },
+    {
+     "en": "Easy movement",
+     "es": "Movimiento fácil"
+    }
+   ],
+   "resultsTrialFocus": "<span class=\"results-trial-focus__label\">Enfoque de la prueba</span><span>Temperaturas de sueño diferentes · Una superficie de descanso más limpia · Movimiento fácil</span>",
+   "eyebrow": "Personalizado con tus respuestas",
+   "profileName": "Tu Resumen de Sueño",
+   "subtitle": "Combinación · Cama Compartida",
+   "reflection": "Buscas un colchón Full, compartes la cama con tu pareja, cambias de posición durante la noche y prefieres una sensación suave.",
+   "reassurance": "Este resumen define por dónde empezamos. Tu comodidad durante la prueba decide qué se queda.",
+   "planLabel": "Tu prueba guiada",
+   "metaStrip": "<div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Tamaño</dt><dd class=\"noct-profile-meta-value\">Full</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Sensación</dt><dd class=\"noct-profile-meta-value\">Suave</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Temperatura</dt><dd class=\"noct-profile-meta-value\">Temperaturas diferentes</dd></div>",
+   "journeyHeading": "Lo que sigue",
+   "journeySteps": "<div class=\"profile-launch__journey-step\" data-step=\"1\">Comparar tus opciones</div><div class=\"profile-launch__journey-step\" data-step=\"2\">Registrar qué se siente mejor</div><div class=\"profile-launch__journey-step\" data-step=\"3\">Construir alrededor del finalista</div>",
+   "journeyCopy": "Después exploraremos Ajustabilidad, Soporte, Almohada y Protección. Cada elección es opcional.",
+   "secondary": "← Editar mis respuestas",
+   "cta": "Ver Mis Opciones →"
+  }
+ },
+ "A": {
+  "en": {
+   "priorities": [
+    {
+     "title": "Temperature regulation",
+     "desc": "Your answers suggest that trapped heat can interrupt comfortable sleep.",
+     "tagClass": "tag-key",
+     "tag": "Must solve",
+     "test": "Stay in place for a full minute and notice whether warmth starts building beneath you."
+    },
+    {
+     "title": "Motion control",
+     "desc": "Movement on the other side is already affecting your sleep.",
+     "tagClass": "tag-key",
+     "tag": "Must solve",
+     "test": "Have the other sleeper change positions and notice how much movement reaches your side."
+    },
+    {
+     "title": "Comfortable alignment",
+     "desc": "Your normal sleep position needs steady support without creating new pressure.",
+     "tagClass": "tag-key",
+     "tag": "Must solve",
+     "test": "Lie in your usual position and notice whether your waist and lower back feel naturally supported."
+    }
+   ],
+   "prioritiesHtml": "<li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Temperature regulation</div><div class=\"noct-profile-priority-desc\">Your answers suggest that trapped heat can interrupt comfortable sleep.</div></div><div class=\"noct-profile-priority-tag tag-key\">Must solve</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Stay in place for a full minute and notice whether warmth starts building beneath you.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Motion control</div><div class=\"noct-profile-priority-desc\">Movement on the other side is already affecting your sleep.</div></div><div class=\"noct-profile-priority-tag tag-key\">Must solve</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Have the other sleeper change positions and notice how much movement reaches your side.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Comfortable alignment</div><div class=\"noct-profile-priority-desc\">Your normal sleep position needs steady support without creating new pressure.</div></div><div class=\"noct-profile-priority-tag tag-key\">Must solve</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Lie in your usual position and notice whether your waist and lower back feel naturally supported.</div></li>",
+   "summary": "Your starting point: temperature regulation, motion control, and comfortable alignment.",
+   "heading": "What we will test together",
+   "intro": "Use these signals to compare each mattress instead of relying on first impressions alone.",
+   "briefByLang": {
+    "en": "Sleep brief · temperature regulation, motion control, and comfortable alignment",
+    "es": "Resumen de sueño · regulación de temperatura, control de movimiento y alineación cómoda"
+   },
+   "trialFocus": [
+    {
+     "en": "Temperature regulation",
+     "es": "Regulación de temperatura"
+    },
+    {
+     "en": "Motion control",
+     "es": "Control de movimiento"
+    },
+    {
+     "en": "Comfortable alignment",
+     "es": "Alineación cómoda"
+    }
+   ],
+   "resultsTrialFocus": "<span class=\"results-trial-focus__label\">Your trial focus</span><span>Temperature regulation · Motion control · Comfortable alignment</span>",
+   "eyebrow": "Personalized from your answers",
+   "profileName": "Your Sleep Brief",
+   "subtitle": "Hot Side Sleeper · Shared Bed",
+   "reflection": "You are shopping for a Queen, share the bed with a partner, sleep mostly on your side, and prefer a medium feel.",
+   "reassurance": "This brief guides where we start. Your comfort during the test decides what stays.",
+   "planLabel": "Your guided trial",
+   "metaStrip": "<div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Size</dt><dd class=\"noct-profile-meta-value\">Queen</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Feel</dt><dd class=\"noct-profile-meta-value\">Medium</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Temperature</dt><dd class=\"noct-profile-meta-value\">Sleeps hot</dd></div>",
+   "journeyHeading": "What happens next",
+   "journeySteps": "<div class=\"profile-launch__journey-step\" data-step=\"1\">Compare your matches</div><div class=\"profile-launch__journey-step\" data-step=\"2\">Record what feels best</div><div class=\"profile-launch__journey-step\" data-step=\"3\">Build around the finalist</div>",
+   "journeyCopy": "Then we will explore Adjustability, Support, Pillow, and Protection. Every choice is optional.",
+   "secondary": "← Edit my answers",
+   "cta": "See My Matches →"
+  },
+  "es": {
+   "priorities": [
+    {
+     "title": "Regulación de temperatura",
+     "desc": "Tus respuestas indican que el calor acumulado puede interrumpir un sueño cómodo.",
+     "tagClass": "tag-key",
+     "tag": "Debe resolver",
+     "test": "Permanece un minuto completo y nota si el calor empieza a acumularse debajo de ti."
+    },
+    {
+     "title": "Control de movimiento",
+     "desc": "El movimiento del otro lado ya está afectando tu sueño.",
+     "tagClass": "tag-key",
+     "tag": "Debe resolver",
+     "test": "Pide a la otra persona que cambie de posición y nota cuánto movimiento llega a tu lado."
+    },
+    {
+     "title": "Alineación cómoda",
+     "desc": "Tu posición habitual necesita soporte estable sin crear nueva presión.",
+     "tagClass": "tag-key",
+     "tag": "Debe resolver",
+     "test": "Acuéstate en tu posición habitual y nota si tu cintura y espalda baja se sienten apoyadas naturalmente."
+    }
+   ],
+   "prioritiesHtml": "<li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Regulación de temperatura</div><div class=\"noct-profile-priority-desc\">Tus respuestas indican que el calor acumulado puede interrumpir un sueño cómodo.</div></div><div class=\"noct-profile-priority-tag tag-key\">Debe resolver</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Permanece un minuto completo y nota si el calor empieza a acumularse debajo de ti.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Control de movimiento</div><div class=\"noct-profile-priority-desc\">El movimiento del otro lado ya está afectando tu sueño.</div></div><div class=\"noct-profile-priority-tag tag-key\">Debe resolver</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Pide a la otra persona que cambie de posición y nota cuánto movimiento llega a tu lado.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Alineación cómoda</div><div class=\"noct-profile-priority-desc\">Tu posición habitual necesita soporte estable sin crear nueva presión.</div></div><div class=\"noct-profile-priority-tag tag-key\">Debe resolver</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Acuéstate en tu posición habitual y nota si tu cintura y espalda baja se sienten apoyadas naturalmente.</div></li>",
+   "summary": "Tu punto de partida: regulación de temperatura, control de movimiento y alineación cómoda.",
+   "heading": "Lo que probaremos juntos",
+   "intro": "Usa estas señales para comparar cada colchón en lugar de depender solo de una primera impresión.",
+   "briefByLang": {
+    "en": "Sleep brief · temperature regulation, motion control, and comfortable alignment",
+    "es": "Resumen de sueño · regulación de temperatura, control de movimiento y alineación cómoda"
+   },
+   "trialFocus": [
+    {
+     "en": "Temperature regulation",
+     "es": "Regulación de temperatura"
+    },
+    {
+     "en": "Motion control",
+     "es": "Control de movimiento"
+    },
+    {
+     "en": "Comfortable alignment",
+     "es": "Alineación cómoda"
+    }
+   ],
+   "resultsTrialFocus": "<span class=\"results-trial-focus__label\">Enfoque de la prueba</span><span>Regulación de temperatura · Control de movimiento · Alineación cómoda</span>",
+   "eyebrow": "Personalizado con tus respuestas",
+   "profileName": "Tu Resumen de Sueño",
+   "subtitle": "Caluroso De Lado · Cama Compartida",
+   "reflection": "Buscas un colchón Queen, compartes la cama con tu pareja, duermes principalmente de lado y prefieres una sensación media.",
+   "reassurance": "Este resumen define por dónde empezamos. Tu comodidad durante la prueba decide qué se queda.",
+   "planLabel": "Tu prueba guiada",
+   "metaStrip": "<div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Tamaño</dt><dd class=\"noct-profile-meta-value\">Queen</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Sensación</dt><dd class=\"noct-profile-meta-value\">Medio</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Temperatura</dt><dd class=\"noct-profile-meta-value\">Duerme con calor</dd></div>",
+   "journeyHeading": "Lo que sigue",
+   "journeySteps": "<div class=\"profile-launch__journey-step\" data-step=\"1\">Comparar tus opciones</div><div class=\"profile-launch__journey-step\" data-step=\"2\">Registrar qué se siente mejor</div><div class=\"profile-launch__journey-step\" data-step=\"3\">Construir alrededor del finalista</div>",
+   "journeyCopy": "Después exploraremos Ajustabilidad, Soporte, Almohada y Protección. Cada elección es opcional.",
+   "secondary": "← Editar mis respuestas",
+   "cta": "Ver Mis Opciones →"
+  }
+ },
+ "I": {
+  "en": {
+   "priorities": [
+    {
+     "title": "Temperature regulation",
+     "desc": "Your answers suggest that trapped heat can interrupt comfortable sleep.",
+     "tagClass": "tag-key",
+     "tag": "Must solve",
+     "test": "Stay in place for a full minute and notice whether warmth starts building beneath you."
+    },
+    {
+     "title": "Comfortable alignment",
+     "desc": "Your normal sleep position needs steady support without creating new pressure.",
+     "tagClass": "tag-key",
+     "tag": "Must solve",
+     "test": "Lie in your usual position and notice whether your waist and lower back feel naturally supported."
+    },
+    {
+     "title": "Comfortable elevation",
+     "desc": "A raised upper body may be worth experiencing as part of the complete sleep setup.",
+     "tagClass": "tag-high",
+     "tag": "Worth comparing",
+     "test": "Try the finalist flat, then with the head gently raised on an adjustable base."
+    }
+   ],
+   "prioritiesHtml": "<li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Temperature regulation</div><div class=\"noct-profile-priority-desc\">Your answers suggest that trapped heat can interrupt comfortable sleep.</div></div><div class=\"noct-profile-priority-tag tag-key\">Must solve</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Stay in place for a full minute and notice whether warmth starts building beneath you.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Comfortable alignment</div><div class=\"noct-profile-priority-desc\">Your normal sleep position needs steady support without creating new pressure.</div></div><div class=\"noct-profile-priority-tag tag-key\">Must solve</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Lie in your usual position and notice whether your waist and lower back feel naturally supported.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Comfortable elevation</div><div class=\"noct-profile-priority-desc\">A raised upper body may be worth experiencing as part of the complete sleep setup.</div></div><div class=\"noct-profile-priority-tag tag-high\">Worth comparing</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Try the finalist flat, then with the head gently raised on an adjustable base.</div></li>",
+   "summary": "Your starting point: temperature regulation, comfortable alignment, and comfortable elevation.",
+   "heading": "What we will test together",
+   "intro": "Use these signals to compare each mattress instead of relying on first impressions alone.",
+   "briefByLang": {
+    "en": "Sleep brief · temperature regulation, comfortable alignment, and comfortable elevation",
+    "es": "Resumen de sueño · regulación de temperatura, alineación cómoda y elevación cómoda"
+   },
+   "trialFocus": [
+    {
+     "en": "Temperature regulation",
+     "es": "Regulación de temperatura"
+    },
+    {
+     "en": "Comfortable alignment",
+     "es": "Alineación cómoda"
+    },
+    {
+     "en": "Comfortable elevation",
+     "es": "Elevación cómoda"
+    }
+   ],
+   "resultsTrialFocus": "<span class=\"results-trial-focus__label\">Your trial focus</span><span>Temperature regulation · Comfortable alignment · Comfortable elevation</span>",
+   "eyebrow": "Personalized from your answers",
+   "profileName": "Your Sleep Brief",
+   "subtitle": "Hot Back Sleeper · Shared Bed",
+   "reflection": "You are shopping for a Twin, share the bed with a partner, sleep mostly on your back, and prefer a medium feel.",
+   "reassurance": "This brief guides where we start. Your comfort during the test decides what stays.",
+   "planLabel": "Your guided trial",
+   "metaStrip": "<div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Size</dt><dd class=\"noct-profile-meta-value\">Twin</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Feel</dt><dd class=\"noct-profile-meta-value\">Medium</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Temperature</dt><dd class=\"noct-profile-meta-value\">Sleeps hot</dd></div>",
+   "journeyHeading": "What happens next",
+   "journeySteps": "<div class=\"profile-launch__journey-step\" data-step=\"1\">Compare your matches</div><div class=\"profile-launch__journey-step\" data-step=\"2\">Record what feels best</div><div class=\"profile-launch__journey-step\" data-step=\"3\">Build around the finalist</div>",
+   "journeyCopy": "Then we will explore Adjustability, Support, Pillow, and Protection. Every choice is optional.",
+   "secondary": "← Edit my answers",
+   "cta": "See My Matches →"
+  },
+  "es": {
+   "priorities": [
+    {
+     "title": "Regulación de temperatura",
+     "desc": "Tus respuestas indican que el calor acumulado puede interrumpir un sueño cómodo.",
+     "tagClass": "tag-key",
+     "tag": "Debe resolver",
+     "test": "Permanece un minuto completo y nota si el calor empieza a acumularse debajo de ti."
+    },
+    {
+     "title": "Alineación cómoda",
+     "desc": "Tu posición habitual necesita soporte estable sin crear nueva presión.",
+     "tagClass": "tag-key",
+     "tag": "Debe resolver",
+     "test": "Acuéstate en tu posición habitual y nota si tu cintura y espalda baja se sienten apoyadas naturalmente."
+    },
+    {
+     "title": "Elevación cómoda",
+     "desc": "Puede valer la pena probar una posición elevada como parte del sistema de descanso completo.",
+     "tagClass": "tag-high",
+     "tag": "Vale comparar",
+     "test": "Prueba el finalista plano y luego con la cabeza ligeramente elevada en una base ajustable."
+    }
+   ],
+   "prioritiesHtml": "<li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Regulación de temperatura</div><div class=\"noct-profile-priority-desc\">Tus respuestas indican que el calor acumulado puede interrumpir un sueño cómodo.</div></div><div class=\"noct-profile-priority-tag tag-key\">Debe resolver</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Permanece un minuto completo y nota si el calor empieza a acumularse debajo de ti.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Alineación cómoda</div><div class=\"noct-profile-priority-desc\">Tu posición habitual necesita soporte estable sin crear nueva presión.</div></div><div class=\"noct-profile-priority-tag tag-key\">Debe resolver</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Acuéstate en tu posición habitual y nota si tu cintura y espalda baja se sienten apoyadas naturalmente.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Elevación cómoda</div><div class=\"noct-profile-priority-desc\">Puede valer la pena probar una posición elevada como parte del sistema de descanso completo.</div></div><div class=\"noct-profile-priority-tag tag-high\">Vale comparar</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Prueba el finalista plano y luego con la cabeza ligeramente elevada en una base ajustable.</div></li>",
+   "summary": "Tu punto de partida: regulación de temperatura, alineación cómoda y elevación cómoda.",
+   "heading": "Lo que probaremos juntos",
+   "intro": "Usa estas señales para comparar cada colchón en lugar de depender solo de una primera impresión.",
+   "briefByLang": {
+    "en": "Sleep brief · temperature regulation, comfortable alignment, and comfortable elevation",
+    "es": "Resumen de sueño · regulación de temperatura, alineación cómoda y elevación cómoda"
+   },
+   "trialFocus": [
+    {
+     "en": "Temperature regulation",
+     "es": "Regulación de temperatura"
+    },
+    {
+     "en": "Comfortable alignment",
+     "es": "Alineación cómoda"
+    },
+    {
+     "en": "Comfortable elevation",
+     "es": "Elevación cómoda"
+    }
+   ],
+   "resultsTrialFocus": "<span class=\"results-trial-focus__label\">Enfoque de la prueba</span><span>Regulación de temperatura · Alineación cómoda · Elevación cómoda</span>",
+   "eyebrow": "Personalizado con tus respuestas",
+   "profileName": "Tu Resumen de Sueño",
+   "subtitle": "Caluroso Boca Arriba · Cama Compartida",
+   "reflection": "Buscas un colchón Twin, compartes la cama con tu pareja, duermes principalmente boca arriba y prefieres una sensación media.",
+   "reassurance": "Este resumen define por dónde empezamos. Tu comodidad durante la prueba decide qué se queda.",
+   "planLabel": "Tu prueba guiada",
+   "metaStrip": "<div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Tamaño</dt><dd class=\"noct-profile-meta-value\">Twin</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Sensación</dt><dd class=\"noct-profile-meta-value\">Medio</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Temperatura</dt><dd class=\"noct-profile-meta-value\">Duerme con calor</dd></div>",
+   "journeyHeading": "Lo que sigue",
+   "journeySteps": "<div class=\"profile-launch__journey-step\" data-step=\"1\">Comparar tus opciones</div><div class=\"profile-launch__journey-step\" data-step=\"2\">Registrar qué se siente mejor</div><div class=\"profile-launch__journey-step\" data-step=\"3\">Construir alrededor del finalista</div>",
+   "journeyCopy": "Después exploraremos Ajustabilidad, Soporte, Almohada y Protección. Cada elección es opcional.",
+   "secondary": "← Editar mis respuestas",
+   "cta": "Ver Mis Opciones →"
+  }
+ },
+ "B": {
+  "en": {
+   "priorities": [
+    {
+     "title": "Comfortable alignment",
+     "desc": "Your normal sleep position needs steady support without creating new pressure.",
+     "tagClass": "tag-key",
+     "tag": "Must solve",
+     "test": "Lie in your usual position and notice whether your waist and lower back feel naturally supported."
+    },
+    {
+     "title": "Firm, not rigid",
+     "desc": "You prefer a solid surface, but firmness should not create pressure.",
+     "tagClass": "tag-preference",
+     "tag": "Feel preference",
+     "test": "Notice whether you feel supported everywhere or pushed at the shoulder, hip, or lower back."
+    }
+   ],
+   "prioritiesHtml": "<li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Comfortable alignment</div><div class=\"noct-profile-priority-desc\">Your normal sleep position needs steady support without creating new pressure.</div></div><div class=\"noct-profile-priority-tag tag-key\">Must solve</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Lie in your usual position and notice whether your waist and lower back feel naturally supported.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Firm, not rigid</div><div class=\"noct-profile-priority-desc\">You prefer a solid surface, but firmness should not create pressure.</div></div><div class=\"noct-profile-priority-tag tag-preference\">Feel preference</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Notice whether you feel supported everywhere or pushed at the shoulder, hip, or lower back.</div></li>",
+   "summary": "Your starting point: comfortable alignment and firm comfort.",
+   "heading": "What we will test together",
+   "intro": "Use these signals to compare each mattress instead of relying on first impressions alone.",
+   "briefByLang": {
+    "en": "Sleep brief · comfortable alignment and firm comfort",
+    "es": "Resumen de sueño · alineación cómoda y comodidad firme"
+   },
+   "trialFocus": [
+    {
+     "en": "Comfortable alignment",
+     "es": "Alineación cómoda"
+    },
+    {
+     "en": "Firm, not rigid",
+     "es": "Firme, no rígido"
+    }
+   ],
+   "resultsTrialFocus": "<span class=\"results-trial-focus__label\">Your trial focus</span><span>Comfortable alignment · Firm, not rigid</span>",
+   "eyebrow": "Personalized from your answers",
+   "profileName": "Your Sleep Brief",
+   "subtitle": "Back Sleeper",
+   "reflection": "You are shopping for a Twin XL, sleep solo, sleep mostly on your back, and prefer a firm feel.",
+   "reassurance": "This brief guides where we start. Your comfort during the test decides what stays.",
+   "planLabel": "Your guided trial",
+   "metaStrip": "<div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Size</dt><dd class=\"noct-profile-meta-value\">Twin XL</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Feel</dt><dd class=\"noct-profile-meta-value\">Firm</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Temperature</dt><dd class=\"noct-profile-meta-value\">Comfortable temperature</dd></div>",
+   "journeyHeading": "What happens next",
+   "journeySteps": "<div class=\"profile-launch__journey-step\" data-step=\"1\">Compare your matches</div><div class=\"profile-launch__journey-step\" data-step=\"2\">Record what feels best</div><div class=\"profile-launch__journey-step\" data-step=\"3\">Build around the finalist</div>",
+   "journeyCopy": "Then we will explore Adjustability, Support, Pillow, and Protection. Every choice is optional.",
+   "secondary": "← Edit my answers",
+   "cta": "See My Matches →"
+  },
+  "es": {
+   "priorities": [
+    {
+     "title": "Alineación cómoda",
+     "desc": "Tu posición habitual necesita soporte estable sin crear nueva presión.",
+     "tagClass": "tag-key",
+     "tag": "Debe resolver",
+     "test": "Acuéstate en tu posición habitual y nota si tu cintura y espalda baja se sienten apoyadas naturalmente."
+    },
+    {
+     "title": "Firme, no rígido",
+     "desc": "Prefieres una superficie sólida, pero la firmeza no debe crear presión.",
+     "tagClass": "tag-preference",
+     "tag": "Preferencia",
+     "test": "Nota si te sientes apoyado por completo o presionado en hombro, cadera o espalda baja."
+    }
+   ],
+   "prioritiesHtml": "<li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Alineación cómoda</div><div class=\"noct-profile-priority-desc\">Tu posición habitual necesita soporte estable sin crear nueva presión.</div></div><div class=\"noct-profile-priority-tag tag-key\">Debe resolver</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Acuéstate en tu posición habitual y nota si tu cintura y espalda baja se sienten apoyadas naturalmente.</div></li><li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Firme, no rígido</div><div class=\"noct-profile-priority-desc\">Prefieres una superficie sólida, pero la firmeza no debe crear presión.</div></div><div class=\"noct-profile-priority-tag tag-preference\">Preferencia</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Nota si te sientes apoyado por completo o presionado en hombro, cadera o espalda baja.</div></li>",
+   "summary": "Tu punto de partida: alineación cómoda y comodidad firme.",
+   "heading": "Lo que probaremos juntos",
+   "intro": "Usa estas señales para comparar cada colchón en lugar de depender solo de una primera impresión.",
+   "briefByLang": {
+    "en": "Sleep brief · comfortable alignment and firm comfort",
+    "es": "Resumen de sueño · alineación cómoda y comodidad firme"
+   },
+   "trialFocus": [
+    {
+     "en": "Comfortable alignment",
+     "es": "Alineación cómoda"
+    },
+    {
+     "en": "Firm, not rigid",
+     "es": "Firme, no rígido"
+    }
+   ],
+   "resultsTrialFocus": "<span class=\"results-trial-focus__label\">Enfoque de la prueba</span><span>Alineación cómoda · Firme, no rígido</span>",
+   "eyebrow": "Personalizado con tus respuestas",
+   "profileName": "Tu Resumen de Sueño",
+   "subtitle": "Boca Arriba",
+   "reflection": "Buscas un colchón Twin XL, duermes solo, duermes principalmente boca arriba y prefieres una sensación firme.",
+   "reassurance": "Este resumen define por dónde empezamos. Tu comodidad durante la prueba decide qué se queda.",
+   "planLabel": "Tu prueba guiada",
+   "metaStrip": "<div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Tamaño</dt><dd class=\"noct-profile-meta-value\">Twin XL</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Sensación</dt><dd class=\"noct-profile-meta-value\">Firme</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Temperatura</dt><dd class=\"noct-profile-meta-value\">Temperatura cómoda</dd></div>",
+   "journeyHeading": "Lo que sigue",
+   "journeySteps": "<div class=\"profile-launch__journey-step\" data-step=\"1\">Comparar tus opciones</div><div class=\"profile-launch__journey-step\" data-step=\"2\">Registrar qué se siente mejor</div><div class=\"profile-launch__journey-step\" data-step=\"3\">Construir alrededor del finalista</div>",
+   "journeyCopy": "Después exploraremos Ajustabilidad, Soporte, Almohada y Protección. Cada elección es opcional.",
+   "secondary": "← Editar mis respuestas",
+   "cta": "Ver Mis Opciones →"
+  }
+ },
+ "H": {
+  "en": {
+   "priorities": [
+    {
+     "title": "Balanced comfort",
+     "desc": "You prefer a middle feel that combines cushioning with easy support.",
+     "tagClass": "tag-preference",
+     "tag": "Feel preference",
+     "test": "Compare which option feels supportive immediately and still comfortable after one minute."
+    }
+   ],
+   "prioritiesHtml": "<li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Balanced comfort</div><div class=\"noct-profile-priority-desc\">You prefer a middle feel that combines cushioning with easy support.</div></div><div class=\"noct-profile-priority-tag tag-preference\">Feel preference</div><div class=\"noct-profile-priority-test\"><strong>Try this: </strong>Compare which option feels supportive immediately and still comfortable after one minute.</div></li>",
+   "summary": "Your starting point: balanced comfort.",
+   "heading": "What we will test together",
+   "intro": "Use these signals to compare each mattress instead of relying on first impressions alone.",
+   "briefByLang": {
+    "en": "Sleep brief · balanced comfort",
+    "es": "Resumen de sueño · comodidad equilibrada"
+   },
+   "trialFocus": [
+    {
+     "en": "Balanced comfort",
+     "es": "Comodidad equilibrada"
+    }
+   ],
+   "resultsTrialFocus": "<span class=\"results-trial-focus__label\">Your trial focus</span><span>Balanced comfort</span>",
+   "eyebrow": "Personalized from your answers",
+   "profileName": "Your Sleep Brief",
+   "subtitle": "Sleeper",
+   "reflection": "You are shopping for a Not set, sleep solo, want to sleep more comfortably, and prefer a medium feel.",
+   "reassurance": "This brief guides where we start. Your comfort during the test decides what stays.",
+   "planLabel": "Your guided trial",
+   "metaStrip": "<div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Size</dt><dd class=\"noct-profile-meta-value\">Not set</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Feel</dt><dd class=\"noct-profile-meta-value\">Medium</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Temperature</dt><dd class=\"noct-profile-meta-value\">Comfortable temperature</dd></div>",
+   "journeyHeading": "What happens next",
+   "journeySteps": "<div class=\"profile-launch__journey-step\" data-step=\"1\">Compare your matches</div><div class=\"profile-launch__journey-step\" data-step=\"2\">Record what feels best</div><div class=\"profile-launch__journey-step\" data-step=\"3\">Build around the finalist</div>",
+   "journeyCopy": "Then we will explore Adjustability, Support, Pillow, and Protection. Every choice is optional.",
+   "secondary": "← Edit my answers",
+   "cta": "See My Matches →"
+  },
+  "es": {
+   "priorities": [
+    {
+     "title": "Comodidad equilibrada",
+     "desc": "Prefieres una sensación media que combine amortiguación y soporte.",
+     "tagClass": "tag-preference",
+     "tag": "Preferencia",
+     "test": "Compara cuál opción se siente firme al inicio y cómoda después de un minuto."
+    }
+   ],
+   "prioritiesHtml": "<li class=\"noct-profile-priority-row\"><div class=\"noct-profile-priority-body\"><div class=\"noct-profile-priority-title\">Comodidad equilibrada</div><div class=\"noct-profile-priority-desc\">Prefieres una sensación media que combine amortiguación y soporte.</div></div><div class=\"noct-profile-priority-tag tag-preference\">Preferencia</div><div class=\"noct-profile-priority-test\"><strong>Pruébalo: </strong>Compara cuál opción se siente firme al inicio y cómoda después de un minuto.</div></li>",
+   "summary": "Tu punto de partida: comodidad equilibrada.",
+   "heading": "Lo que probaremos juntos",
+   "intro": "Usa estas señales para comparar cada colchón en lugar de depender solo de una primera impresión.",
+   "briefByLang": {
+    "en": "Sleep brief · balanced comfort",
+    "es": "Resumen de sueño · comodidad equilibrada"
+   },
+   "trialFocus": [
+    {
+     "en": "Balanced comfort",
+     "es": "Comodidad equilibrada"
+    }
+   ],
+   "resultsTrialFocus": "<span class=\"results-trial-focus__label\">Enfoque de la prueba</span><span>Comodidad equilibrada</span>",
+   "eyebrow": "Personalizado con tus respuestas",
+   "profileName": "Tu Resumen de Sueño",
+   "subtitle": "Durmiente",
+   "reflection": "Buscas un colchón Sin definir, duermes solo, quieres dormir con más comodidad y prefieres una sensación media.",
+   "reassurance": "Este resumen define por dónde empezamos. Tu comodidad durante la prueba decide qué se queda.",
+   "planLabel": "Tu prueba guiada",
+   "metaStrip": "<div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Tamaño</dt><dd class=\"noct-profile-meta-value\">Sin definir</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Sensación</dt><dd class=\"noct-profile-meta-value\">Medio</dd></div><div class=\"noct-profile-meta\"><dt class=\"noct-profile-meta-label\">Temperatura</dt><dd class=\"noct-profile-meta-value\">Temperatura cómoda</dd></div>",
+   "journeyHeading": "Lo que sigue",
+   "journeySteps": "<div class=\"profile-launch__journey-step\" data-step=\"1\">Comparar tus opciones</div><div class=\"profile-launch__journey-step\" data-step=\"2\">Registrar qué se siente mejor</div><div class=\"profile-launch__journey-step\" data-step=\"3\">Construir alrededor del finalista</div>",
+   "journeyCopy": "Después exploraremos Ajustabilidad, Soporte, Almohada y Protección. Cada elección es opcional.",
+   "secondary": "← Editar mis respuestas",
+   "cta": "Ver Mis Opciones →"
+  }
+ }
+}

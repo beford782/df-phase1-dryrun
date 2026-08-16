@@ -1,0 +1,19 @@
+.claude/
+docs/*
+!docs/phase0-onboarding-pipeline-spec-2026-05-31.md
+!docs/gas-rsa-field-addition.md
+!docs/gas-activation-runbook.md
+!docs/financing-verification-2026-07-30.md
+!docs/lacks-clone-plan-2026-07-30.md
+!docs/deployment-workflow.md
+!docs/kiosk-device-hardening.md
+!docs/rebuild-roadmap.md
+!docs/pr24-motion-device-check.md
+tools/strip-bg.py
+
+# Local scratch / design mockups (kept locally, never committed)
+tmp/
+
+# Python bytecode
+__pycache__/
+*.pyc

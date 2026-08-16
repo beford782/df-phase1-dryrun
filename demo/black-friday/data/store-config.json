@@ -1,0 +1,620 @@
+{
+  "storeName": "Lacks Furniture",
+  "storeKey": "lacks",
+  "languages": [
+    "en",
+    "es"
+  ],
+  "logo": {
+    "main": "Lacks",
+    "sub": "furniture"
+  },
+  "colors": {
+    "storePrimary": "#FABD0F",
+    "storePrimaryLight": "#FFD24D",
+    "storePrimaryGlow": "rgba(250,189,15,0.15)",
+    "accent": "#FF5C36"
+  },
+  "gasUrl": "",
+  "publicAssetRoot": "https://beford782.github.io/LacksFurniture/",
+  "allowedHosts": [
+    "beford782.github.io"
+  ],
+  "brands": [
+    {
+      "name": "Restonic",
+      "logo": ""
+    },
+    {
+      "name": "Chattam & Wells",
+      "logo": ""
+    },
+    {
+      "name": "Spring Air",
+      "logo": ""
+    },
+    {
+      "name": "Tempur-Pedic",
+      "logo": ""
+    },
+    {
+      "name": "Genesis",
+      "logo": ""
+    }
+  ],
+  "rsaList": [],
+  "text": {
+    "pageTitle": "DreamFinder - Lacks Furniture Sleep Quiz",
+    "metaDescription": "Take the Lacks Furniture sleep quiz and get personalized mattress recommendations.",
+    "ogTitle": "DreamFinder - Lacks Furniture",
+    "trustSignal": "Family-owned since 1935 — 90 years of South Texas homes",
+    "heritage": "FAMILY-OWNED · SOUTH TEXAS · SINCE 1935",
+    "emailPrivacy": "We'll only use your email to send your results.",
+    "privacyPolicyContact": "To access or remove your information, contact your local Lacks Furniture store.",
+    "inStockText": "In stock at Lacks",
+    "emailHeader": "Lacks Furniture x DreamFinder",
+    "emailSubtext": "Your personalized mattress matches",
+    "locationLabel": "South Texas & the Rio Grande Valley",
+    "privacyDraftNotice": "Draft policy — pending Lacks Furniture approval before live use.",
+    "privacyHeading": "Privacy",
+    "privacyBody": "DreamFinder collects your name, email, and optional phone number to deliver your mattress recommendations. Your information is only used for this purpose and is never sold. DreamFinder does not send your information to lenders. If you choose to open Lacks' financing or application pages, you continue on lacks.com — a separate site governed by its own terms and privacy policy.",
+    "disclaimerHeading": "Disclaimer",
+    "disclaimerBody": "DreamFinder is a product recommendation tool. Match percentages and Sleep Brief guidance are generated from your quiz answers and should be treated as starting points, not guarantees. This tool does not provide medical advice — consult a healthcare provider for medical sleep concerns. Payment options, pricing, and product availability are subject to Lacks Furniture store terms and approval.",
+    "ownershipBadge": "",
+    "locationsLabel": "",
+    "locations": "Brownsville · Laredo · McAllen · Alice · Harlingen · Rio Grande City"
+  },
+  "text_es": {
+    "pageTitle": "DreamFinder - Cuestionario del Sueño de Lacks Furniture",
+    "metaDescription": "Responde el cuestionario del sueño de Lacks Furniture y recibe recomendaciones personalizadas de colchones.",
+    "ogTitle": "DreamFinder - Lacks Furniture",
+    "trustSignal": "Negocio familiar desde 1935 — 90 años en los hogares del sur de Texas",
+    "heritage": "NEGOCIO FAMILIAR · SUR DE TEXAS · DESDE 1935",
+    "emailPrivacy": "Solo usaremos tu correo para enviarte tus resultados.",
+    "privacyPolicyContact": "Para acceder o eliminar tu información, comunícate con tu tienda Lacks Furniture local.",
+    "inStockText": "En stock en Lacks",
+    "emailHeader": "",
+    "emailSubtext": "",
+    "locationLabel": "Sur de Texas y el Valle del Río Grande",
+    "privacyDraftNotice": "Política preliminar — pendiente de aprobación de Lacks Furniture antes de su uso.",
+    "privacyHeading": "Privacidad",
+    "privacyBody": "DreamFinder recopila tu nombre, correo electrónico y número de teléfono opcional para enviarte tus recomendaciones de colchón. Tu información se usa únicamente para este fin y nunca se vende. DreamFinder no envía tu información a prestamistas. Si decides abrir las páginas de financiamiento o solicitud de Lacks, continúas en lacks.com — un sitio aparte, regido por sus propios términos y política de privacidad.",
+    "disclaimerHeading": "Aviso legal",
+    "disclaimerBody": "DreamFinder es una herramienta de recomendación de productos. Los porcentajes de compatibilidad y la guía del Resumen de Sueño se generan a partir de tus respuestas y deben tomarse como punto de partida, no como garantía. Esta herramienta no ofrece asesoramiento médico — consulta a un profesional de la salud para problemas médicos del sueño. Las opciones de pago, los precios y la disponibilidad de productos están sujetos a los términos de las tiendas Lacks Furniture y a aprobación."
+  },
+  "discount": {
+    "codePrefix": "DREAM",
+    "codeDigits": 4,
+    "mode": "disabled",
+    "percentage": 5,
+    "validityDays": 30,
+    "scope": {
+      "en": "a qualifying DreamFinder mattress selection",
+      "es": "una selección de colchón DreamFinder que califique"
+    },
+    "landingHint": {
+      "en": "A 30-day offer to bring home with your matches",
+      "es": "Una oferta de 30 días para llevar con tus recomendaciones"
+    },
+    "demoDeliveryNote": {
+      "en": "Live delivery can be connected after Lacks approves the experience.",
+      "es": "La entrega real se puede conectar después de que Lacks apruebe la experiencia."
+    },
+    "terms": {
+      "en": "Valid on qualifying mattress selections. Cannot be combined with other offers. Final eligibility confirmed by your Lacks sleep specialist.",
+      "es": "Válido en selecciones de colchones que califiquen. No se puede combinar con otras ofertas. Elegibilidad final confirmada por tu especialista del sueño de Lacks."
+    }
+  },
+  "promotions": {
+    "schemaVersion": 1,
+    "activeScenario": "daybreak-black-friday-demo",
+    "allowedSourceHosts": [
+      "lacks.com"
+    ],
+    "scenarios": {
+      "daybreak-black-friday-demo": {
+        "kind": "illustrative-demo",
+        "demoOnly": true,
+        "disableEmailSubmission": true,
+        "verified": false,
+        "name": {
+          "en": "Black Friday Event Preview",
+          "es": "Vista Previa del Evento de Black Friday"
+        },
+        "disclosure": {
+          "en": "BLACK FRIDAY DEMO — Illustrative offers only. These are not current Lacks promotions. Ask your Lacks specialist about actual offers.",
+          "es": "DEMOSTRACIÓN DE BLACK FRIDAY — Estas ofertas son solo ilustrativas. No son promociones vigentes de Lacks. Consulta con tu especialista de Lacks sobre las ofertas reales."
+        },
+        "items": [
+          {
+            "id": "black-friday-event-demo",
+            "badge": {
+              "en": "Black Friday Preview",
+              "es": "Vista Previa de Black Friday"
+            },
+            "headline": {
+              "en": "Qualifying mattresses include a Black Friday sleep bonus through the displayed deadline.",
+              "es": "Los colchones que califican incluyen un bono de descanso de Black Friday hasta la fecha límite indicada."
+            },
+            "detail": {
+              "en": "Your specialist confirms eligibility and explains the available bonus before checkout.",
+              "es": "Tu especialista confirma la elegibilidad y explica el bono disponible antes de finalizar la compra."
+            },
+            "eligibleBrands": [
+              "Restonic",
+              "Chattam & Wells"
+            ]
+          },
+          {
+            "id": "black-friday-bonus-demo",
+            "badge": {
+              "en": "Choose Your Bonus",
+              "es": "Elige Tu Bono"
+            },
+            "headline": {
+              "en": "Demo only: choose two cooling pillows or a mattress protector with a qualifying mattress.",
+              "es": "Solo demostración: elige dos almohadas frescas o un protector con un colchón que califique."
+            },
+            "detail": {
+              "en": "One illustrative bonus choice per qualifying mattress purchase.",
+              "es": "Una opción de bono ilustrativo por cada compra de colchón que califique."
+            },
+            "eligibleBrands": [
+              "Restonic",
+              "Chattam & Wells"
+            ]
+          }
+        ],
+        "storewide": []
+      }
+    }
+  },
+  "financing": {
+    "enabled": true,
+    "experience": "payment-choice",
+    "offerVersion": "2026-07-30a",
+    "verifiedAt": "2026-07-31T16:43:00-05:00",
+    "maxAgeDays": 7,
+    "sourceUrl": "https://www.lacks.com/financing",
+    "applicationUrl": "https://www.lacks.com/credit-application",
+    "mexicoInfoUrl": "https://www.lacks.com/faq",
+    "mexicoApplicationUrl": {
+      "url": "https://www.lacks.com/mexican-credit-application",
+      "verified": false,
+      "note": "Published in Lacks' FAQ but returned 404 on 2026-07-30. Do not render as a link until it resolves; the Mexico card links to mexicoInfoUrl."
+    },
+    "savingsPassPolicy": "specialist_confirm",
+    "exactPromotionsEnabled": false,
+    "esReviewStatus": "pending-native-legal-review",
+    "allowedSourceHosts": [
+      "lacks.com",
+      "www.lacks.com",
+      "synchrony.com",
+      "www.synchrony.com",
+      "mysynchrony.com"
+    ],
+    "copy": {
+      "eyebrow": {
+        "en": "LACKS PAYMENT CHOICE",
+        "es": "OPCIONES DE PAGO LACKS"
+      },
+      "headline": {
+        "en": "Better sleep. More ways to bring it home.",
+        "es": "Duerme mejor. Más opciones para llevarlo a casa."
+      },
+      "body": {
+        "en": "Explore promotional financing, Lacks In-House Credit, lease-to-own, and Build My Credit. Options are subject to terms and approval.",
+        "es": "Explora financiamiento promocional, Crédito Interno de Lacks, arrendamiento con opción a compra y Build My Credit. Las opciones están sujetas a términos y aprobación."
+      },
+      "cta": {
+        "en": "Explore payment options",
+        "es": "Explorar opciones de pago"
+      },
+      "welcomeTagline": {
+        "en": "Flexible ways to bring better sleep home.",
+        "es": "Formas flexibles de llevar mejor descanso a casa."
+      },
+      "welcomeSupport": {
+        "en": "Explore payment options after finding your strongest mattress matches.",
+        "es": "Explora opciones de pago después de encontrar tus mejores opciones de colchón."
+      },
+      "resultsLead": {
+        "en": "Your strongest mattress match may have more than one way to bring it home.",
+        "es": "Tu mejor opción de colchón puede tener más de una forma de llegar a casa."
+      },
+      "resultsAsk": {
+        "en": "Plan the conversation",
+        "es": "Planear la conversación"
+      },
+      "fitFirst": {
+        "en": "Your matches are based on sleep fit — never on payment method.",
+        "es": "Tus opciones se basan en tu descanso — nunca en la forma de pago."
+      },
+      "drawerTitle": {
+        "en": "Ways to bring it home",
+        "es": "Formas de llevarlo a casa"
+      },
+      "drawerBody": {
+        "en": "This recommendation is based on your sleep fit. When you're ready, Lacks offers more than one way to bring it home.",
+        "es": "Esta recomendación se basa en tu descanso. Cuando estés listo, Lacks ofrece más de una forma de llevarlo a casa."
+      },
+      "drawerMark": {
+        "en": "Plan the conversation",
+        "es": "Planear la conversación"
+      },
+      "sleepSystemGuidance": {
+        "en": "Build the sleep setup that fits you first. Your Lacks specialist can then review current payment options for the complete plan.",
+        "es": "Primero arma el sistema de sueño que te quede bien. Después, tu especialista de Lacks puede revisar las opciones de pago actuales para el plan completo."
+      },
+      "handoffHeadline": {
+        "en": "Your Sleep Plan. Your Payment Choices.",
+        "es": "Tu Plan de Sueño. Tus Opciones de Pago."
+      },
+      "handoffPrivate": {
+        "en": "Continue on your phone — scan to open Lacks' official financing page.",
+        "es": "Continúa desde tu teléfono — escanea para abrir la página oficial de financiamiento de Lacks."
+      },
+      "agendaPrompt": {
+        "en": "As you review these together, mark any options the customer wants to discuss.",
+        "es": "Mientras revisan estas opciones juntos, marca las opciones de pago que el cliente quiera conversar."
+      },
+      "agendaMark": {
+        "en": "Add to discussion",
+        "es": "Agregar a la conversación"
+      },
+      "agendaMarked": {
+        "en": "Added to discussion",
+        "es": "Agregado a la conversación"
+      },
+      "agendaEmpty": {
+        "en": "No options are marked yet.",
+        "es": "Todavía no hay opciones de pago marcadas."
+      },
+      "agendaConsequence": {
+        "en": "Use this agenda to guide the conversation together. Nothing is submitted and no application is started.",
+        "es": "Usen esta agenda para guiar la conversación juntos. No se envía nada y no se inicia ninguna solicitud."
+      },
+      "agendaChange": {
+        "en": "Change discussion agenda",
+        "es": "Cambiar agenda de conversación"
+      },
+      "agendaNotNow": {
+        "en": "Not right now",
+        "es": "Ahora no"
+      },
+      "agendaDismissed": {
+        "en": "No options marked for review right now.",
+        "es": "No hay opciones de pago marcadas para revisar por ahora."
+      },
+      "agendaDone": {
+        "en": "Done",
+        "es": "Listo"
+      },
+      "interestNotNowAnnounce": {
+        "en": "Not right now selected. You can change this choice.",
+        "es": "Se seleccionó 'Ahora no'. Puedes cambiar esta opción."
+      },
+      "interestClearedAnnounce": {
+        "en": "Selection cleared. Choose again when you're ready.",
+        "es": "Se borró la selección. Elige de nuevo cuando quieras."
+      },
+      "staleNotice": {
+        "en": "Current payment options are available from your Lacks specialist.",
+        "es": "Tu especialista de Lacks tiene las opciones de pago actuales."
+      },
+      "staleAnnouncement": {
+        "en": "Exact rates and terms are not shown right now. Your Lacks specialist can confirm current payment options in store.",
+        "es": "Las tasas y los plazos exactos no se muestran en este momento. Tu especialista de Lacks puede confirmar las opciones de pago actuales en tienda."
+      },
+      "externalNotice": {
+        "en": "Opens lacks.com — a separate site governed by its own terms and privacy policy.",
+        "es": "Abre lacks.com — un sitio aparte, regido por sus propios términos y política de privacidad."
+      },
+      "emailHeading": {
+        "en": "Payment options",
+        "es": "Opciones de pago"
+      },
+      "emailBody": {
+        "en": "You explored Lacks Payment Choice: promotional financing, Lacks In-House Credit, lease-to-own, and Build My Credit. Final pricing, eligibility, terms, and approval are confirmed by Lacks.",
+        "es": "Exploraste las Opciones de Pago Lacks: financiamiento promocional, Crédito Interno de Lacks, arrendamiento con opción a compra y Build My Credit. El precio final, la elegibilidad, los términos y la aprobación los confirma Lacks."
+      },
+      "emailBodyAvailable": {
+        "en": "Lacks Payment Choice offers more than one way to bring it home: promotional financing, Lacks In-House Credit, lease-to-own, and Build My Credit. Final pricing, eligibility, terms, and approval are confirmed by Lacks.",
+        "es": "Las Opciones de Pago Lacks ofrecen más de una forma de llevarlo a casa: financiamiento promocional, Crédito Interno de Lacks, arrendamiento con opción a compra y Build My Credit. El precio final, la elegibilidad, los términos y la aprobación los confirma Lacks."
+      },
+      "disclosureFooter": {
+        "en": "All payment options are subject to terms and approval. Advertised purchase minimums, rates, and terms are set by Lacks and its financing partners and may change or end at any time. Your Lacks specialist confirms current details in store.",
+        "es": "Todas las opciones de pago están sujetas a términos y aprobación. Los mínimos de compra, tasas y plazos anunciados los establecen Lacks y sus socios financieros y pueden cambiar o terminar en cualquier momento. Tu especialista de Lacks confirma los detalles vigentes en tienda."
+      },
+      "prequalNote": {
+        "en": "See if you prequalify on Lacks' official financing page — prequalification is not approval.",
+        "es": "Consulta si precalificas en la página oficial de financiamiento de Lacks — precalificar no es una aprobación."
+      }
+    },
+    "plans": [
+      {
+        "id": "synchrony-9-99-72",
+        "kind": "open-end-promotional-credit",
+        "provider": "Synchrony",
+        "verified": true,
+        "verifiedAt": "2026-07-31T16:43:00-05:00",
+        "sourceUrl": "https://www.lacks.com/financing",
+        "apr": 9.99,
+        "termMonths": 72,
+        "minimumPurchase": 500,
+        "channel": "per-current-source",
+        "calculationMode": "published-fixed-factor",
+        "paymentCalculationEnabled": false,
+        "headline": {
+          "en": "9.99% APR for 72 months",
+          "es": "9.99% APR por 72 meses"
+        },
+        "detail": {
+          "en": "On qualifying purchases of $500 or more with the Lacks Furniture Synchrony HOME Credit Card. Fixed monthly payments required. Interest is charged from the purchase date at the reduced APR. The advertised purchase minimum must be met on one receipt; discounts may reduce the purchase below it.",
+          "es": "En compras que califiquen de $500 o más con la tarjeta Lacks Furniture Synchrony HOME. Se requieren pagos mensuales fijos. Se cobra interés desde la fecha de compra a la tasa APR reducida. El mínimo de compra anunciado debe cumplirse en un solo recibo; los descuentos pueden reducir la compra por debajo del mínimo."
+        },
+        "disclosure": {
+          "en": "Subject to credit approval. Regular account terms apply to non-promo purchases; for new accounts as of 07/31/2025 the purchase APR is 34.99%, penalty APR 39.99%, minimum interest charge $2. Lacks may alter or discontinue this offer at any time.",
+          "es": "Sujeto a aprobación de crédito. Los términos regulares de la cuenta aplican a compras fuera de promoción; para cuentas nuevas al 07/31/2025 la tasa APR de compra es 34.99%, la APR de penalización 39.99% y el cargo mínimo por interés $2. Lacks puede modificar o descontinuar esta oferta en cualquier momento."
+        }
+      },
+      {
+        "id": "synchrony-0-48",
+        "kind": "open-end-promotional-credit",
+        "provider": "Synchrony",
+        "verified": true,
+        "verifiedAt": "2026-07-31T16:43:00-05:00",
+        "sourceUrl": "https://www.lacks.com/financing",
+        "apr": 0,
+        "termMonths": 48,
+        "minimumPurchase": 4200,
+        "channel": "in-store",
+        "calculationMode": "not-published",
+        "paymentCalculationEnabled": false,
+        "headline": {
+          "en": "0% APR for 48 months",
+          "es": "0% APR por 48 meses"
+        },
+        "detail": {
+          "en": "On qualifying in-store purchases of $4,200 or more with the Lacks Furniture Synchrony HOME Credit Card. Equal monthly payments required. A minimum purchase and a down payment, plus tax and delivery fee, are required. The advertised purchase minimum must be met on one receipt; discounts may reduce the purchase below it.",
+          "es": "En compras en tienda que califiquen de $4,200 o más con la tarjeta Lacks Furniture Synchrony HOME. Se requieren pagos mensuales iguales. Se requiere una compra mínima y un enganche, más impuestos y cargo de entrega. El mínimo de compra anunciado debe cumplirse en un solo recibo; los descuentos pueden reducir la compra por debajo del mínimo."
+        },
+        "disclosure": {
+          "en": "Subject to credit approval. No interest is charged on the promotional purchase. Regular account terms apply to non-promo purchases; for new accounts as of 07/31/2025 the purchase APR is 34.99%, penalty APR 39.99%, minimum interest charge $2.",
+          "es": "Sujeto a aprobación de crédito. No se cobra interés en la compra promocional. Los términos regulares de la cuenta aplican a compras fuera de promoción; para cuentas nuevas al 07/31/2025 la tasa APR de compra es 34.99%, la APR de penalización 39.99% y el cargo mínimo por interés $2."
+        }
+      },
+      {
+        "id": "lacks-in-house",
+        "kind": "closed-end-installment",
+        "provider": "Lacks",
+        "verified": true,
+        "verifiedAt": "2026-07-31T16:43:00-05:00",
+        "sourceUrl": "https://www.lacks.com/financing",
+        "paymentCalculationEnabled": false,
+        "headline": {
+          "en": "Lacks In-House Credit",
+          "es": "Crédito Interno de Lacks"
+        },
+        "detail": {
+          "en": "Installment contracts may be available from 6–36 months for qualifying customers, with in-house approvals by Lacks' own credit team. Purchases may also qualify for promotional pricing. Subject to Lacks approval and applicable offer terms.",
+          "es": "Para clientes que califiquen, puede haber contratos a plazos de 6 a 36 meses, con aprobación interna del propio equipo de crédito de Lacks. Las compras también pueden calificar para precios promocionales. Sujeto a la aprobación de Lacks y a los términos de la oferta aplicable."
+        },
+        "disclosure": {
+          "en": "Availability, terms, and promotional pricing are confirmed by Lacks in store.",
+          "es": "La disponibilidad, los términos y los precios promocionales los confirma Lacks en tienda."
+        }
+      },
+      {
+        "id": "lease-to-own",
+        "kind": "lease-to-own",
+        "provider": "Lacks",
+        "verified": true,
+        "verifiedAt": "2026-07-31T16:43:00-05:00",
+        "sourceUrl": "https://www.lacks.com/financing",
+        "paymentCalculationEnabled": false,
+        "headline": {
+          "en": "Lease-to-own",
+          "es": "Arrendamiento con opción a compra"
+        },
+        "detail": {
+          "en": "Lease-to-own is available. Program details, costs, eligibility, and ownership terms are confirmed in store.",
+          "es": "El arrendamiento con opción a compra está disponible. Los detalles del programa, costos, elegibilidad y términos de propiedad se confirman en tienda."
+        }
+      },
+      {
+        "id": "build-my-credit",
+        "kind": "credit-builder",
+        "provider": "Lacks",
+        "verified": true,
+        "verifiedAt": "2026-07-31T16:43:00-05:00",
+        "sourceUrl": "https://www.lacks.com/financing",
+        "paymentCalculationEnabled": false,
+        "headline": {
+          "en": "Build My Credit",
+          "es": "Build My Credit"
+        },
+        "detail": {
+          "en": "An available path for customers with little or no credit history. Program details are confirmed in store.",
+          "es": "Una opción disponible para clientes con poco o ningún historial de crédito. Los detalles del programa se confirman en tienda."
+        }
+      },
+      {
+        "id": "mexico-in-house",
+        "kind": "closed-end-installment",
+        "provider": "Lacks",
+        "presentationScenario": "mexico-delivery",
+        "verified": true,
+        "verifiedAt": "2026-07-31T16:43:00-05:00",
+        "sourceUrl": "https://www.lacks.com/faq",
+        "apr": 24,
+        "termMonths": 24,
+        "paymentCalculationEnabled": false,
+        "headline": {
+          "en": "Purchasing for delivery to Mexico?",
+          "es": "¿Compras para entrega en México?"
+        },
+        "detail": {
+          "en": "An optional program for customers purchasing for delivery to Mexico: Lacks in-house credit for up to 24 months with a maximum contract APR of 24% (which may vary). Requirements currently include two official IDs, three personal references, and income verification.",
+          "es": "Un programa opcional para clientes que compran para entrega en México: crédito interno de Lacks hasta por 24 meses con un interés máximo del contrato de 24% APR (mismo que puede variar). Los requisitos actuales incluyen dos identificaciones oficiales, 3 referencias personales y verificación de ingresos."
+        },
+        "representativeExample": {
+          "en": "Lacks' published example: $999 financed for 24 months at 24% APR equals 24 monthly payments of $52.82.",
+          "es": "Ejemplo publicado por Lacks: $999 financiados durante 24 meses con 24% APR tendrán 24 pagos mensuales de $52.82."
+        },
+        "disclosure": {
+          "en": "For purchases intended for delivery to Mexico, ask a Lacks specialist to confirm current details and requirements.",
+          "es": "Para compras destinadas a entrega en México, consulta con un especialista de Lacks para confirmar los detalles y requisitos actuales."
+        }
+      }
+    ]
+  },
+  "voice": {
+    "eyebrow": "FAMILY-OWNED · SOUTH TEXAS · SINCE 1935",
+    "headlineMain": "South Texas'",
+    "headlineAccent": "Sleep Shop.",
+    "subCopyBefore": "Answer a few questions, then review your mattress matches with a Lacks sleep specialist.",
+    "subCopyAccent": "",
+    "subCopyAfter": "",
+    "ctaPrimary": "Find My Sleep Match",
+    "timeEstimate": "About 2 minutes · No pressure",
+    "retailerSubline": "SLEEP SHOP",
+    "outcomeLabel": "Your consultation builds",
+    "outcomeItems": "Sleep Brief · Mattress Matches · Sleep System Picks · Payment Choices"
+  },
+  "voice_es": {
+    "eyebrow": "NEGOCIO FAMILIAR · SUR DE TEXAS · DESDE 1935",
+    "headlineMain": "La tienda del descanso",
+    "headlineAccent": "del sur de Texas.",
+    "subCopyBefore": "Responde unas preguntas y revisa tus opciones de colchón con un especialista del descanso de Lacks.",
+    "subCopyAccent": "",
+    "subCopyAfter": "",
+    "ctaPrimary": "Encontrar Mi Opción Ideal",
+    "timeEstimate": "Aproximadamente 2 minutos · Sin presión",
+    "retailerSubline": "TIENDA DEL DESCANSO",
+    "outcomeLabel": "Tu consulta crea",
+    "outcomeItems": "Resumen de Sueño · Opciones de Colchón · Sistema de Sueño · Opciones de Pago"
+  },
+  "salesNotes": {
+    "subBrands": {},
+    "brands": {
+      "Restonic": {
+        "story": "Made locally in Texas and named a Consumers Digest Best Buy year after year, Restonic's Marvelous Middle builds 25% more support into the center third of every bed — where support matters most."
+      },
+      "Chattam & Wells": {
+        "story": "Chattam & Wells is hand-crafted luxury built by Restonic's finest craftspeople — Merino wool, cashmere, and graphite latex layered over precision coils for heirloom-quality sleep."
+      },
+      "Spring Air": {
+        "story": "Spring Air's patented Copper collection pairs NatuVerex copper fabric with copper-infused foams for a cooler, fresher, health-forward sleep experience."
+      },
+      "Tempur-Pedic": {
+        "story": "Developed from NASA-engineered pressure-relieving material, Tempur-Pedic is the benchmark for adaptive memory-foam comfort, cooling innovation, and zero motion transfer."
+      },
+      "Genesis": {
+        "story": "Genesis by Kingdom Mattress is engineered entirely in the USA by a 30-year family company — honest, durable comfort built for real family life."
+      }
+    },
+    "consultationImplications": {
+      "trigger": {
+        "pain": "here to solve a comfort problem",
+        "worn_out": "replacing an old mattress",
+        "moving": "furnishing a new space",
+        "upgrade": "ready for an upgrade",
+        "browsing": "exploring options today"
+      },
+      "sleep_issues": {
+        "back_pain": "test lower-back support carefully",
+        "hip_pain": "focus on pressure relief at hips and shoulders",
+        "hot": "prioritize temperature control",
+        "tossing": "notice how easy it is to settle in",
+        "stiff": "compare alignment and morning comfort",
+        "sagging": "check for durable, consistent support",
+        "too_soft": "try firmer, more supportive feels",
+        "none": ""
+      },
+      "sleep_position": {
+        "side": "prioritize shoulder and hip cushioning",
+        "back": "look for even lumbar support",
+        "stomach": "keep the midsection supported",
+        "combo": "notice ease of movement between positions",
+        "no_idea": "compare a few different feels to find a starting point"
+      },
+      "health_conditions": {
+        "nerve_pain": "compare gentle, even pressure relief",
+        "allergies": "ask about washable and protective covers",
+        "snoring": "test head-of-bed elevation on an adjustable base",
+        "reflux": "notice how a raised upper body feels",
+        "extra_support": "prioritize reinforced, sturdy support",
+        "getting_older": "compare ease of getting in and out of bed",
+        "none": ""
+      },
+      "temperature": {
+        "hot": "compare cooling covers and airflow",
+        "comfortable": "",
+        "cold": "notice warmth and cozier surface feels",
+        "opposite": "compare temperature balance for two sleepers"
+      }
+    }
+  },
+  "salesNotes_es": {
+    "subBrands": {},
+    "brands": {
+      "Restonic": {
+        "story": "Fabricado localmente en Texas y nombrado Best Buy por Consumers Digest año tras año, el Marvelous Middle de Restonic construye 25% más soporte en el tercio central de cada cama — donde el soporte más importa."
+      },
+      "Chattam & Wells": {
+        "story": "Chattam & Wells es lujo artesanal construido por los mejores artesanos de Restonic — lana Merino, cachemira y látex de grafito sobre resortes de precisión para un descanso de calidad heredable."
+      },
+      "Spring Air": {
+        "story": "La colección Copper patentada de Spring Air combina la tela de cobre NatuVerex con espumas infundidas de cobre para un descanso más fresco y saludable."
+      },
+      "Tempur-Pedic": {
+        "story": "Desarrollado a partir del material de alivio de presión diseñado por la NASA, Tempur-Pedic es el referente del confort adaptable, la innovación en frescura y la cero transferencia de movimiento."
+      },
+      "Genesis": {
+        "story": "Genesis de Kingdom Mattress está diseñado completamente en EE. UU. por una empresa familiar de 30 años — confort honesto y duradero hecho para la vida familiar real."
+      }
+    },
+    "consultationImplications": {
+      "trigger": {
+        "pain": "aquí para resolver un problema de comodidad",
+        "worn_out": "reemplazando un colchón viejo",
+        "moving": "amueblando un espacio nuevo",
+        "upgrade": "buscando una mejora",
+        "browsing": "explorando opciones hoy"
+      },
+      "sleep_issues": {
+        "back_pain": "probar con cuidado el soporte lumbar",
+        "hip_pain": "enfocarse en aliviar la presión en caderas y hombros",
+        "hot": "priorizar el control de temperatura",
+        "tossing": "notar qué tan fácil es acomodarse",
+        "stiff": "comparar la alineación y la comodidad al despertar",
+        "sagging": "revisar que el soporte sea duradero y consistente",
+        "too_soft": "probar sensaciones más firmes y con más soporte",
+        "none": ""
+      },
+      "sleep_position": {
+        "side": "priorizar el acolchado de hombros y caderas",
+        "back": "buscar soporte lumbar uniforme",
+        "stomach": "mantener la zona media con soporte",
+        "combo": "notar la facilidad para cambiar de posición",
+        "no_idea": "comparar varias sensaciones para encontrar un punto de partida"
+      },
+      "health_conditions": {
+        "nerve_pain": "comparar un alivio de presión suave y uniforme",
+        "allergies": "preguntar por fundas lavables y protectoras",
+        "snoring": "probar la elevación de la cabecera en una base ajustable",
+        "reflux": "notar cómo se siente el torso elevado",
+        "extra_support": "priorizar un soporte reforzado y resistente",
+        "getting_older": "comparar la facilidad para acostarse y levantarse",
+        "none": ""
+      },
+      "temperature": {
+        "hot": "comparar fundas frescas y ventilación",
+        "comfortable": "",
+        "cold": "notar calidez y superficies más acogedoras",
+        "opposite": "comparar el equilibrio de temperatura para dos personas"
+      }
+    }
+  }
+}

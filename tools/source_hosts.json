@@ -1,0 +1,14 @@
+{
+  "_comment": "Explicit source-host allowlist for promotion/financing evidence URLs. Validation fails closed: source-backed claims error when their URL host is not listed here (web.archive.org captures are checked against their embedded target host). Narrow by design — add hosts deliberately, never wildcard. etail.mysynchrony.com may be added only if an approved stable partner link is supplied.",
+  "promotionSourceHosts": [
+    "lacks.com",
+    "www.lacks.com"
+  ],
+  "financingSourceHosts": [
+    "lacks.com",
+    "www.lacks.com",
+    "synchrony.com",
+    "www.synchrony.com",
+    "mysynchrony.com"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "DreamFinder Black Friday Demo",
+  "short_name": "BF Demo",
+  "description": "Illustrative Black Friday demonstration of the DreamFinder sleep consultation — not current Lacks promotions",
+  "start_url": "/LacksFurniture/demo/black-friday/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#000000",
+  "theme_color": "#000000"
+}

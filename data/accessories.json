@@ -1,0 +1,282 @@
+[
+  {
+    "id": "base-bt2000",
+    "name": {
+      "en": "BedTech BT2000 Adjustable Base",
+      "es": "Base Ajustable BedTech BT2000"
+    },
+    "category": {
+      "en": "Foundations & Support",
+      "es": "Bases y Soportes"
+    },
+    "price": 899,
+    "image": "images/accessories/base-bt2000.jpg",
+    "description": {
+      "en": "Adjustable power base with head & foot articulation, wireless remote, and programmable memory positions.",
+      "es": "Base eléctrica ajustable con elevación de cabeza y pies, control inalámbrico y posiciones de memoria programables."
+    },
+    "subType": "adjustable",
+    "matchTags": [
+      "snoring",
+      "reflux",
+      "back_pain"
+    ],
+    "matchScores": {
+      "back_pain": 3,
+      "snoring": 3,
+      "reflux": 3,
+      "premium": 1
+    }
+  },
+  {
+    "id": "base-bt3000",
+    "name": {
+      "en": "BedTech BT3000 Massage Base",
+      "es": "Base con Masaje BedTech BT3000"
+    },
+    "category": {
+      "en": "Foundations & Support",
+      "es": "Bases y Soportes"
+    },
+    "price": 1099,
+    "image": "images/accessories/base-bt3000.jpg",
+    "description": {
+      "en": "Adjustable base with head & foot massage, 5 vibration modes, one-touch flat, and wireless remote with presets.",
+      "es": "Base ajustable con masaje de cabeza y pies, 5 modos de vibración, regreso plano de un toque y control inalámbrico con posiciones predeterminadas."
+    },
+    "subType": "adjustable",
+    "matchTags": [
+      "snoring",
+      "reflux",
+      "back_pain"
+    ],
+    "matchScores": {
+      "back_pain": 4,
+      "snoring": 3,
+      "reflux": 3,
+      "premium": 2
+    }
+  },
+  {
+    "id": "base-tempur-ergo",
+    "name": {
+      "en": "TEMPUR-Ergo 3.0 Power Base",
+      "es": "Base Eléctrica TEMPUR-Ergo 3.0"
+    },
+    "category": {
+      "en": "Foundations & Support",
+      "es": "Bases y Soportes"
+    },
+    "price": 1599,
+    "image": "images/accessories/base-tempur-ergo.jpg",
+    "description": {
+      "en": "Premium adjustable base with lumbar support and a virtually unlimited range of head & foot positions, including Zero Gravity.",
+      "es": "Base ajustable premium con soporte lumbar y un rango casi ilimitado de posiciones de cabeza y pies, incluida Gravedad Cero."
+    },
+    "subType": "adjustable",
+    "matchTags": [
+      "snoring",
+      "reflux",
+      "back_pain"
+    ],
+    "matchScores": {
+      "back_pain": 4,
+      "snoring": 4,
+      "reflux": 4,
+      "premium": 3
+    }
+  },
+  {
+    "id": "foundation-princess",
+    "name": {
+      "en": "Chattam & Wells Standard Foundation",
+      "es": "Base Estándar Chattam & Wells"
+    },
+    "category": {
+      "en": "Foundations & Support",
+      "es": "Bases y Soportes"
+    },
+    "price": 499,
+    "image": "images/accessories/foundation-princess.jpg",
+    "description": {
+      "en": "9-inch wood foundation engineered to support your mattress edge to edge and extend its life.",
+      "es": "Base de madera de 9 pulgadas diseñada para soportar tu colchón de borde a borde y extender su vida útil."
+    },
+    "subType": "foundation",
+    "matchTags": [
+      "all"
+    ],
+    "matchScores": {
+      "default": 2
+    }
+  },
+  {
+    "id": "pillow-flow",
+    "name": {
+      "en": "Bedgear Flow 2.0 Performance Pillow",
+      "es": "Almohada Bedgear Flow 2.0 Performance"
+    },
+    "category": {
+      "en": "Pillows",
+      "es": "Almohadas"
+    },
+    "price": 108,
+    "image": "images/accessories/pillow-flow.jpg",
+    "description": {
+      "en": "Performance pillow with a soft t-shirt-like cover and airflow design for cooler, better-supported sleep.",
+      "es": "Almohada de alto rendimiento con funda suave tipo camiseta y diseño de ventilación para dormir más fresco y con mejor soporte."
+    },
+    "matchTags": [
+      "cooling",
+      "hot_sleeper",
+      "all",
+      "all_positions"
+    ],
+    "matchScores": {
+      "cooling": 3,
+      "hot": 3,
+      "position_side": 1,
+      "position_back": 1
+    }
+  },
+  {
+    "id": "pillow-gel-memory",
+    "name": {
+      "en": "Gel Memory Foam Cool Pillow",
+      "es": "Almohada Fresca de Espuma con Gel"
+    },
+    "category": {
+      "en": "Pillows",
+      "es": "Almohadas"
+    },
+    "price": 99,
+    "image": "images/accessories/pillow-gel-memory.jpg",
+    "description": {
+      "en": "Cool-gel memory foam that softens and adjusts to your neck, taking pressure off your spine without overheating.",
+      "es": "Espuma viscoelástica con gel fresco que se suaviza y se ajusta a tu cuello, quitando presión de la columna sin sobrecalentarte."
+    },
+    "matchTags": [
+      "cooling",
+      "hot_sleeper",
+      "all",
+      "all_positions"
+    ],
+    "matchScores": {
+      "default": 2,
+      "cooling": 2,
+      "hot": 2,
+      "position_side": 1
+    }
+  },
+  {
+    "id": "protector-dritec",
+    "name": {
+      "en": "Bedgear Dri-Tec Mattress Protector",
+      "es": "Protector de Colchón Bedgear Dri-Tec"
+    },
+    "category": {
+      "en": "Protectors",
+      "es": "Protectores"
+    },
+    "price": 149,
+    "image": "images/accessories/protector-dritec.jpg",
+    "description": {
+      "en": "Moisture-wicking, breathable protection that keeps you dry and comfortable while guarding against spills.",
+      "es": "Protección transpirable que absorbe la humedad, te mantiene seco y cómodo y protege contra derrames."
+    },
+    "matchTags": [
+      "all",
+      "allergies",
+      "spills",
+      "everyday"
+    ],
+    "matchScores": {
+      "default": 1,
+      "hot": 1,
+      "allergies": 1
+    }
+  },
+  {
+    "id": "protector-iprotect",
+    "name": {
+      "en": "Bedgear iProtect Mattress Protector",
+      "es": "Protector de Colchón Bedgear iProtect"
+    },
+    "category": {
+      "en": "Protectors",
+      "es": "Protectores"
+    },
+    "price": 89,
+    "image": "images/accessories/protector-iprotect.jpg",
+    "description": {
+      "en": "Simple, breathable everyday protection against spills and dust — comfort without compromise.",
+      "es": "Protección diaria sencilla y transpirable contra derrames y polvo — confort sin compromisos."
+    },
+    "matchTags": [
+      "all",
+      "allergies",
+      "spills",
+      "everyday"
+    ],
+    "matchScores": {
+      "default": 1,
+      "allergies": 2
+    }
+  },
+  {
+    "id": "protector-vertex",
+    "name": {
+      "en": "Bedgear Ver-Tex Cooling Protector",
+      "es": "Protector Refrescante Bedgear Ver-Tex"
+    },
+    "category": {
+      "en": "Protectors",
+      "es": "Protectores"
+    },
+    "price": 249,
+    "image": "images/accessories/protector-vertex.jpg",
+    "description": {
+      "en": "Instant-cooling top fabric for hot sleepers, with a Powerband fit that guards against spills without changing the feel.",
+      "es": "Tela superior de enfriamiento instantáneo para quienes duermen con calor, con ajuste Powerband que protege contra derrames sin cambiar la sensación."
+    },
+    "matchTags": [
+      "cooling",
+      "hot_sleeper",
+      "spills",
+      "everyday"
+    ],
+    "matchScores": {
+      "default": 1,
+      "cooling": 3,
+      "hot": 3
+    }
+  },
+  {
+    "id": "protector-tempur",
+    "name": {
+      "en": "TEMPUR-Protect Mattress Protector",
+      "es": "Protector de Colchón TEMPUR-Protect"
+    },
+    "category": {
+      "en": "Protectors",
+      "es": "Protectores"
+    },
+    "price": 189,
+    "image": "images/accessories/protector-tempur.jpg",
+    "description": {
+      "en": "Cooling, moisture-wicking protector with SurfaceGuard technology and a 10-year warranty.",
+      "es": "Protector refrescante que absorbe la humedad, con tecnología SurfaceGuard y garantía de 10 años."
+    },
+    "matchTags": [
+      "all",
+      "allergies",
+      "spills",
+      "everyday"
+    ],
+    "matchScores": {
+      "default": 1,
+      "premium": 2,
+      "allergies": 1
+    }
+  }
+]

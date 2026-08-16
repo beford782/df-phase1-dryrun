@@ -1,0 +1,64 @@
+{
+  "_meta": {
+    "illustrativeOnly": true,
+    "note": "Local demonstration content. Never generated into production store configuration. Consumed only by tools/serve_daybreak_demo.py (localhost preview) and tools/build_black_friday_demo.py (static /demo/black-friday/ bundle). The 72-hour demonstration window is computed at serve/page-load time; no deadline is authored here."
+  },
+  "schemaVersion": 1,
+  "durationHours": 72,
+  "scenarioId": "daybreak-black-friday-demo",
+  "scenario": {
+    "kind": "illustrative-demo",
+    "demoOnly": true,
+    "disableEmailSubmission": true,
+    "verified": false,
+    "name": {
+      "en": "Black Friday Event Preview",
+      "es": "Vista Previa del Evento de Black Friday"
+    },
+    "disclosure": {
+      "en": "BLACK FRIDAY DEMO — Illustrative offers only. These are not current Lacks promotions. Ask your Lacks specialist about actual offers.",
+      "es": "DEMOSTRACIÓN DE BLACK FRIDAY — Estas ofertas son solo ilustrativas. No son promociones vigentes de Lacks. Consulta con tu especialista de Lacks sobre las ofertas reales."
+    },
+    "items": [
+      {
+        "id": "black-friday-event-demo",
+        "badge": {
+          "en": "Black Friday Preview",
+          "es": "Vista Previa de Black Friday"
+        },
+        "headline": {
+          "en": "Qualifying mattresses include a Black Friday sleep bonus through the displayed deadline.",
+          "es": "Los colchones que califican incluyen un bono de descanso de Black Friday hasta la fecha límite indicada."
+        },
+        "detail": {
+          "en": "Your specialist confirms eligibility and explains the available bonus before checkout.",
+          "es": "Tu especialista confirma la elegibilidad y explica el bono disponible antes de finalizar la compra."
+        },
+        "eligibleBrands": [
+          "Restonic",
+          "Chattam & Wells"
+        ]
+      },
+      {
+        "id": "black-friday-bonus-demo",
+        "badge": {
+          "en": "Choose Your Bonus",
+          "es": "Elige Tu Bono"
+        },
+        "headline": {
+          "en": "Demo only: choose two cooling pillows or a mattress protector with a qualifying mattress.",
+          "es": "Solo demostración: elige dos almohadas frescas o un protector con un colchón que califique."
+        },
+        "detail": {
+          "en": "One illustrative bonus choice per qualifying mattress purchase.",
+          "es": "Una opción de bono ilustrativo por cada compra de colchón que califique."
+        },
+        "eligibleBrands": [
+          "Restonic",
+          "Chattam & Wells"
+        ]
+      }
+    ],
+    "storewide": []
+  }
+}

@@ -1,0 +1,526 @@
+# DreamFinder / Lacks Payment Choice — full verification suite.
+#
+# Every check in this repository is invoked by hand as `python <path>` or
+# `node <path>`; there is no runner, no package.json and no Makefile. That made
+# the suites advisory: nothing stopped a red change from merging, and the value
+# of the financing safety work depends entirely on the suites actually running.
+# This workflow is that enforcement, and nothing more — it builds no artifact,
+# publishes nothing, and needs no write access.
+#
+# DETERMINISM. Python and Node are pinned to exact versions and the three
+# third-party packages are pinned too (qrcode via the repository's own
+# incoming/requirements-qr.txt, which exists so the QR suite runs with zero
+# optional skips). pwsh is required, not optional: tests/golden/run_golden.py
+# --strict treats a missing PowerShell as a FAILURE, because without it the
+# mattresses.json comparison is silently skipped. The pinned ubuntu-24.04 image
+# ships pwsh preinstalled; the job asserts that rather than assuming it.
+#
+# ARTIFACT SAFETY. Several suites regenerate the bundle to compare it against
+# what is committed, so a bug that rewrites a tracked file would otherwise pass
+# unnoticed. The job records a hash manifest of every protected artifact before
+# the suites run, re-checks it after, and finishes on `git status --porcelain`
+# being empty.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Least privilege: the suites only read the tree.
+permissions:
+  contents: read
+
+# Superseded PR runs are pointless work and are cancelled. Every OTHER run gets
+# a group of its own.
+#
+# `cancel-in-progress: false` is NOT sufficient to protect main. It preserves
+# the RUNNING job, but GitHub keeps at most one PENDING run per group: queue a
+# third commit while one run is active and one is pending, and the pending run
+# is cancelled and replaced. The middle commit on main would then get no CI
+# result at all — precisely the guarantee this workflow exists to provide.
+#
+# So pull requests share a group keyed on the PR number (new push supersedes the
+# old run for that PR), while push-to-main and workflow_dispatch use a group
+# containing github.run_id, which is unique per run. A unique group cannot
+# collide, so no main run can ever cancel or replace another.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || format('run-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verify:
+    # The display name is PINNED by branch protection (required status check
+    # "Full suite (18 checks)") — renaming it here without updating the
+    # protection rule in the same change would leave every PR waiting on a
+    # check that never reports. The suite actually runs 24 checks: Phase 0.6
+    # added the consultation-summary suite, the compare-modal prerequisite
+    # added its dialog-semantics suite, slice 5a added the construction
+    # reveal repair suite, and Phase 1 opened with its output-regression
+    # exit gate; renaming name+protection together is an operator
+    # (Blake) action, tracked in the 0.6 PR notes.
+    name: Full suite (18 checks)
+    runs-on: ubuntu-24.04
+    # Raised from 20 for the mutation sweep, which re-runs the suites once per
+    # manifest entry and takes ~7 minutes locally. The rest of the job is ~3.
+    timeout-minutes: 30
+    steps:
+      - name: Check out the tree
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          # Full history: the whitespace check below diffs the committed change
+          # against a base commit, which a shallow clone would not contain.
+          fetch-depth: 0
+
+      - name: Resolve the concurrency group and the diff range
+        id: ctx
+        run: |
+          set -euo pipefail
+          # Echoed so the group is visible in the log and can be compared
+          # between runs — two main/dispatch runs must never share one.
+          echo "concurrency group: ci-${{ github.workflow }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || format('run-{0}', github.run_id) }}"
+
+          # The revision range for `git diff --check`. Bare `git diff --check`
+          # compares the WORKING TREE against the index, which is empty right
+          # after checkout — it would pass on any committed change, however
+          # broken. Each trigger gets a real range instead.
+          case "${{ github.event_name }}" in
+            pull_request)
+              BASE='${{ github.event.pull_request.base.sha }}'
+              ;;
+            push)
+              BASE='${{ github.event.before }}'
+              # A new branch, or a force-push whose old tip is gone, yields
+              # all-zeros or an unreachable SHA; fall back to the first parent.
+              if [ -z "$BASE" ] \
+                 || [ "$BASE" = "0000000000000000000000000000000000000000" ] \
+                 || ! git cat-file -e "${BASE}^{commit}" 2>/dev/null; then
+                BASE=''
+              fi
+              ;;
+            *)
+              BASE=''   # workflow_dispatch: no event range exists
+              ;;
+          esac
+          # Safe explicit fallback: the single commit at HEAD. Guarded for a
+          # root commit, which has no parent.
+          if [ -z "$BASE" ]; then
+            if git rev-parse -q --verify HEAD^ >/dev/null 2>&1; then
+              BASE="$(git rev-parse HEAD^)"
+            else
+              BASE="$(git hash-object -t tree /dev/null)"   # empty tree
+            fi
+          fi
+          echo "diff base: $BASE"
+          echo "diff head: $(git rev-parse HEAD)"
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
+
+      - name: Pin Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Pin Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.1'
+
+      - name: Install pinned Python dependencies
+        run: |
+          python -m pip install --upgrade pip==24.3.1
+          # openpyxl: workbook build/read. Pillow: image normalisation in the
+          # converter and the golden image compare. qrcode: pinned by the repo's
+          # own requirements file so the QR suite reports 0 skipped.
+          python -m pip install 'openpyxl==3.1.5' 'Pillow==11.0.0'
+          python -m pip install -r incoming/requirements-qr.txt
+
+      - name: Record the toolchain and prove pwsh is present
+        run: |
+          set -euo pipefail
+          python --version
+          node --version
+          python -c "import openpyxl, PIL, qrcode; print('openpyxl', openpyxl.__version__, '| Pillow', PIL.__version__)"
+          # golden --strict FAILS on a missing PowerShell rather than skipping,
+          # so a runner image without it must break loudly here, not silently
+          # downgrade the mattresses.json comparison.
+          command -v pwsh >/dev/null || { echo "::error::pwsh not found - golden --strict cannot run"; exit 1; }
+          pwsh --version
+
+      - name: Record protected-artifact hashes
+        run: |
+          set -euo pipefail
+          # Application behaviour, customer-visible data, generated bundle,
+          # build inputs, the QR asset and the mail backend. No suite may
+          # modify any of these; several regenerate copies to compare.
+          cat > /tmp/protected.txt <<'EOF'
+          index.html
+          Code.gs
+          manifest.json
+          data/store-config.json
+          data/quiz.json
+          data/mattresses.json
+          data/mattresses.csv
+          data/mattresses-es.csv
+          data/accessories.json
+          data/allowed-hosts.js
+          data/dict-en.json
+          data/dict-es.json
+          images/qr-financing.svg
+          incoming/lacks_financing.json
+          incoming/lacks_mattresses.json
+          incoming/lacks_accessories.json
+          incoming/lacks_store_values.json
+          incoming/dreamfinder_quiz.json
+          incoming/Lacks_Store_Data.xlsx
+          incoming/lacks_promotions.json
+          tools/source_hosts.json
+          demo/daybreak-black-friday.json
+          demo/black-friday/index.html
+          demo/black-friday/data/store-config.json
+          demo/black-friday/manifest.json
+          EOF
+          sha256sum $(cat /tmp/protected.txt) | tee /tmp/protected.sha256
+
+      # ---- Python suites ----------------------------------------------------
+      - name: validation self-test
+        run: python tools/validation.py --self-test
+
+      - name: financing totality
+        run: python tests/financing_totality_check.py
+
+      - name: smoke
+        run: python tests/smoke_check.py
+
+      - name: canonical self-test
+        run: python tests/golden/canonical.py --self-test
+
+      - name: converter self-test
+        run: python tools/convert_store_data.py --self-test
+
+      - name: reverify self-test
+        run: python tools/reverify_financing.py --self-test
+
+      - name: workbook validation
+        run: >
+          python tools/validate_workbook.py incoming/Lacks_Store_Data.xlsx
+          --source-images incoming/images --warnings-as-errors
+
+      - name: strict golden bundle
+        run: python tests/golden/run_golden.py --strict
+
+      # The canonical Lacks lineage as an executable guarantee: rebuilds the
+      # workbook from the committed incoming JSON sources into temp space,
+      # compares it cell-semantically with the committed xlsx, validates it
+      # warnings-as-errors, converts it and canonically compares every
+      # generated artifact with the committed bundle — then proves its own
+      # non-vacuity by mutating an implication string in a sandboxed source
+      # copy and requiring both observers to turn red. A source edit without
+      # a rebuild, or a hand edit to the workbook/bundle, fails here.
+      - name: canonical Lacks lineage (sources -> workbook -> bundle)
+        run: python tests/lineage_check.py
+
+      - name: QR payload suite
+        run: python tests/qr_payload_check.py
+
+      - name: QR committed-asset check
+        run: python incoming/generate_financing_qr.py --check
+
+      # ---- Node suites ------------------------------------------------------
+      - name: financing renderer
+        run: node tests/financing_render_check.mjs
+
+      - name: scoring isolation
+        run: node tests/scoring_isolation_check.mjs
+
+      - name: handoff interest
+        run: node tests/handoff_interest_check.mjs
+
+      - name: financing copy policy
+        run: node tests/financing_copy_policy_check.mjs
+
+      - name: financing taxonomy
+        run: node tests/financing_taxonomy_check.mjs
+
+      - name: financing URL
+        run: node tests/financing_url_check.mjs
+
+      - name: exact-promotions policy
+        run: node tests/exact_promotions_policy_check.mjs
+
+      - name: email gating
+        run: node tests/email_gating_check.mjs
+
+      - name: contrast
+        run: node tests/contrast_check.mjs
+
+      # Executes the real extracted drawer lifecycle against a DOM shim (same
+      # extract-and-execute pattern as the financing renderer suite) rather
+      # than grepping for function names. Pins the idle-reset regression:
+      # a reset while the drawer was open used to strand #resultsScreen inert.
+      - name: drawer dialog lifecycle
+        run: node tests/drawer_lifecycle_check.mjs
+
+      # Gate 1B. Executes the real extracted session module — timing policy,
+      # deadline-based idle controller, shared safety dialog and the single
+      # authoritative privacy wipe — against a DOM shim and a fake clock, plus
+      # the real switchLanguage() against an out-of-order dictionary fetch.
+      # Pins the recoverable timeout (the old build reset destructively after
+      # two silent minutes), confirmation-before-restart, and the wipe matrix
+      # that proves no prior customer's answers or contact values survive.
+      - name: session safety
+        run: node tests/session_safety_check.mjs
+
+      # Gate 1B amendment. Executes the real send-completion path (preview
+      # timer + live fetch continuations) against a fake clock and deferred
+      # promises, and the real analytics.log() against sentinel contact values
+      # and quiz answers. Also owns the CLASSIFICATION of every raw
+      # setTimeout / setInterval / requestAnimationFrame in index.html, so new
+      # unclassified delayed work cannot enter the customer journey silently.
+      - name: session async + diagnostic privacy
+        run: node tests/session_async_check.mjs
+
+      # Phase 0.4. Executes the real extracted data loader, the recovery
+      # controls and the real session-epoch primitives against a DOM shim, a
+      # programmable fetch and a fake clock. Pins the regression that made the
+      # data-error overlay terminal — it contained no interactive element, and
+      # the only way out was a page reload this file forbids — plus the
+      # stale-completion rules that stop a late load speaking over a wiped
+      # session. Every safety property is mutated and must fail when removed.
+      - name: data-error recovery
+        run: node tests/data_error_recovery_check.mjs
+
+      # Phase 0.5. Executes the real extracted showProfileScreen(),
+      # renderHf2Priorities() and the payload projection. Pins the Sleep Brief
+      # byte-for-byte against a baseline generated by executing the PRE-0.5
+      # code (tests/fixtures/sleep_brief_baseline_572d405.json), and the
+      # engine's 1-3 priority order end to end: computation, session state,
+      # Consultation Summary DOM, payload.
+      - name: consultation priorities
+        run: node tests/consultation_priorities_check.mjs
+
+      # Phase 0.5, server side. The first suite to EXECUTE Code.gs (whole-file
+      # load, four recorder stubs): safeData projection, HTML email order and
+      # escaping, the full plain-text body on BOTH sends (the normal email's
+      # text/plain part and the forced-HTML-failure fallback), and the
+      # hostility table. The CAN-SPAM refusal is asserted first so nothing here
+      # can pass against an email that never existed.
+      - name: email priorities (Code.gs)
+        run: node tests/email_priorities_check.mjs
+
+      # Phase 0.6. Executes the real config hydration, the shared
+      # consultation-summary resolver, the hf2 row render, the payload
+      # projection and Code.gs on both send paths. Proves behaviorally (via
+      # sentinel quiz labels in a sandbox) that clinical-style labels and raw
+      # option/question ids can never reach the Consultation Summary, the
+      # payload, either MIME part, or the sheet row — and that a missing,
+      # malformed or untranslated implication fails closed by omission.
+      - name: consultation summary (implication mapping)
+        run: node tests/consultation_summary_check.mjs
+
+      # DFM motion spike: extracts and EXECUTES the flag gate, the gather, and
+      # startProfileReveal against a DOM stub and fake clock. Proves the gate
+      # fails closed off-localhost, the disabled path keeps the legacy staged
+      # reveal byte-identical in behavior and timing, and the enabled path
+      # gathers the customer's actual review rows without leaking clones —
+      # across skip, spam, reduced-motion, Spanish, and mapping fallbacks.
+      - name: motion spike flag gate + gather (both paths)
+        run: node tests/motion_flag_check.mjs
+
+      # Compare-modal dialog semantics: extracts and EXECUTES the real
+      # open/close/keydown against a focus-tracking DOM stub. Proves the
+      # labelled-dialog contract, localized name and close label on every
+      # open, initial focus, Tab/Shift+Tab containment, Escape, exact-opener
+      # restoration (detached openers never focused), single keydown binding
+      # across reopenings, and the wipe's null-before-close ordering. This is
+      # the standing prerequisite in front of comparison-alignment work.
+      # (The job's display name remains pinned by branch protection — see the
+      # note at the top of this job; renaming name+protection together stays
+      # a tracked operator action.)
+      - name: compare modal dialog semantics
+        run: node tests/compare_modal_check.mjs
+
+      # Construction reveal repair (slice 5a): computes real WCAG contrast
+      # ratios from the authored colors on BOTH drawer themes (the light
+      # results-screen drawer is the only production entry and previously had
+      # no reveal styling at all), bans material-reading motifs (radial dots,
+      # vertical pinstripes), pins equal-weight geometry, the forced-colors
+      # border-style fallback, visibility-based legend hiding, disclosure
+      # semantics, layer-to-swatch correspondence, byte-identical wording,
+      # and executes the markup across every mattress record per language to
+      # prove one generic build.
+      - name: construction reveal repair (contrast, honesty, a11y)
+        run: node tests/construction_reveal_repair_check.mjs
+
+      # Compare entry point (owner-authorized slice): the comparison machine
+      # shipped owner-approved but unreachable — no markup emitted the
+      # .compare-btn control. This suite extracts and EXECUTES the real
+      # toggle/tray/clear functions and the delegated tap handler, proving
+      # the ruled EN/ES strings verbatim, selection cap and aria-pressed
+      # sync, tray localization on every rewrite, handler precedence (a
+      # compare tap never opens the drawer), the 44px touch floor, contrast
+      # on the results surface, and the session-wipe reset.
+      - name: compare entry point (reachability, i18n, a11y)
+        run: node tests/compare_entry_check.mjs
+
+      # Phase 1 exit gate (owner-approved 2026-08-12): executes the real
+      # extracted engine — calculateScores, the tier derivation inside
+      # window.showResults, qualifyRankedChoices, the accessory scorer and
+      # view-model grouping, and showProfileScreen's priority computation —
+      # across ten fixed answer sets in both languages, and holds every
+      # recommendation output (scores, match reasons, tier membership and
+      # order, pct, threshold, cap, back-fill, top pick, accessories,
+      # priorities, resolved firmness, profile assignment) to the committed
+      # baseline fixture phase1_output_baseline_daybreak_pr1.json (regenerated
+      # for the owner-approved Daybreak PR 1 scoring change on top of 31a7e79;
+      # the original Phase 1 baseline was generated at 85c5c10).
+      # Self-proving: fourteen in-memory engine mutations must each diverge
+      # from the baseline or the suite fails as vacuous. (The locally-made
+      # bonus mutation retired with the bonus itself — owner-approved
+      # Daybreak PR 1, 2026-08-13; the baseline fixture regenerated to
+      # phase1_output_baseline_daybreak_pr1.json in the same change.)
+      - name: phase 1 output regression (recommendations pinned)
+        run: node tests/phase1_output_regression_check.mjs
+
+      # Claim retirement (owner ruling 2026-08-12): executes the real
+      # mattressDifferentiators, drawer differentiator block, compare
+      # sideData/rowsHtml, buildMattressPriorities and hf2ReasonFor against
+      # the shipped catalog in both languages. Pins the exact retired set
+      # (g6/g7/s3/g8/g9 and no other), total drawer omission (no heading,
+      # no empty markup, no hardcoded or feature-derived fallback), compare
+      # semantics ("—" on the retired side only; retired×retired omits the
+      # two rows), the R4-exclusion evidence, and per-model banned-string
+      # absence. Four in-memory mutations must each be caught on every run.
+      - name: claim retirement (omission, no resurrection)
+        run: node tests/claim_retirement_check.mjs
+
+      # PR 1 integrity repairs (Daybreak preparation, 2026-08-13): pins the
+      # retired unbacked availability claims ("In stock at …" / "In stock" /
+      # "Disponible…") out of the result-card renderers — the deployment has
+      # no inventory data source, so the strings were fabricated claims — and
+      # executes the real wipeLayer() against the SESSION_LAYERS inventory to
+      # prove the hidden-attribute-driven RSA roster panel actually closes on
+      # a session wipe (the old entry stripped a class the element never
+      # carried, a no-op).
+      - name: integrity repairs (availability claims, RSA panel wipe)
+        run: node tests/integrity_repairs_check.mjs
+
+      # Results presentation (Slice 1, D3 2026-08-14): extracts and EXECUTES
+      # the real tier-tab, tier-descriptor, lead-card, support-card and
+      # _renderResults renderers against a DOM shim. Pins the index-only
+      # hero/support hierarchy at the engine's own cap (a four-item
+      # negative-control input proves the view never re-applies it), the
+      # ruled EN/ES role labels and relativity line resolved from the
+      # governed dictionaries, aria-pressed tier tabs with stable ids, the
+      # 44px touch floor and focus/forced-colors wiring, tier_view fidelity,
+      # the retired buyer-characterising descriptor, the de-rendered
+      # synthesized priority rows (helper and non-Results consumers intact),
+      # and bans on percentages, rings, provenance and nickname output.
+      - name: results presentation (hierarchy, ordinal labels, tabs)
+        run: node tests/results_presentation_check.mjs
+
+      # Sleep Brief recomposition (Slice 2, D1+D2 2026-08-15): extracts and
+      # EXECUTES the sleep-signature constellation renderer — deterministic,
+      # language-independent, answer-derived, strictly decorative — and, with
+      # the recomposition, the D1 structural/behavioral contract (retained
+      # heading + hero, single-open why+test disclosure, removed surfaces,
+      # cross-surface geometry identity, dict-driven copy, focus/touch/wipe).
+      - name: sleep brief presentation (constellation, D1 composition)
+        run: node tests/sleep_brief_presentation_check.mjs
+
+      # Daybreak PR 2 — production/demo separation. The committed production
+      # promotions block must stay the inert contract (a temporary pre-runtime
+      # activation lock; a later reviewed change may deliberately relax the
+      # empty-scenarios assertion once trusted-time and governed current-event
+      # runtime gates exist); the illustrative Black Friday content may exist
+      # ONLY in the tracked demo fixture and the generated /demo/black-friday/
+      # bundle, which must byte-match a fresh deterministic rebuild.
+      - name: daybreak contract (shipped-state lock + demo bundle)
+        run: python tests/daybreak_contract_check.py
+
+      # Executes the real localhost demo server against a live loopback
+      # socket: loopback-only bind, narrow store-config interception, the
+      # launch+72h window, untouched committed files.
+      - name: daybreak demo server (loopback interception)
+        run: python tests/daybreak_server_check.py
+
+      # Executes the real promotion helpers with the injected demo
+      # configuration and the real catalog: qualification, Sample/Ejemplo
+      # badges, disclosure-first cue/drawer, expiry rendering, and the
+      # scenario-level email block under a nonblank gasUrl.
+      - name: daybreak demo runtime (real helpers, injected config)
+        run: node tests/daybreak_demo_runtime_check.mjs
+
+      # One level up from the suites: for each safety property in the manifest,
+      # delete it from a COPY of the tree and require a suite to go red. A
+      # survivor is a property with no effective test, and a mutation that fails
+      # to apply is a stale manifest entry — both fail this step. Nothing is
+      # written inside the repository; the sandbox is a temp directory.
+      - name: mutation sweep (are the suites non-vacuous?)
+        run: node tests/mutation_sweep.mjs
+
+      # ---- Tree hygiene -----------------------------------------------------
+      - name: git diff --check (whitespace and conflict markers)
+        run: |
+          set -euo pipefail
+          # Ranged, so this actually inspects the COMMITTED change. Bare
+          # `git diff --check` looks at the working tree against the index and
+          # is vacuous immediately after checkout.
+          echo "checking ${{ steps.ctx.outputs.base }}..HEAD"
+          git diff --check "${{ steps.ctx.outputs.base }}" HEAD
+
+      - name: Protected artifacts are byte-identical
+        run: |
+          set -euo pipefail
+          sha256sum -c /tmp/protected.sha256
+
+      - name: Working tree is clean
+        run: |
+          set -euo pipefail
+          # A suite that rewrote a tracked file, or left a stray artifact
+          # behind, fails here even if every assertion above passed.
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::the suite modified the working tree"
+            git status --porcelain
+            git --no-pager diff --stat
+            exit 1
+          fi
+          echo "working tree clean"
+
+      # ---- Operating-state invariants ---------------------------------------
+      # These are policy, not code: exact financing terms stay gated off, the
+      # kiosk sends nothing live, and the illustrative Savings Pass stays
+      # disabled. A PR that flips any of them should have to say so out loud.
+      - name: Shipped operating state unchanged
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import io, json, sys
+          cfg = json.load(io.open("data/store-config.json", encoding="utf-8"))
+          fin = cfg.get("financing") or {}
+          promos = cfg.get("promotions")
+          checks = {
+              "financing.exactPromotionsEnabled is false":
+                  fin.get("exactPromotionsEnabled") is False,
+              "gasUrl is blank (no live email/lead sends)":
+                  not (cfg.get("gasUrl") or "").strip(),
+              "discount.mode is disabled":
+                  (cfg.get("discount") or {}).get("mode") == "disabled",
+              # Daybreak pre-runtime activation lock: the shipped promotions
+              # block stays exactly the inert contract until trusted-time and
+              # governed current-event runtime gates exist. Relaxing the
+              # empty-scenarios assertion is a deliberate reviewed change.
+              "promotions is exactly the inert Daybreak contract":
+                  promos == {"schemaVersion": 1, "activeScenario": None,
+                             "allowedSourceHosts": ["lacks.com"],
+                             "scenarios": {}},
+          }
+          bad = [k for k, ok in checks.items() if not ok]
+          for k, ok in checks.items():
+              print(("  [ok] " if ok else "  [FAIL] ") + k)
+          if bad:
+              print("::error::operating-state invariant changed: " + "; ".join(bad))
+              sys.exit(1)
+          PY
