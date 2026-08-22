@@ -419,9 +419,9 @@ rollback command was `git push origin 4c8d3df:main`.)
 Open the Pages URL on a desktop browser AND on an iPad. Run the full flow:
 
 - [ ] Welcome screen shows the retailer's name, colors, trust signal, badge
-- [ ] Quiz runs all 12 questions; skip-logic works for solo sleepers; multi-select cap of 3 enforced
+- [ ] Quiz runs all 10 questions (9 on the solo path); skip-logic works for solo sleepers; multi-select cap of 3 enforced
 - [ ] Review screen shows current answers; Edit returns to that question
-- [ ] Profile screen shows the personalized opener (uses `trigger`, `current_mattress_age`, `sleep_quality`)
+- [ ] Profile screen shows the personalized opener (uses `trigger` — `current_mattress_age` and `sleep_quality` were removed from the quiz by owner ruling 2026-08-12)
 - [ ] Confidence pill + social proof show
 - [ ] Theme accent colors look right per profile archetype
 - [ ] Results page: Gold/Silver/Bronze tabs work; tier explainer reads correctly; $/$$/$$$ price markers visible
@@ -444,7 +444,7 @@ Open the Pages URL on a desktop browser AND on an iPad. Run the full flow:
 - [ ] Idle timer (2 min) returns to welcome
 - [ ] **Spanish toggle (EN/ES) visible on welcome screen**
 - [ ] **Tap ES — entire welcome screen switches to Spanish**
-- [ ] **Complete quiz in Spanish — all 12 questions, labels, sublabels in Spanish**
+- [ ] **Complete quiz in Spanish — all 10 questions, labels, sublabels in Spanish**
 - [ ] **Profile, results, drawer, accessories all render in Spanish**
 - [ ] **Submit email in Spanish mode — email arrives with Spanish subject, body, labels**
 - [ ] **Tap EN — reverts to English cleanly**

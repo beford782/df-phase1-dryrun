@@ -42,6 +42,10 @@
     "savingsPassPolicy": "specialist_confirm",
     "exactPromotionsEnabled": false,
     "esReviewStatus": "pending-native-legal-review",
+    "surfaces": {
+      "drawer": false,
+      "sleepSystem": false
+    },
     "allowedSourceHosts": [
       "lacks.com",
       "www.lacks.com",
@@ -78,10 +82,6 @@
         "en": "Your strongest mattress match may have more than one way to bring it home.",
         "es": "Tu mejor opción de colchón puede tener más de una forma de llegar a casa."
       },
-      "resultsAsk": {
-        "en": "Plan the conversation",
-        "es": "Planear la conversación"
-      },
       "fitFirst": {
         "en": "Your matches are based on sleep fit — never on payment method.",
         "es": "Tus opciones se basan en tu descanso — nunca en la forma de pago."
@@ -93,10 +93,6 @@
       "drawerBody": {
         "en": "This recommendation is based on your sleep fit. When you're ready, Lacks offers more than one way to bring it home.",
         "es": "Esta recomendación se basa en tu descanso. Cuando estés listo, Lacks ofrece más de una forma de llevarlo a casa."
-      },
-      "drawerMark": {
-        "en": "Plan the conversation",
-        "es": "Planear la conversación"
       },
       "sleepSystemGuidance": {
         "en": "Build the sleep setup that fits you first. Your Lacks specialist can then review current payment options for the complete plan.",
@@ -110,47 +106,55 @@
         "en": "Continue on your phone — scan to open Lacks' official financing page.",
         "es": "Continúa desde tu teléfono — escanea para abrir la página oficial de financiamiento de Lacks."
       },
-      "agendaPrompt": {
-        "en": "As you review these together, mark any options the customer wants to discuss.",
-        "es": "Mientras revisan estas opciones juntos, marca las opciones de pago que el cliente quiera conversar."
+      "paymentPreferenceLabel": {
+        "en": "Payment preference",
+        "es": "Preferencia de pago"
       },
-      "agendaMark": {
-        "en": "Add to discussion",
-        "es": "Agregar a la conversación"
+      "preferenceNone": {
+        "en": "Not selected",
+        "es": "Sin seleccionar"
       },
-      "agendaMarked": {
-        "en": "Added to discussion",
-        "es": "Agregado a la conversación"
+      "optionsExploredLabel": {
+        "en": "Options explored",
+        "es": "Opciones exploradas"
       },
-      "agendaEmpty": {
-        "en": "No options are marked yet.",
-        "es": "Todavía no hay opciones de pago marcadas."
+      "reviewOption": {
+        "en": "Review this option",
+        "es": "Revisar esta opción"
       },
-      "agendaConsequence": {
-        "en": "Use this agenda to guide the conversation together. Nothing is submitted and no application is started.",
-        "es": "Usen esta agenda para guiar la conversación juntos. No se envía nada y no se inicia ninguna solicitud."
+      "hideDetails": {
+        "en": "Hide details",
+        "es": "Ocultar detalles"
       },
-      "agendaChange": {
-        "en": "Change discussion agenda",
-        "es": "Cambiar agenda de conversación"
+      "considerOption": {
+        "en": "Consider this option",
+        "es": "Considerar esta opción"
       },
-      "agendaNotNow": {
+      "currentlyConsidering": {
+        "en": "Currently considering ✓",
+        "es": "En consideración ✓"
+      },
+      "clearPreference": {
+        "en": "Clear preference",
+        "es": "Quitar preferencia"
+      },
+      "preferenceNotNow": {
         "en": "Not right now",
         "es": "Ahora no"
       },
-      "agendaDismissed": {
-        "en": "No options marked for review right now.",
-        "es": "No hay opciones de pago marcadas para revisar por ahora."
+      "exploreConsequence": {
+        "en": "Explore options together. Nothing is submitted and no application is started.",
+        "es": "Exploren las opciones juntos. No se envía nada y no se inicia ninguna solicitud."
       },
-      "agendaDone": {
+      "sheetDone": {
         "en": "Done",
         "es": "Listo"
       },
-      "interestNotNowAnnounce": {
+      "preferenceNotNowAnnounce": {
         "en": "Not right now selected. You can change this choice.",
         "es": "Se seleccionó 'Ahora no'. Puedes cambiar esta opción."
       },
-      "interestClearedAnnounce": {
+      "preferenceClearedAnnounce": {
         "en": "Selection cleared. Choose again when you're ready.",
         "es": "Se borró la selección. Elige de nuevo cuando quieras."
       },
@@ -169,10 +173,6 @@
       "emailHeading": {
         "en": "Payment options",
         "es": "Opciones de pago"
-      },
-      "emailBody": {
-        "en": "You explored Lacks Payment Choice: promotional financing, Lacks In-House Credit, lease-to-own, and Build My Credit. Final pricing, eligibility, terms, and approval are confirmed by Lacks.",
-        "es": "Exploraste las Opciones de Pago Lacks: financiamiento promocional, Crédito Interno de Lacks, arrendamiento con opción a compra y Build My Credit. El precio final, la elegibilidad, los términos y la aprobación los confirma Lacks."
       },
       "emailBodyAvailable": {
         "en": "Lacks Payment Choice offers more than one way to bring it home: promotional financing, Lacks In-House Credit, lease-to-own, and Build My Credit. Final pricing, eligibility, terms, and approval are confirmed by Lacks.",

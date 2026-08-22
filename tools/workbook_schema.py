@@ -409,7 +409,7 @@ PROMOTIONS = Tab(
 
 # ── Tab: Quiz ────────────────────────────────────────────────────────────────
 # OPTIONAL-payload tab (tab itself is always present, like Promotions). Carries
-# the quiz definition — 12 questions with bilingual copy, option scores, and
+# the quiz definition — 10 questions with bilingual copy, option scores, and
 # skip/hide conditions — as canonical JSON in an envelope {"quiz": ...},
 # chunked one fragment per row and concatenated by the converter (build_quiz)
 # into data/quiz.json. Same STATIC-payload rationale as Promotions: the nested

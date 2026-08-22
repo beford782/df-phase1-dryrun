@@ -282,10 +282,65 @@ def main():
           "FC('staleAnnouncement') || FC('staleNotice')" in html)
     check("no WG&R in index.html", not re.search(r"WG&R|WG&amp;R|wgrfurniture", html))
     check("no WG&R in Code.gs", not re.search(r"WG&R|WG&amp;R|wgrfurniture", gs))
-    check("no hardcoded retailer name in index.html (white-label boundary)",
-          "Lacks" not in html)
+    # WHITE-LABEL BOUNDARY. CLAUDE.md: "index.html must contain zero
+    # store-specific content. No retailer names ... hardcoded in the HTML."
+    #
+    # This was `"Lacks" not in html` — a CASE-SENSITIVE substring test — and it
+    # was routed around by capitalisation: a Slice 4 comment header reading
+    # "LACKS PAYMENT CHOICE" sailed straight through while this check reported
+    # green, and three lender names went with it. A guard that can be defeated
+    # by pressing shift is not a boundary.
+    #
+    # Case is handled, but not by banning "lacks" outright: the English VERB
+    # appears legitimately ("the dictionary lacks it"). Only a CAPITALISED form
+    # can be the proper noun, so that is what is banned — any of Lacks, LACKS,
+    # LaCkS. A lowercase "lacks" stays legal.
+    #
+    # Lender names are banned outright and case-insensitively. They are as
+    # store-specific as the retailer's own name — this deployment's promotional
+    # provider is one retailer's commercial relationship, not a template fact —
+    # and, unlike "lacks", they have no innocent English reading.
+    retailer_hits = re.findall(r"\bL[Aa][Cc][Kk][Ss]\b", html)
+    lender_hits = re.findall(r"(?i)\b(?:synchrony|mysynchrony)\b", html)
+    check(f"no hardcoded retailer name in index.html, ANY capitalisation "
+          f"(white-label boundary){' — FOUND: ' + ', '.join(sorted(set(retailer_hits))) if retailer_hits else ''}",
+          not retailer_hits)
+    check(f"no hardcoded lender name in index.html"
+          f"{' — FOUND: ' + ', '.join(sorted(set(lender_hits))) if lender_hits else ''}",
+          not lender_hits)
+    # The guard must be able to FIRE. Both patterns are proved against planted
+    # examples, including the exact capitalisation that defeated the old test,
+    # and the innocent lowercase verb is proved still legal.
+    check("the retailer pattern catches every capitalisation, and spares the English verb",
+          all(re.search(r"\bL[Aa][Cc][Kk][Ss]\b", f"// ===== {v} PAYMENT CHOICE =====")
+              for v in ("LACKS", "Lacks", "LaCkS"))
+          and not re.search(r"\bL[Aa][Cc][Kk][Ss]\b",
+                            "// t() returns the KEY when the dictionary lacks it"))
+    check("the lender pattern catches every capitalisation",
+          all(re.search(r"(?i)\b(?:synchrony|mysynchrony)\b", f'"{v}" and "{v}-Bank"')
+              for v in ("Synchrony", "SYNCHRONY", "synchrony")))
     check("publishedPaymentFactor stripped from shipped config",
           "publishedPaymentFactor" not in json.dumps(cfg))
+    # PRIVACY HALF OF THE BOUNDARY (trust gate, 2026-08-21). A privacy promise
+    # is retailer policy, so it is config (text / text_es) or nothing — the
+    # template may not carry one of its own. index.html used to hardcode
+    # "Your info is never sold to third parties. Unsubscribe anytime." in both
+    # languages: an absolute claim no code kept, an "unsubscribe" for a
+    # subscription that does not exist, and a white-label breach. Scanned on
+    # executable text (HTML comments and //-comment lines removed) so a
+    # comment that mentions the retired line is not mistaken for it.
+    executable = re.sub(r"<!--.*?-->", "", html, flags=re.S)
+    executable = "\n".join(l for l in executable.splitlines() if not re.match(r"\s*//", l))
+    promise_hits = re.findall(
+        r"(?i)never sold|nunca se vende|never shared|nunca se comparte|unsubscribe anytime|"
+        r"cancelar la suscripci|third parties|cleared when you finish|deleted immediately",
+        executable)
+    check(f"no template-hardcoded privacy promise in index.html (privacy copy is config or dictionary)"
+          f"{' — FOUND: ' + ', '.join(sorted(set(promise_hits))) if promise_hits else ''}",
+          not promise_hits)
+    check("the promise pattern fires on the retired line in both languages",
+          re.search(r"(?i)never sold", " Your info is never sold to third parties. Unsubscribe anytime.")
+          and re.search(r"(?i)nunca se vende", " Tu información nunca se vende. Puedes cancelar la suscripción."))
     # The dead Mexico application URL is stored in config as documentation
     # (verified:false) and must stay structurally unreachable: no runtime code
     # reads the field or the URL, so no config edit alone can render it.
@@ -354,10 +409,20 @@ def main():
     # meant to verify. The call-site/EVENT_FIELDS set equality that actually
     # catches a rename lives in tests/session_async_check.mjs; this stays a
     # cheap presence sweep and is deliberately not the guard.
+    #
+    # Slice 4 (D4) retired financing_agenda_changed and financing_agenda_reviewed
+    # OUTRIGHT, with no replacement: Consider, Clear, Review and Not-right-now
+    # emit nothing, because a preference is the customer's own position and no
+    # consumer needs it. The four neutral events below — module impression,
+    # whole-sheet open, official-link click, Mexico detail open — are the whole
+    # remaining financing surface, and their absence is asserted alongside.
     check("financing analytics events wired",
           all(e in html for e in ["finance_module_impression", "finance_details_open",
-                                  "official_financing_link_click", "financing_agenda_reviewed",
-                                  "financing_agenda_changed", "mexico_financing_details_open"]))
+                                  "official_financing_link_click",
+                                  "mexico_financing_details_open"]))
+    check("the two retired agenda events are gone from the app",
+          "financing_agenda_reviewed" not in html
+          and "financing_agenda_changed" not in html)
     check("no PII in financing analytics payload builder",
           "finEventBase" in html and not re.search(r"finEventBase[^}]*email", html))
     ah = load_text("data/allowed-hosts.js")

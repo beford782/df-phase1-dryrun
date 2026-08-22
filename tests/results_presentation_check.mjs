@@ -306,7 +306,9 @@ ok('active tab state is carried by a token fill, not color alone (and never the 
   /background: var\(--color-text\);/.test(tabActiveCss)
   && /color: var\(--color-surface\);/.test(tabActiveCss)
   && !/store-primary/.test(tabActiveCss));
-const consolidatedFocus = norm.match(/\.fin-btn:focus-visible,[\s\S]{0,400}?\{[\s\S]*?\}/);
+// Cap widened for Slice 3: the consolidated rule took on the five Quiz and
+// Review selectors, so the selector list outgrew the old 400-char scan window.
+const consolidatedFocus = norm.match(/\.fin-btn:focus-visible,[\s\S]{0,900}?\{[\s\S]*?\}/);
 ok('tier tab joined the consolidated semantic focus rule',
   !!consolidatedFocus && consolidatedFocus[0].includes('.noct-tier-tab:focus-visible')
   && consolidatedFocus[0].includes('var(--focus-ring-outer)'));

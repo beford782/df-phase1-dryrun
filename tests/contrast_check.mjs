@@ -87,7 +87,9 @@ check("no :focus-visible rule uses --store-primary anymore",
 const focusSelectors = [".fin-btn:focus-visible", ".fin-sheet-close:focus-visible",
   ".fin-sheet-title:focus-visible", ".fin-official-link:focus-visible",
   "#resultsScreen .noct-results-cta:focus-visible"];
-const consolidated = html.match(/\.fin-btn:focus-visible,[\s\S]{0,400}?\{[\s\S]*?\}/);
+// Cap widened for Slice 3: the consolidated rule took on the five Quiz and
+// Review selectors, so the selector list is longer than the old 400-char scan.
+const consolidated = html.match(/\.fin-btn:focus-visible,[\s\S]{0,900}?\{[\s\S]*?\}/);
 check("consolidated focus rule covers all five pilot selectors",
   !!consolidated && focusSelectors.every(s => consolidated[0].includes(s)));
 check("focus rule uses semantic two-ring tokens",
@@ -270,38 +272,177 @@ if (descendantWhite.length) descendantWhite.forEach((r) => console.log(`        
 function ruleFor(exact) {
   return cssRules.filter((r) => r.sel.split(",").some((s) => s.trim() === exact));
 }
+//
+// Slice 3 replaced the selected option's store-primary FILL with a restrained
+// brand-neutral warm tint plus a geometric cue (6px rail + 2px boundary), so
+// the old on-primary assertions no longer describe the shipped control. What
+// follows measures the surfaces the Quiz actually paints. The tint is a fixed
+// literal on purpose, for the same reason the language toggle's inversion is:
+// a tint derived from the CONFIGURED primary would make the sublabel floor
+// depend on a colour each deployment chooses (a near-black primary lands at
+// 4.41:1), while a neutral literal measures the same in every deployment.
+//
+// Tokens, read once so a rename fails loudly instead of silently passing.
+function tokenValue(name) {
+  const m = styleBlock.match(new RegExp(name.replace(/[-]/g, "\\-") + ":\\s*([^;]+);"));
+  return m ? m[1].trim() : null;
+}
+// Composite a translucent layer over an opaque backdrop.
+function over(fg, bg, alpha) {
+  const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
+  const [fr, fgc, fb] = hex(fg), [br, bgc, bb] = hex(bg);
+  const mix = (f, b) => Math.round(f * alpha + b * (1 - alpha));
+  return "#" + [mix(fr, br), mix(fgc, bgc), mix(fb, bb)]
+    .map((v) => v.toString(16).padStart(2, "0")).join("").toUpperCase();
+}
 {
-  const sel = "body:has(#questionScreen.active) .noct-quiz-option.selected";
-  const rules = ruleFor(sel);
-  check("selected quiz option main text uses the computed on-primary token",
-    rules.length > 0 && rules.some((r) => /color:\s*var\(--on-store-primary\)/.test(r.body)));
+  const CONSULT_BG = "#F4EFE6";     // --consultation-bg
+  const INK = "#2F271E";            // --consultation-ink / --accent-ink
+  const MUTED = "#685C4D";          // --consultation-muted
+  const SUBTLE = "#8B7B67";         // --consultation-subtle
+  const TINT = "#F2E9DB";           // the ruled selected tint
+  check("the consultation tokens this block measures are the ones the page declares",
+    tokenValue("--consultation-bg") === CONSULT_BG
+    && tokenValue("--consultation-ink") === INK
+    && tokenValue("--consultation-muted") === MUTED
+    && tokenValue("--consultation-subtle") === SUBTLE);
 
-  const subRules = ruleFor(sel + " .opt-sub");
-  check("selected quiz-option SUBTEXT uses the computed on-primary token",
-    subRules.length > 0 && subRules.some((r) => /color:\s*var\(--on-store-primary\)/.test(r.body)));
-  check("selected quiz-option subtext no longer hardcodes a near-white",
-    subRules.length > 0 && !subRules.some((r) => HARDCODED_WHITE.test(r.body)));
+  const optBase = ruleFor("body:has(#questionScreen.active) .noct-quiz-option");
+  const optSel = ruleFor("body:has(#questionScreen.active) .noct-quiz-option.selected");
+  const optSub = ruleFor("body:has(#questionScreen.active) .noct-quiz-option .opt-sub");
+  const optSelSub = ruleFor("body:has(#questionScreen.active) .noct-quiz-option.selected .opt-sub");
 
-  // Opacity is retained, so prove the COMPOSITED result, not the raw pair.
-  const opacity = (() => {
-    for (const r of subRules) {
-      const m = r.body.match(/opacity:\s*([\d.]+)/);
-      if (m) return parseFloat(m[1]);
+  // --- UNSELECTED option: white at 24% over the consultation page ---
+  const restSurface = over("#FFFFFF", CONSULT_BG, 0.24);
+  check(`unselected option surface composites to ${restSurface} (white 24% over ${CONSULT_BG})`,
+    optBase.length > 0 && optBase.some((r) => /background:\s*rgba\(255, 255, 255, 0\.24\)/.test(r.body)));
+  {
+    const rr = ratio(INK, restSurface);
+    check(`unselected option LABEL ${INK} on ${restSurface} >= 4.5:1 (got ${rr.toFixed(2)}:1)`, rr >= 4.5);
+  }
+  {
+    const rr = ratio(MUTED, restSurface);
+    check(`unselected option SUBLABEL ${MUTED} on ${restSurface} >= 4.5:1 (got ${rr.toFixed(2)}:1)`, rr >= 4.5);
+    check("unselected sublabel is normal-size text (15px), so the 4.5:1 floor is the right one",
+      optSub.length > 0 && optSub.some((r) => /font-size:\s*15px/.test(r.body)));
+  }
+
+  // --- SELECTED option: the warm tint, at full opacity in both text roles ---
+  check(`selected option paints the ruled warm tint ${TINT}, not the store primary`,
+    optSel.length > 0 && optSel.some((r) => new RegExp(`background:\\s*${TINT}`, "i").test(r.body))
+    && !optSel.some((r) => PRIMARY_REF.test(r.body)));
+  check("selected quiz-option subtext hardcodes no near-white",
+    optSelSub.length > 0 && !optSelSub.some((r) => HARDCODED_WHITE.test(r.body)));
+  check("selected subtext dropped its opacity knock-down (full-strength muted ink)",
+    optSelSub.length > 0 && optSelSub.some((r) => /opacity:\s*1\b/.test(r.body))
+    && !optSelSub.some((r) => /opacity:\s*0\./.test(r.body)));
+  {
+    const rr = ratio(INK, TINT);
+    check(`selected option LABEL ${INK} on ${TINT} >= 4.5:1 (got ${rr.toFixed(2)}:1)`, rr >= 4.5);
+  }
+  {
+    const rr = ratio(MUTED, TINT);
+    check(`selected option SUBLABEL ${MUTED} on ${TINT} >= 4.5:1 (got ${rr.toFixed(2)}:1)`, rr >= 4.5);
+  }
+
+  // --- the STRUCTURAL boundary that carries the state without colour ---
+  {
+    const rr = ratio(INK, TINT);
+    check(`selected boundary/rail ${INK} against its own fill >= 3:1 non-text (got ${rr.toFixed(2)}:1)`, rr >= 3);
+    const rrPage = ratio(INK, CONSULT_BG);
+    check(`selected boundary/rail against the surrounding page >= 3:1 (got ${rrPage.toFixed(2)}:1)`, rrPage >= 3);
+    check("the boundary resolves to --accent-ink, never the raw store primary",
+      optSel.some((r) => /border-color:\s*var\(--accent-ink\)/.test(r.body)));
+    check("the state cue is geometric as well as tonal (2px boundary + 6px rail, reserved at rest)",
+      optSel.some((r) => /border-width:\s*2px/.test(r.body) && /border-left-width:\s*6px/.test(r.body))
+      && optBase.some((r) => /border-left:\s*6px solid transparent/.test(r.body)));
+  }
+
+  // --- eyebrow and help copy on the consultation page ---
+  {
+    const eyebrow = ruleFor("body:has(#questionScreen.active) .noct-quiz-eyebrow");
+    const help = ruleFor("body:has(#questionScreen.active) .noct-quiz-help");
+    check("quiz eyebrow uses the consultation ink",
+      eyebrow.length > 0 && eyebrow.some((r) => /color:\s*var\(--consultation-ink\)/.test(r.body)));
+    const rrEye = ratio(INK, CONSULT_BG);
+    check(`quiz eyebrow ${INK} on ${CONSULT_BG} >= 4.5:1 (got ${rrEye.toFixed(2)}:1)`, rrEye >= 4.5);
+    check("quiz help copy uses the consultation muted ink",
+      help.length > 0 && help.some((r) => /color:\s*var\(--consultation-muted\)/.test(r.body)));
+    const rrHelp = ratio(MUTED, CONSULT_BG);
+    check(`quiz help copy ${MUTED} on ${CONSULT_BG} >= 4.5:1 (got ${rrHelp.toFixed(2)}:1)`, rrHelp >= 4.5);
+  }
+
+  // --- disabled Next -------------------------------------------------------
+  // WCAG 1.4.3 exempts inactive components from the text floor, so this is
+  // NOT asserted at 4.5:1. What IS asserted is that "disabled" is legible as
+  // a STATE without relying on hue: the fill drops away, the boundary changes
+  // to the page rule and the opacity drops. The measured ratio is printed so
+  // the number is on the record rather than assumed.
+  {
+    const dis = ruleFor("body:has(#questionScreen.active) .noct-quiz-next:disabled");
+    const alpha = parseFloat((dis[0]?.body.match(/opacity:\s*([\d.]+)/) || [])[1] ?? "1");
+    const composite = over(SUBTLE, CONSULT_BG, alpha);
+    const rr = ratio(composite, CONSULT_BG);
+    check(`disabled Next label composites to ${composite} at opacity ${alpha} (measured ${rr.toFixed(2)}:1 — 1.4.3-exempt, recorded not asserted)`,
+      dis.length > 0);
+    check("disabled Next is distinguished by more than colour (fill removed, boundary and opacity change)",
+      dis.length > 0 && /background:\s*transparent/.test(dis[0].body)
+      && /border-color:/.test(dis[0].body) && /opacity:/.test(dis[0].body));
+  }
+
+  // --- focus ring colours on the surfaces the Quiz renders on --------------
+  {
+    const outer = "#000000";  // --focus-ring-outer
+    const inner = "#FFFFFF";  // --focus-ring-inner
+    [["consultation page", CONSULT_BG], ["unselected option", restSurface], ["selected option", TINT]]
+      .forEach(([where, bg]) => {
+        const rr = ratio(outer, bg);
+        check(`focus ring outer ${outer} on the ${where} >= 3:1 (got ${rr.toFixed(2)}:1)`, rr >= 3);
+      });
+    const rrRing = ratio(outer, inner);
+    check(`the two focus rings separate from each other >= 3:1 (got ${rrRing.toFixed(2)}:1)`, rrRing >= 3);
+  }
+
+  // --- forced-colors wiring for the Quiz controls --------------------------
+  {
+    const quizFocus = [".noct-quiz-option", ".noct-quiz-back", ".noct-quiz-next",
+      ".noct-review-edit", ".noct-slider-track"];
+    check("all five Quiz/Review controls joined the consolidated two-ring focus rule",
+      !!consolidated && quizFocus.every((s) => consolidated[0].includes(s + ":focus-visible")));
+    check("all five joined the forced-colors focus fallback",
+      !!forced && quizFocus.every((s) => forced[0].includes(s + ":focus-visible")));
+    // The cue is GEOMETRY, not colour, because forced colours strip the tint
+    // and are not required to preserve a transparent border. Resting options
+    // take a uniform 1px boundary; the selected one a 3px frame with a 6px
+    // left rail. Scoped to the quiz screen and qualified by .selected so it
+    // outranks the normal selected rule (1,4,1 vs 1,3,1) — the previous
+    // (0,2,0) selector lost the cascade and never applied.
+    const forcedSel = 'body:has(#questionScreen.active) .noct-quiz-option.selected[aria-pressed="true"]';
+    check("forced colors keeps a geometric selected cue keyed to aria-pressed",
+      html.includes(forcedSel) && /border-left-width: 6px;/.test(html));
+    // Boundary VISIBILITY, resolved — not a word search. The base rule declares
+    // `border-left: 6px solid transparent`; a uniform width would still leave
+    // that edge's visibility up to whether the UA forces `transparent`. The
+    // forced rule must therefore pin a system colour, and must do so later in
+    // the file than both the transparent rail and .selected's author colour
+    // (all three are the same specificity, so source order decides).
+    const forcedResting = (html.match(/@media \(forced-colors: active\) \{[\s\S]*?body:has\(#questionScreen\.active\) \.noct-quiz-option \{([^}]*)\}/) || [null, ""])[1];
+    check("forced colors gives resting options a uniform 1px width on all four sides",
+      /border-width: 1px;/.test(forcedResting));
+    check("forced colors pins an explicit CanvasText boundary rather than inheriting the transparent base rail",
+      /border-color: CanvasText;/.test(forcedResting));
+    {
+      const iRail = html.indexOf("border-left: 6px solid transparent;");
+      const iInk = html.indexOf("border-color: var(--accent-ink);", html.indexOf("background: #F2E9DB;"));
+      const iCanvas = html.indexOf("border-color: CanvasText;", html.indexOf("@media (forced-colors: active) {"));
+      check("the CanvasText boundary is declared after the transparent rail and after the selected author colour (equal specificity, order decides)",
+        iRail > 0 && iInk > 0 && iCanvas > iRail && iCanvas > iInk);
     }
-    return 1;
-  })();
-  const fill = cfg.colors.storePrimary;               // the actual selected fill
-  const fg = pick(fill) || "#000000";                 // what the app computes
-  const composite = (() => {
-    const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16));
-    const [fr, fg_, fb] = hex(fg), [br, bg_, bb] = hex(fill);
-    const mix = (f, b) => Math.round(f * opacity + b * (1 - opacity));
-    return "#" + [mix(fr, br), mix(fg_, bg_), mix(fb, bb)]
-      .map((v) => v.toString(16).padStart(2, "0")).join("");
-  })();
-  const rr = ratio(composite, fill);
-  check(`selected subtext composited at opacity ${opacity} (${fg} over ${fill} = ${composite}) >= 4.5:1 (got ${rr.toFixed(2)}:1)`,
-    rr >= 4.5);
+    check("the Quiz forced-colors cue is placed AFTER the anchored focus block",
+      html.indexOf(forcedSel) > html.indexOf(".fin-btn:focus-visible"));
+    check("the retired (0,2,0) forced-colors selector is gone",
+      !/^\s*\.noct-quiz-option\[aria-pressed="true"\] \{/m.test(html));
+  }
 }
 
 // --- targeted: the Sleep System "Review Sleep Plan" control boundary ----
@@ -314,6 +455,44 @@ function ruleFor(exact) {
       decls(r.body).some((x) => /^border[a-z-]*\s*:/.test(x) && PRIMARY_REF.test(x))));
   const rr = ratio(accentInk, "#F3EEE5");
   check(`its boundary clears 3:1 on the Sleep System surface (got ${rr.toFixed(2)}:1)`, rr >= 3);
+}
+
+// --- trust gate (2026-08-21): the supporting copy that carries the honest lines
+// The tier-relativity note, the Welcome data-use sentence and the Review
+// audience line are the three integrity statements this gate relies on; each
+// must be body size and clear the normal-text floor on the surface it sits on.
+{
+  const RESULTS_BG = "#F3EEE5";      // --color-bg, light showroom theme
+  const RESULTS_MUTED = "#665D54";   // --color-text-muted, light showroom theme
+  const LANDING_BG = "#F4EFE6";      // --landing-bg
+  const LANDING_MUTED = "#685C4D";   // --landing-muted
+  check("the showroom and landing tokens this block measures are the ones the page declares",
+    (styleBlock.match(/--color-text-muted:\s*#665D54;/g) || []).length >= 1
+    && (styleBlock.match(/--color-bg:\s*#F3EEE5;/g) || []).length >= 1
+    && tokenValue("--landing-bg") === LANDING_BG && tokenValue("--landing-muted") === LANDING_MUTED);
+
+  const rel = ruleFor(".noct-tier-descriptor .tier-relativity");
+  const relSize = rel.length ? Number((rel[rel.length - 1].body.match(/font-size:\s*(\d+(?:\.\d+)?)px/) || [])[1]) : NaN;
+  check(`tier-relativity note is at least 15px (got ${relSize}px)`, relSize >= 15);
+  check("tier-relativity note keeps the muted showroom ink token",
+    rel.length > 0 && rel.some((r) => /color:\s*var\(--color-text-muted\)/.test(r.body)));
+  const rrRel = ratio(RESULTS_MUTED, RESULTS_BG);
+  check(`tier-relativity note ${RESULTS_MUTED} on ${RESULTS_BG} >= 4.5:1 (got ${rrRel.toFixed(2)}:1)`, rrRel >= 4.5);
+
+  const dataUse = ruleFor(".landing-data-use");
+  const dataUseSize = dataUse.length ? Number((dataUse[dataUse.length - 1].body.match(/font-size:\s*(\d+(?:\.\d+)?)px/) || [])[1]) : NaN;
+  check(`welcome data-use sentence is at least 15px (got ${dataUseSize}px)`, dataUseSize >= 15);
+  check("welcome data-use sentence uses the landing muted ink",
+    dataUse.length > 0 && dataUse.some((r) => /color:\s*var\(--landing-muted/.test(r.body)));
+  const rrUse = ratio(LANDING_MUTED, LANDING_BG);
+  check(`welcome data-use sentence ${LANDING_MUTED} on ${LANDING_BG} >= 4.5:1 (got ${rrUse.toFixed(2)}:1)`, rrUse >= 4.5);
+
+  // The Review audience line reuses the quiz help rule (15px, consultation
+  // muted ink on the consultation paper) — measured above; pinned here by name
+  // so a future restyle of the Review help cannot drop it below body size.
+  const reviewHelp = ruleFor("body:has(#reviewScreen.active) .noct-quiz-help");
+  const reviewSize = reviewHelp.length ? Number((reviewHelp[reviewHelp.length - 1].body.match(/font-size:\s*(\d+(?:\.\d+)?)px/) || [])[1]) : NaN;
+  check(`review audience line (quiz help rule) is at least 15px (got ${reviewSize}px)`, reviewSize >= 15);
 }
 
 console.log(`\nContrast check: ${passed} passed, ${failed} failed`);

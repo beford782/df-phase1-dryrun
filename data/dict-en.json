@@ -16,17 +16,19 @@
   "safety.restart_keep": "Keep this session",
   "safety.restart_confirm": "Start new customer",
   "safety.timeout_title": "Still comparing?",
-  "safety.timeout_body": "Your session is paused to protect your privacy.",
+  "safety.timeout_body": "Session paused. Continue this session where you left off, or start a new customer to clear it.",
   "safety.timeout_continue": "Continue this session",
   "safety.timeout_confirm": "Start new customer",
   "safety.timeout_remaining": "{seconds} seconds left",
   "safety.timeout_final_warning": "This session clears in about {seconds} seconds.",
+  "privacy.data_use_preview": "During this showroom session, your answers stay on this tablet and are used to create your matches and specialist summary. Restart clears them.",
+  "privacy.data_use_live": "Your answers are used on this tablet to create your matches and specialist summary. They are sent only if you choose to email your Sleep Brief. Restart clears them.",
 
   "footer.powered": "Powered by <strong>DreamFinder</strong>",
 
   "review.category": "Almost There",
   "review.title": "Quick review",
-  "review.help": "Make sure everything looks right, then we'll build your match.",
+  "review.help": "These answers create your matches and the summary your specialist will review with you.",
   "review.looks_good": "Looks Good →",
   "nav.back": "← Back",
 

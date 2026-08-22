@@ -220,6 +220,51 @@ function domShim() {
   };
 }
 
+// A window shim that FAILS LOUDLY on an undeclared read.
+//
+// Every harness below used to hand the engine `var window = {}`. A plain
+// object answers EVERY property read with `undefined` and says nothing, so an
+// engine that started consulting session state through the global — the
+// Payment Choice model's `window._payPref` / `window._payExplored` being the
+// live example, but equally `window._savedPicks` or any future customer
+// value — would keep computing, keep producing a snapshot that matched the
+// pinned baseline, and this suite would certify the isolation it can no
+// longer see. `typeof window._payPref === 'undefined'` is the same escape
+// wearing a guard: on a plain object it is simply true, forever.
+//
+// The Proxy inverts the default. Reads of a string key that was never written
+// by the engine itself and is not in this harness's DECLARED seed throw, so
+// reaching for state the harness does not supply is a loud failure instead of
+// a silent `undefined`. Writes are allowed and are readable afterwards
+// (`window.showResults = fn; window.showResults()` is the real call shape).
+// Symbol reads return undefined: `JSON.stringify`, `console.log` and the
+// spread operator probe Symbol.toPrimitive / Symbol.iterator on anything they
+// touch, and turning those probes into failures would only make the harness
+// fragile without protecting anything.
+//
+// The seeds are the audited set of window properties the extracted engine
+// functions actually read on this baseline:
+//   showResults()            -> none (it only ASSIGNS window.showResults)
+//   getSleepSystemFinalist() -> _savedPicks, _favoriteMattressId
+//   showProfileScreen()      -> _sleepSignatureEntry
+// Adding a seed is a reviewed act: it declares that the engine legitimately
+// reads that global, which is exactly the claim this suite exists to police.
+function throwingWindow(seed = {}) {
+  const store = Object.assign(Object.create(null), seed);
+  return new Proxy(store, {
+    get(t, k) {
+      if (typeof k === "symbol") return undefined;
+      if (k in t) return t[k];
+      throw new Error(
+        `engine read window.${String(k)}, which this harness never declared — ` +
+        `the recommendation engine must not consult session/global state`);
+    },
+    set(t, k, v) { t[k] = v; return true; },
+    has(t, k) { return typeof k === "symbol" ? false : k in t; },
+    deleteProperty(t, k) { delete t[k]; return true; }
+  });
+}
+
 const clone = (x) => JSON.parse(JSON.stringify(x));
 
 // Executes the engine's own firmness-resolution line.
@@ -243,8 +288,7 @@ function runScores(answers, lang, calcSrc = CALC_FN) {
 function runResults(answers, lang, { calcSrc = CALC_FN, qualifySrc = QUALIFY_FN, showSrc = SHOW_RESULTS_FN } = {}) {
   const { doc } = domShim();
   const out = {};
-  new Function("document", "MATTRESSES", "QUESTIONS", "answers", "currentLang", "out", `"use strict";
-    var window = {};
+  new Function("document", "window", "MATTRESSES", "QUESTIONS", "answers", "currentLang", "out", `"use strict";
     var analytics = { log: function(){} };
     var _resultsState = null;
     function _renderResults() {}
@@ -255,7 +299,7 @@ function runResults(answers, lang, { calcSrc = CALC_FN, qualifySrc = QUALIFY_FN,
     ${showSrc};
     window.showResults();
     out.state = _resultsState;
-    out.analytics = analytics;`)(doc, MATTRESSES, QUIZ.questions, clone(answers), lang, out);
+    out.analytics = analytics;`)(doc, throwingWindow(), MATTRESSES, QUIZ.questions, clone(answers), lang, out);
   const slim = {};
   for (const tier of ["gold", "silver", "bronze"]) {
     slim[tier] = out.state.tierData[tier].map((m) => ({
@@ -269,8 +313,7 @@ function runResults(answers, lang, { calcSrc = CALC_FN, qualifySrc = QUALIFY_FN,
 // System view-model grouping (qualification + support sub-type re-sort).
 function runAccessories(answers, lang, { accSrc = SCORE_ACC_FN, qualifySrc = QUALIFY_FN, vmSrc = VIEWMODEL_FN, stepSrc = STEP_FN } = {}) {
   const out = {};
-  new Function("ACCESSORIES", "answers", "currentLang", "out", `"use strict";
-    var window = { _savedPicks: [], _favoriteMattressId: '' };
+  new Function("ACCESSORIES", "window", "answers", "currentLang", "out", `"use strict";
     var _resultsState = null;
     var analytics = {};
     ${qualifySrc}
@@ -281,7 +324,9 @@ function runAccessories(answers, lang, { accSrc = SCORE_ACC_FN, qualifySrc = QUA
     ${vmSrc}
     out.ordered = scoreAccessoriesFromAnswers();
     out.vm = getSleepSystemViewModel();
-    out.analytics = analytics;`)(ACCESSORIES, clone(answers), lang, out);
+    out.analytics = analytics;`)(ACCESSORIES,
+      throwingWindow({ _savedPicks: [], _favoriteMattressId: "" }),
+      clone(answers), lang, out);
   const slimGroups = {};
   for (const step of ["support", "adjustability", "pillow", "protection"]) {
     slimGroups[step] = out.vm.groups[step].map((a) => ({
@@ -310,13 +355,44 @@ function runProfile(answers, lang, profileSrc = PROFILE_FN) {
     ${L_FN}
     ${SIGNATURE_FN}
     ${profileSrc}
-    showProfileScreen();`)(doc, {}, clone(answers), lang, analytics);
+    showProfileScreen();`)(doc, throwingWindow({ _sleepSignatureEntry: false }),
+      clone(answers), lang, analytics);
   return {
     trialFocus: analytics.trialFocus,
     profileName: analytics.profileName,
     profileSubtitleByLang: analytics.profileSubtitleByLang,
     profileBriefByLang: analytics.profileBriefByLang
   };
+}
+
+// ---------- harness self-proof ----------------------------------------------
+// A guard nobody exercises is a guard nobody has. These run the throwing shim
+// through the exact escapes it exists to close, so the shim cannot quietly
+// degrade into the plain `{}` it replaced.
+section("window shim fails loudly (harness non-vacuity)");
+{
+  const threw = (fn) => { try { fn(); return false; } catch { return true; } };
+  const w = throwingWindow({ _savedPicks: [] });
+  check("an undeclared window read throws", threw(() => w._payPref));
+  check("a typeof guard on an undeclared window read throws too",
+    threw(() => typeof w._payExplored));
+  check("a declared seed reads normally without throwing",
+    !threw(() => w._savedPicks) && Array.isArray(w._savedPicks));
+  check("a value the engine writes is readable afterwards",
+    !threw(() => { w.showResults = () => 7; return w.showResults(); })
+    && w.showResults() === 7);
+  check("symbol probes stay silent (stringify/spread must not become failures)",
+    !threw(() => JSON.stringify({ w: String(typeof w) }))
+    && !threw(() => w[Symbol.iterator]));
+  check("`in` reports only what is declared or written",
+    !("_payPref" in w) && "_savedPicks" in w);
+  // The three real harness seeds, pinned: widening one is a reviewed act.
+  check("the declared seed inventory is exactly the audited engine globals",
+    JSON.stringify([
+      Object.keys(Object.assign({}, throwingWindow())),
+      Object.keys(Object.assign({}, throwingWindow({ _savedPicks: [], _favoriteMattressId: "" }))),
+      Object.keys(Object.assign({}, throwingWindow({ _sleepSignatureEntry: false })))
+    ]) === JSON.stringify([[], ["_savedPicks", "_favoriteMattressId"], ["_sleepSignatureEntry"]]));
 }
 
 // ---------- snapshot ---------------------------------------------------------

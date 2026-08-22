@@ -124,7 +124,7 @@ If you find yourself writing a store name or brand color into the HTML, stop —
 it belongs in config.
 
 ### Quiz questions are config-driven (data/quiz.json)
-The 12 quiz questions live in `incoming/dreamfinder_quiz.json` → workbook
+The 10 quiz questions live in `incoming/dreamfinder_quiz.json` → workbook
 Quiz tab (JSON envelope, same channel as the Promotions financing envelope)
 → `data/quiz.json` (generated — never edit directly; rebuild via
 build_lacks_workbook.py + convert_store_data.py). The app fetches it at load
@@ -219,6 +219,14 @@ by default. Do not treat this as optional or Bel-specific.
 - **Retailer-specific text** lives in `store-config.json` under `text` (English)
   and `text_es` (Spanish) blocks. This includes trust signals, footer copy, email
   privacy text, social proof, and in-stock labels.
+- **Deployment-mode data-use copy** — what the app itself does with the answers
+  (`privacy.data_use_preview` / `privacy.data_use_live`, `review.help`) — is
+  generic app truth and lives in the dicts; the runtime picks the variant from
+  `gasUrl` via `emailDeliveryLive()`. Retailer privacy *policy*
+  (`text.emailPrivacy`, `text.privacyBody`, `text.privacyPolicyContact`, …)
+  stays in `store-config.json` and is config-or-nothing: the template carries no
+  fallback promise, and `tools/validation.py` rejects preview-mode wording in it
+  under a non-blank `gasUrl` (any non-blank `gasUrl` is live at runtime).
 - **Quiz questions** carry inline bilingual objects `{en: "...", es: "..."}`
   in `data/quiz.json` (canonical source `incoming/dreamfinder_quiz.json`).
   **Profile names and label constants** still use inline bilingual objects

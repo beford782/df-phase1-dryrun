@@ -269,6 +269,66 @@ def validate_structure(raw_tabs: Dict[str, Tuple[List[str], List[dict]]]) -> Val
 
 # -- Store-config value validation (assembled config dict) --------------------
 
+# Retailer privacy prose keys (both language blocks) that the mode rule reads.
+PRIVACY_PROSE_KEYS = ("emailPrivacy", "privacyBody", "privacyDraftNotice",
+                      "privacyPolicyContact", "disclaimerBody")
+# Preview-mode signal phrases: wording that is only true while nothing leaves
+# the tablet. Lower-cased substring match in either language.
+PREVIEW_MODE_SIGNALS = (
+    "preview mode", "preview deployment", "in this preview",
+    "modo de vista previa", "en esta vista previa",
+    "stays on this tablet", "stay on this tablet", "permanecen en esta tableta",
+    "permanece en esta tableta", "se queda en esta tableta", "se quedan en esta tableta",
+    "isn't connected", "is not connected", "no está conectada", "no esta conectada",
+    "nothing is sent", "nothing leaves", "never leaves", "not sent anywhere",
+    "never sent anywhere", "aren't sent anywhere", "are not sent anywhere",
+    "is not sent anywhere", "isn't sent anywhere", "not sent or stored",
+    "no email is sent", "no email was sent", "not transmitted", "never transmitted",
+    "not saved", "aren't saved", "never saved", "not stored", "never stored",
+    "don't store", "do not store", "doesn't store", "does not store",
+    "does not send or store", "doesn't send or store",
+    "no se envía nada", "no se envia nada", "nada sale", "no se envía a ning",
+    "no se envia a ning", "no se envía ning", "no se envia ning", "no se guarda",
+    "no se guardan", "no se almacena", "no se almacenan", "no se transmite",
+    "no se transmiten", "no se envían", "no se envian",
+)
+
+
+def _check_privacy_prose_present(r: ValidationReport, config: dict) -> None:
+    """Warn when a retailer that authors a text block leaves the two privacy
+    prose keys the template now renders config-or-nothing blank in English
+    (the Spanish block falls back to English through localizedConfigBlock).
+    A blank emailPrivacy shows no line on the email screen; a blank
+    privacyBody shows an empty Privacy section under its heading."""
+    text = config.get("text")
+    if not isinstance(text, dict):
+        return
+    for key, surface in (("emailPrivacy", "the email screen's privacy line"),
+                         ("privacyBody", "the Privacy & Terms overlay body")):
+        if _blank(text.get(key)):
+            r.add_warning(f"text.{key} is blank: {surface} renders nothing (the template "
+                          "carries no fallback promise of its own)")
+
+
+def _check_privacy_prose_mode(r: ValidationReport, config: dict) -> None:
+    """With a live gasUrl, reject preview-only wording in retailer privacy prose."""
+    for block in ("text", "text_es"):
+        prose = config.get(block)
+        if not isinstance(prose, dict):
+            continue
+        for key in PRIVACY_PROSE_KEYS:
+            value = prose.get(key)
+            if not isinstance(value, str) or not value.strip():
+                continue
+            low = value.lower()
+            hit = next((sig for sig in PREVIEW_MODE_SIGNALS if sig in low), None)
+            if hit:
+                r.add_error(f"{block}.{key} carries preview-mode wording ({hit!r}) but "
+                            "gasUrl is live - a statement that nothing leaves the tablet "
+                            "is false once live email is enabled; author the live-mode "
+                            "wording or blank gasUrl")
+
+
 def validate_store_config(config: dict, manifest: Optional[dict] = None, *,
                           require_gas_url: bool = False) -> ValidationReport:
     r = ValidationReport()
@@ -328,6 +388,17 @@ def validate_store_config(config: dict, manifest: Optional[dict] = None, *,
 
     gas = str(config.get("gasUrl") or "").strip()
     is_placeholder = _blank(gas) or "example" in gas.lower() or gas.upper() in ("TODO", "PLACEHOLDER")
+    # The RUNTIME'S notion of live: index.html (emailDeliveryLive() and the
+    # sendResults() gate) treats ANY non-blank gasUrl as a live endpoint — it
+    # speaks the live-mode data-use copy and POSTs the customer's contact
+    # values and derived summary to it. A non-blank placeholder is therefore
+    # not "not yet configured"; it is a live endpoint pointing at a sentinel,
+    # and it is refused here regardless of --require-gas-url (trust gate).
+    live_at_runtime = not _blank(gas)
+    if live_at_runtime and is_placeholder:
+        r.add_error(f"gasUrl {gas!r} is a non-blank placeholder: the kiosk treats any "
+                    "non-blank gasUrl as live (live-mode copy, real POST) - blank it "
+                    "for preview or set the deployed endpoint")
     if is_placeholder:
         msg = "gasUrl is blank/placeholder (set it after the Google Apps Script deploy)"
         if require_gas_url:
@@ -342,6 +413,23 @@ def validate_store_config(config: dict, manifest: Optional[dict] = None, *,
 
     if manifest is not None and _blank(manifest.get("start_url")):
         r.add_error("manifest.start_url is empty")
+
+    # Trust integrity gate (2026-08-21): retailer privacy prose must be true for
+    # the deployment mode it ships in. The app's own data-use sentence is
+    # dictionary copy selected at runtime by gasUrl, so it can never say
+    # "nothing is sent" under a live endpoint — but the retailer-authored
+    # privacy text (text / text_es) is free prose, and a preview-only promise
+    # left in it while a live GAS endpoint is configured would be a false
+    # representation the moment the first email goes out. The build refuses
+    # that combination: with a live gasUrl, no retailer privacy key may carry
+    # a preview-mode signal phrase. With gasUrl blank the same prose is true
+    # and passes. Phrases, not semantics — the validator cannot judge intent;
+    # it catches the sentences this repo has shipped or proposed so far. Keyed
+    # on the runtime's own notion of live (any non-blank gasUrl), never on the
+    # placeholder heuristic, so the gate and the kiosk cannot disagree.
+    if live_at_runtime:
+        _check_privacy_prose_mode(r, config)
+    _check_privacy_prose_present(r, config)
 
     # Consultation implications (0.6): structural + cross-language checks on the
     # EMITTED maps. Completeness against the quiz definition lives in
@@ -1376,6 +1464,168 @@ FINANCING_PLAN_KINDS = {
 }
 SAVINGS_PASS_POLICIES = {"alternative", "stackable", "specialist_confirm"}
 
+# ===== Financing experience + Spanish review status ==========================
+# `experience` selects which financing runtime a deployment ships. Only one
+# exists, and the app renders Payment Choice unconditionally, so an unknown
+# value would silently promise a presentation nobody built. Validated when
+# PRESENT rather than required: a retailer whose financing block predates the
+# field must not be broken by a validator upgrade, and financing itself is
+# never required globally.
+FINANCING_EXPERIENCES = {"payment-choice"}
+
+# The Spanish financing copy carries a review status. Both states are legal.
+# 'pending-native-legal-review' is the SHIPPED state and must keep validating:
+# it is an honest declaration that native/legal review has not happened yet, and
+# turning it into an error would only pressure an editor to write the approved
+# value before the review it names.
+FINANCING_ES_REVIEW_STATUSES = {
+    "pending-native-legal-review",
+    "approved-native-legal-review",
+}
+
+# ===== Per-surface financing placement (item 1.5) ============================
+# `financing.surfaces` config-DISABLES a duplicate financing placement without
+# deleting it. Exactly two surfaces are addressable, because exactly two exist
+# as duplicates of content the Results module and the handoff already carry.
+#
+# An unknown key is an ERROR, not a no-op: `{"drawer": false, "sleepsystem":
+# false}` would read as a policy that turns two surfaces off while turning one
+# off, and the runtime's `surfaces[name] !== false` test cannot tell the
+# difference. So can a typo like "sleepSystems". Fail the build instead.
+#
+# Values must be JSON booleans. The runtime gate is `!== false`, so a string
+# "false" would read as ENABLED while looking disabled to a human — the same
+# class of trap exactPromotionsEnabled guards against.
+#
+# A MISSING key means ENABLED, and that is a contract, not an accident: another
+# retailer's financing block that predates this field must keep both surfaces.
+FINANCING_SURFACES = {"drawer", "sleepSystem"}
+
+# ===== The D4 Payment Choice copy contract ===================================
+# Keys the Payment Choice runtime reads by literal name and renders to a
+# customer. FC() returns '' for a key that is not there, so a missing one is not
+# an error anywhere at runtime — it is a BLANK button, a blank row label, or a
+# silent live region. Requiring them here is what makes that impossible.
+#
+# Scoped to `enabled` ALONE, not to `experience`. The browser gates Payment
+# Choice on financingEnabled() and nothing else — it never reads `experience` —
+# so enabled financing renders these controls whether or not the field is
+# declared, and the requirement has to follow what renders rather than what is
+# declared. `experience` remains optional and enum-checked when present; a
+# deployment predating it keeps validating, but does not thereby become exempt
+# from the copy its customers will see.
+#
+# Full bilingual objects, both languages non-blank: every one of these is a
+# customer-facing string on a bilingual kiosk, and a half-translated control is
+# worse than an untranslated one because only some of the row changes language.
+PAYMENT_CHOICE_REQUIRED_COPY = (
+    # The nine strings adopted with D4.
+    "paymentPreferenceLabel",
+    "optionsExploredLabel",
+    "reviewOption",
+    "hideDetails",
+    "considerOption",
+    "currentlyConsidering",
+    "clearPreference",
+    "exploreConsequence",
+    "preferenceNone",
+    # The four governed keys renamed into the D4 vocabulary.
+    "preferenceNotNow",
+    "preferenceNotNowAnnounce",
+    "preferenceClearedAnnounce",
+    "sheetDone",
+    # The email packet's ONLY financing body. D4 excludes payment state from
+    # email entirely, so this neutral availability line is what every customer
+    # receives in every state; without it the email's payment row renders empty.
+    "emailBodyAvailable",
+)
+
+# Superseded by D4. Each of these either names the retired salesperson-marked
+# discussion agenda, or is the state-specific email body whose whole purpose was
+# to tell an explorer from a non-explorer — which the model no longer permits.
+# Present in a payment-choice config, they are dead weight at best and a
+# resurrection hazard at worst: a renderer could be pointed back at one without
+# any other file changing.
+PAYMENT_CHOICE_RETIRED_COPY = {
+    "agendaPrompt": "the agenda prompt (no options are 'marked' any more)",
+    "agendaMark": "the agenda mark control (replaced by Consider)",
+    "agendaMarked": "the agenda marked state (replaced by the considering marker)",
+    "agendaEmpty": "the empty-agenda line (replaced by preferenceNone)",
+    "agendaConsequence": "the agenda consequence line (replaced by exploreConsequence)",
+    "agendaChange": "the change-agenda control (the handoff has one governed cta)",
+    "agendaDismissed": "the dismissed-agenda line (not_now now suppresses a row)",
+    "resultsAsk": "the duplicate Results agenda CTA (Results keeps one cta)",
+    "drawerMark": "the drawer agenda CTA (the drawer keeps one cta)",
+    "emailBody": "the state-specific email body (D4 excludes payment state from email)",
+}
+
+
+def _fin_path_encode(value):
+    """Mirror of finPathEncode() in index.html: every character outside
+    [A-Za-z0-9-] becomes '_' plus its UTF-8 bytes in lowercase hex.
+
+    Injective, and therefore collision-free — which is the entire point. The
+    previous runtime slugifier lower-cased and collapsed unsupported runs, so
+    "Synchrony Bank"/"Synchrony-Bank", "Synchrony"/"SYNCHRONY" and a provider
+    literally named "General"/a promotional group with no provider all shared
+    one identity.
+
+    Returns None — never raises — for a value with no canonical identity:
+
+      * a NON-STRING. Identity values are strings; a dict, list, number or
+        boolean has no canonical path id. This previously str()-serialised them,
+        so `{"toString": None}` became the id `plan-_7b_27toString_27...` here
+        while the JS runtime THREW on the same input — the two mirrors
+        disagreed on exactly the value that broke the browser. The specific
+        "id must be a string" error is raised separately by validate_financing
+        and is what an author actually needs to read.
+      * a string holding an UNPAIRED SURROGATE, on which `.encode("utf-8")`
+        raises UnicodeEncodeError. That was uncaught, and it broke this module's
+        own stated contract ("TOTAL over JSON … It never raises … Malformed
+        author input is a VERDICT, not a crash"): validate_financing produced a
+        traceback instead of a report, so the build could not refuse the one
+        config shape that also breaks the runtime encoder.
+
+    None/absent maps to the empty encoding rather than the sentinel, mirroring
+    the runtime: a promotional group with no provider is identified by the empty
+    string and keeps a usable id."""
+    if value is None:
+        return ""
+    if not isinstance(value, str):
+        return None
+    out = []
+    for ch in value:
+        if ch.isascii() and (ch.isalnum() or ch == "-") and not ch.isspace():
+            out.append(ch)
+        else:
+            try:
+                out.extend("_%02x" % b for b in ch.encode("utf-8"))
+            except UnicodeEncodeError:
+                return None
+    return "".join(out)
+
+
+def _fin_path_id(kind: str, value):
+    """Mirror of finPathId(). KIND contains no '-', so splitting on the first
+    '-' recovers it unambiguously.
+
+    Returns None when the value cannot be encoded, propagating the encoder's
+    refusal rather than raising, AND when an empty encoding is not a legitimate
+    identity for that kind.
+
+    An empty encoding identifies exactly one real path: the promotional group
+    whose provider is missing or blank, which renders as the generic
+    "Promotional financing" card. A plan or scenario identity is required to be
+    present and non-blank, so an empty one means the config bypassed that gate —
+    and admitting it yields a TRUTHY id ("plan-") that the runtime would treat
+    as a selectable path. Mirrors finPathId() in index.html."""
+    enc = _fin_path_encode(value)
+    if enc is None:
+        return None
+    if enc == "" and kind != "promo":
+        return None
+    return kind + "-" + enc
+
 # -- Exact-claim detection for UNGATED financing copy --------------------------
 # financing.exactPromotionsEnabled and financingTermsFresh()/financingPlanFresh()
 # gate the exact OFFER BODIES, but a large amount of financing text renders
@@ -1478,9 +1728,24 @@ _EXACT_CLAIM_SIGNALS = (
 #
 # This is why banning "installments"/"cuotas" alone did not close the
 # payment-count class: ordinary "payments"/"pagos" carries it just as well.
+#
+# 2026-08-17 (Slice 4 / D4, owner-adopted copy). One collocation added, exactly
+# as narrow as the ones above: "payment preference" / "preferencia de pago".
+# The D4 handoff row is labelled with that phrase by owner ruling and the phrase
+# is not to be reworded, so the guard had to learn it rather than the copy learn
+# the guard. It names the CONCEPT ("which way of paying is being considered")
+# in the same manner as "payment options" and states nothing about an amount, a
+# rate, a term or a count.
+#
+# It is deliberately not generalised. `preference` alone is not allowed to
+# neutralise a payment noun in any other position, so every near-miss still
+# fails: "preferencia del pago" (a different collocation), "Payment-preference"
+# (not the reviewed two-word phrase), "Preferencia de pago mensual" (which
+# additionally trips payment-cadence and duration-unit), and any wording that
+# leaves a second, uncollocated payment noun behind.
 _NEUTRAL_PAYMENT_PHRASES = re.compile(
-    r"\bpayment\s+(?:options?|choices?|methods?)\b"
-    r"|\b(?:opciones?|formas?|m[eé]todos?|maneras?)\s+de\s+pago\b", re.I)
+    r"\bpayment\s+(?:options?|choices?|methods?|preferences?)\b"
+    r"|\b(?:opciones?|formas?|m[eé]todos?|maneras?|preferencias?)\s+de\s+pago\b", re.I)
 _PAYMENT_NOUN = re.compile(r"\bpayments?\b|\bpagos?\b", re.I)
 
 
@@ -1731,6 +1996,54 @@ def validate_financing(config: dict, *, allowed_source_hosts=None) -> Validation
         hosts = []
     enabled = fin.get("enabled") is True
 
+    # Experience + Spanish review status. Both are validated WHENEVER PRESENT,
+    # enabled or not: a malformed value is wrong either way, and a config that
+    # is switched on later should not discover it then. Neither is required —
+    # financing is optional per deployment, and a financing block that predates
+    # these fields must keep validating.
+    _exp = fin.get("experience")
+    if _exp is not None and (not isinstance(_exp, str)
+                             or _exp not in FINANCING_EXPERIENCES):
+        r.add_error(
+            f"financing.experience {fin_headline.short_repr(_exp)} must be one of "
+            f"{sorted(FINANCING_EXPERIENCES)} — an unknown value names a "
+            f"presentation the app does not implement, and the runtime would "
+            f"render Payment Choice regardless")
+    _esr = fin.get("esReviewStatus")
+    if _esr is not None and (not isinstance(_esr, str)
+                             or _esr not in FINANCING_ES_REVIEW_STATUSES):
+        r.add_error(
+            f"financing.esReviewStatus {fin_headline.short_repr(_esr)} must be one of "
+            f"{sorted(FINANCING_ES_REVIEW_STATUSES)} — 'pending-native-legal-review' "
+            f"is a legal shipped state and is deliberately not an error")
+
+    # Optional per-surface placement policy. Absent = every surface enabled.
+    _surfaces = fin.get("surfaces")
+    if _surfaces is not None:
+        if not isinstance(_surfaces, dict):
+            r.add_error(
+                f"financing.surfaces must be an object mapping surface names to "
+                f"booleans, got {_type_name(_surfaces)} "
+                f"({fin_headline.short_repr(_surfaces)}) — a missing surfaces block "
+                f"already means every surface is enabled, so there is no reason "
+                f"to write anything else here")
+        else:
+            for _sk in sorted(_surfaces):
+                if _sk not in FINANCING_SURFACES:
+                    r.add_error(
+                        f"financing.surfaces.{_sk} is not an addressable surface "
+                        f"(expected one of {sorted(FINANCING_SURFACES)}) — the "
+                        f"runtime reads surfaces[name] !== false, so an unknown or "
+                        f"misspelled key silently disables nothing while reading "
+                        f"like a policy that does")
+                elif not isinstance(_surfaces[_sk], bool):
+                    r.add_error(
+                        f"financing.surfaces.{_sk} "
+                        f"{fin_headline.short_repr(_surfaces[_sk])} must be a JSON "
+                        f"boolean — the runtime gate is `!== false`, so a string "
+                        f"\"false\" reads as ENABLED while looking disabled to a "
+                        f"human")
+
     # `plans` is iterated in FOUR places. Normalise it ONCE, here, so no loop
     # can iterate a non-list: `for x in (fin.get("plans") or [])` walked the
     # CHARACTERS of plans="bad" and raised on a plain int. A malformed value is
@@ -1818,6 +2131,54 @@ def validate_financing(config: dict, *, allowed_source_hosts=None) -> Validation
                 "the email packet row will use 'explored' wording even for "
                 "customers who never opened Payment Choice content (COPY-15); "
                 "add the neutral availability variant")
+        # ---- the D4 Payment Choice copy contract --------------------------
+        # REQUIRED copy is scoped to `enabled` (the enclosing branch) and NOT
+        # to `experience`, because `experience` selects nothing at runtime.
+        # index.html never reads it — the only gate the browser applies is
+        # financingEnabled(), i.e. `enabled === true` plus a non-empty plans
+        # array — so an enabled deployment whose financing block predates the
+        # field still renders every Payment Choice control and still reads
+        # these keys by literal name. Requiring them only when the field
+        # happens to be declared made the validator green for a configuration
+        # that ships blank buttons, blank row labels and silent live regions,
+        # which is the exact outcome this contract exists to prevent. The
+        # field stays OPTIONAL for backward compatibility and is enum-checked
+        # when present; what it must never do is buy an exemption from the
+        # requirements of UI the runtime renders anyway.
+        if _exp is None or _exp == "payment-choice":
+            _for_exp = ("for experience='payment-choice'" if _exp
+                        else "for enabled financing (no `experience` declared, "
+                             "which the runtime ignores)")
+            for key in PAYMENT_CHOICE_REQUIRED_COPY:
+                if key not in copy:
+                    r.add_error(
+                        f"financing.copy.{key} is required {_for_exp} — the "
+                        f"Payment Choice runtime "
+                        f"reads it by name and FC() renders '' for a missing key, so "
+                        f"its absence is a BLANK control or row rather than an error")
+                elif not _bilingual_ok(copy.get(key)):
+                    r.add_error(
+                        f"financing.copy.{key} must be a bilingual object with "
+                        f"non-blank EN and ES text {_for_exp} "
+                        f"(got {fin_headline.short_repr(copy.get(key))}) — a "
+                        f"half-translated control changes language only in part")
+        # RETIRED copy is deliberately NARROWER, and the asymmetry is the same
+        # principle read the other way: a retired key is rendered by nothing,
+        # so its presence is inert rather than customer-visible. An agenda-era
+        # block predating `experience` legitimately still carries `agendaMark`
+        # and friends; erroring on those would break precisely the backward
+        # compatibility the field was left optional to preserve, and would buy
+        # a customer nothing. Retirement therefore needs an EXPLICIT
+        # payment-choice declaration.
+        if _exp == "payment-choice":
+            for key, why in sorted(PAYMENT_CHOICE_RETIRED_COPY.items()):
+                if key in copy:
+                    r.add_error(
+                        f"financing.copy.{key} is retired under "
+                        f"experience='payment-choice': {why}. Nothing renders it, "
+                        f"so shipping it leaves copy a renderer could be pointed "
+                        f"back at without any other file changing — remove it from "
+                        f"incoming/lacks_financing.json and rebuild")
         # isinstance(str) FIRST: `x not in <set>` hashes x, so a JSON array or
         # object here raised TypeError before the error could be reported.
         policy = fin.get("savingsPassPolicy")
@@ -2289,6 +2650,78 @@ def validate_financing(config: dict, *, allowed_source_hosts=None) -> Validation
                     f"financing.plans: {len(owners)} plans declare "
                     f"presentationScenario={fin_headline.short_repr(_sc)} ({owners}) but the renderer presents "
                     f"exactly one — the others would be dropped silently")
+
+        # ---- canonical Payment Choice path identity is UNIQUE --------------
+        # The runtime derives one path per promotional PROVIDER, one per
+        # installment/evergreen plan and one per presentation scenario, and
+        # identifies each by finPathId(kind, value) — mirrored by
+        # _fin_path_id() above. Two paths sharing an id means one preference
+        # row, one explored entry and one set of DOM ids for both, so a
+        # customer's Consider lands on a path they did not choose and the
+        # salesperson reads the wrong one off the handoff.
+        #
+        # The encoding is injective, so a collision here can only come from two
+        # sources genuinely carrying the same identifying value (duplicate plan
+        # ids are caught above; this catches the cross-group and provider
+        # cases). It is checked rather than assumed because the derivation is
+        # what the customer's choice is keyed on.
+        _path_owners = {}
+        _seen_providers = []
+        for i, plan in enumerate(plan_list):
+            if not isinstance(plan, dict):
+                continue
+            group = _plan_group(plan)
+            if group == "promotional":
+                prov = plan.get("provider")
+                prov = prov.strip() if isinstance(prov, str) else ""
+                if prov in _seen_providers:
+                    continue          # one path per provider, by construction
+                _seen_providers.append(prov)
+                _raw = prov
+                _pid = _fin_path_id("promo", prov)
+                _owner = f"promotional provider {fin_headline.short_repr(prov)}"
+            elif group in ("installment", "evergreen"):
+                _raw = plan.get("id")
+                _pid = _fin_path_id("plan", _raw)
+                _owner = _plan_tag(plan, i)
+            elif group == "scenario":
+                _raw = _plan_scenario(plan)
+                _pid = _fin_path_id("scenario", _raw)
+                _owner = (f"scenario "
+                          f"{fin_headline.short_repr(_plan_scenario(plan))}")
+            else:
+                continue
+            if _pid is None:
+                # No canonical identity. TWO causes, and only ONE of them needs
+                # a message here: a NON-STRING identity value already has its
+                # own specific error ("id must be a string"), and repeating it
+                # in different words would tell the author less, not more. A
+                # STRING that cannot be encoded has no other reporter, so it is
+                # named here — the runtime cannot form an id for it either, the
+                # path would silently vanish from the sheet and the handoff, and
+                # a preference on it could never be cleared.
+                # A BLANK identity is reported by the required-id rule, and a
+                # NON-STRING by the must-be-a-string rule. Only a non-empty
+                # string that fails to ENCODE has no other reporter, so only
+                # that case is named here — otherwise an empty id would be
+                # described to the author as an unpaired surrogate, which it is
+                # not.
+                if isinstance(_raw, str) and _raw != "":
+                    r.add_error(
+                        f"{_owner}: the value identifying this Payment Choice "
+                        f"path contains an unpaired surrogate and cannot be "
+                        f"encoded, so no canonical path id exists for it - the "
+                        f"runtime would drop the path entirely. Fix the source "
+                        f"text.")
+                continue
+            _path_owners.setdefault(_pid, []).append(_owner)
+        for _pid, owners in sorted(_path_owners.items()):
+            if len(owners) > 1:
+                r.add_error(
+                    f"financing: {len(owners)} Payment Choice paths derive the same "
+                    f"canonical id {fin_headline.short_repr(_pid)} ({', '.join(owners)}) — one "
+                    f"preference and one explored entry would stand for both, so a "
+                    f"customer's choice would land on a path they did not pick")
     return r
 
 
@@ -3173,6 +3606,82 @@ def _self_test() -> int:
     check("require_gas_url promotes gasUrl to error",
           any("gasUrl" in e for e in r.errors))
 
+    # Trust gate: preview-only privacy wording is rejected under a LIVE gasUrl
+    # (_good_config's gasUrl is live), accepted under a blank one, and live-mode
+    # wording passes either way. Both language blocks and every prose key.
+    c = _good_config(); c["text"] = {"emailPrivacy": "Preview mode: nothing is sent from this tablet."}
+    r = validate_store_config(c)
+    check("preview-mode privacy wording under a live gasUrl -> error",
+          not r.ok and any("preview-mode wording" in e and "text.emailPrivacy" in e for e in r.errors))
+    c = _good_config(); c["text_es"] = {"privacyBody": "Tus respuestas permanecen en esta tableta."}
+    r = validate_store_config(c)
+    check("preview-mode wording in the ES block under a live gasUrl -> error",
+          not r.ok and any("text_es.privacyBody" in e for e in r.errors))
+    for key in PRIVACY_PROSE_KEYS:
+        c = _good_config(); c["text"] = {key: "Nothing leaves this tablet."}
+        check(f"preview-mode wording in text.{key} under a live gasUrl -> error",
+              any(f"text.{key}" in e for e in validate_store_config(c).errors))
+    c = _good_config(); c["gasUrl"] = ""
+    c["text"] = {"emailPrivacy": "Preview mode: nothing is sent from this tablet."}
+    r = validate_store_config(c)
+    check("the same preview-mode wording under a BLANK gasUrl -> accepted (it is true there)",
+          r.ok)
+    c = _good_config(); c["text"] = {"emailPrivacy": "We'll only use your email to send your results."}
+    c["text_es"] = {"emailPrivacy": "Solo usaremos tu correo para enviarte tus resultados."}
+    check("live-mode privacy wording under a live gasUrl -> accepted",
+          validate_store_config(c).ok)
+    c = _good_config(); c["text"] = {"heritage": "nothing is sent"}
+    check("the rule reads only privacy prose keys (other text keys are not privacy statements)",
+          validate_store_config(c).ok)
+    # The gate keys on the RUNTIME's notion of live (any non-blank gasUrl), and
+    # a non-blank placeholder is itself an error: the kiosk would speak
+    # live-mode copy and POST to the sentinel.
+    for sentinel in ("TODO", "PLACEHOLDER", "https://example.com/exec", "todo"):
+        c = _good_config(); c["gasUrl"] = sentinel
+        c["text"] = {"privacyBody": "Your answers stay on this tablet."}
+        r = validate_store_config(c)
+        check(f"non-blank placeholder gasUrl {sentinel!r} -> error, and preview wording under it -> error",
+              not r.ok and any("non-blank placeholder" in e for e in r.errors)
+              and any("preview-mode wording" in e for e in r.errors))
+    c = _good_config(); c["gasUrl"] = "TODO"
+    check("a non-blank placeholder gasUrl is an error even with nothing else wrong",
+          any("non-blank placeholder" in e for e in validate_store_config(c).errors))
+    c = _good_config(); c["gasUrl"] = "   "
+    check("a whitespace-only gasUrl is blank (preview), not a placeholder error",
+          validate_store_config(c).ok)
+    # The proposed preview sentences from the investigation and the audits are
+    # all caught; live-appropriate wording is not.
+    for phrase in ("Your answers aren't saved or sent anywhere.",
+                   "This kiosk does not send or store your answers.",
+                   "We don't store your answers.",
+                   "Your answers are not stored or transmitted.",
+                   "No email is sent in this preview.",
+                   "Tus respuestas no se guardan ni se envían a ningún lado."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}
+        check(f"proposed preview sentence is caught under a live gasUrl: {phrase[:40]!r}",
+              any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    c = _good_config(); c["text"] = {"privacyBody": "DreamFinder does not send your information to lenders. "
+                                                    "Your answers are never sent to lenders."}
+    check("live-appropriate wording about lenders is not mis-rejected",
+          validate_store_config(c).ok)
+    c = _good_config(); c["text"] = {"privacyBody": "Your answers are not sent to lenders.",
+                                     "emailPrivacy": "We use your email to send your results."}
+    check("'are not sent to lenders' (live-appropriate) is not mis-rejected, and the 'sent' family needs 'anywhere'",
+          validate_store_config(c).ok)
+    c = _good_config(); c["text"] = {"privacyBody": "Your answers are not sent anywhere."}
+    check("'are not sent anywhere' under a live gasUrl -> error",
+          any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    # Config-or-nothing consequence: a text block that leaves the two prose
+    # keys blank is warned (the surfaces render nothing), never errored.
+    c = _good_config(); c["text"] = {"heritage": "x"}
+    r = validate_store_config(c)
+    check("blank text.emailPrivacy / text.privacyBody -> two warnings naming the surfaces, no error",
+          r.ok and sum(1 for w in r.warnings if "renders nothing" in w) == 2
+          and any("emailPrivacy" in w for w in r.warnings) and any("privacyBody" in w for w in r.warnings))
+    c = _good_config()
+    check("a config with no text block at all is not warned (nothing was authored)",
+          not any("renders nothing" in w for w in validate_store_config(c).warnings))
+
     # warnings_as_errors promotes allowedHosts-missing-Pages-host warning to blocking
     c = _good_config(); c["allowedHosts"] = ["someoneelse.github.io"]
     r = validate_store_config(c)
@@ -3697,7 +4206,16 @@ def _self_test() -> int:
         # every customer-reachable URL) whenever financing is enabled, so the
         # baseline fixture carries it exactly as a shipped config must.
         "allowedSourceHosts": ["lacks.com", "www.lacks.com"],
-        "copy": {"eyebrow": {"en": "E", "es": "E"}, "headline": {"en": "H", "es": "H"}},
+        # The baseline fixture declares experience='payment-choice', so it
+        # carries the full D4 copy contract — every required key as a
+        # non-blank bilingual object. Short placeholders on purpose: the
+        # SHAPE is what this fixture pins, and the real wording is pinned
+        # against the shipped config by tests/financing_totality_check.py and
+        # tests/financing_copy_policy_check.mjs.
+        "copy": dict(
+            {"eyebrow": {"en": "E", "es": "E"}, "headline": {"en": "H", "es": "H"}},
+            **{k: {"en": k, "es": k} for k in PAYMENT_CHOICE_REQUIRED_COPY}
+        ),
         "plans": [{
             "id": "syn-9-99-72", "kind": "open-end-promotional-credit",
             "provider": "Synchrony",
@@ -3744,7 +4262,13 @@ def _self_test() -> int:
           any("disclosure" in e for e in
               validate_financing(_fc(fes), allowed_source_hosts=_FHOSTS).errors))
 
-    fmail = _fmut(); fmail["copy"]["emailBody"] = {"en": "B", "es": "B"}
+    # COPY-15 is legacy guidance for a financing block that is NOT the D4
+    # Payment Choice experience. Under payment-choice, emailBodyAvailable is
+    # REQUIRED and emailBody is RETIRED, so neither half of the warning can
+    # arise there — the fixture therefore drops `experience` for these two.
+    fmail = _fmut(); del fmail["experience"]
+    fmail["copy"]["emailBody"] = {"en": "B", "es": "B"}
+    del fmail["copy"]["emailBodyAvailable"]
     check("financing emailBody without emailBodyAvailable -> warning (COPY-15)",
           any("emailBodyAvailable" in w for w in
               validate_financing(_fc(fmail), allowed_source_hosts=_FHOSTS).warnings))
@@ -3752,6 +4276,263 @@ def _self_test() -> int:
     check("financing emailBody with emailBodyAvailable -> no warning",
           not any("emailBodyAvailable" in w for w in
               validate_financing(_fc(fmail), allowed_source_hosts=_FHOSTS).warnings))
+
+    # ---- the D4 Payment Choice copy contract --------------------------------
+    check("D4: the baseline payment-choice fixture is valid as shipped",
+          validate_financing(_fc(_fmut()), allowed_source_hosts=_FHOSTS).ok)
+    for _rq in PAYMENT_CHOICE_REQUIRED_COPY:
+        _miss = _fmut(); del _miss["copy"][_rq]
+        check(f"D4: missing financing.copy.{_rq} -> error under payment-choice",
+              any(f"copy.{_rq}" in e and "required" in e for e in
+                  validate_financing(_fc(_miss), allowed_source_hosts=_FHOSTS).errors))
+        _half = _fmut(); _half["copy"][_rq] = {"en": "X", "es": "   "}
+        check(f"D4: blank ES on financing.copy.{_rq} -> error (half-translated control)",
+              any(f"copy.{_rq}" in e for e in
+                  validate_financing(_fc(_half), allowed_source_hosts=_FHOSTS).errors))
+        _str = _fmut(); _str["copy"][_rq] = "single-language"
+        check(f"D4: a plain string for financing.copy.{_rq} -> error (bilingual required)",
+              any(f"copy.{_rq}" in e for e in
+                  validate_financing(_fc(_str), allowed_source_hosts=_FHOSTS).errors))
+        # ...and the SAME key is required when `experience` is ABSENT, because
+        # the runtime does not read `experience` at all. This assertion used to
+        # say the opposite ("not required without experience") and that is the
+        # defect it now pins: an enabled config predating the field renders
+        # every Payment Choice control regardless, reads this key by name, and
+        # FC() returns '' for a key that is not there — so the validator was
+        # passing configurations that ship a BLANK control to a customer.
+        _noexp = _fmut(); del _noexp["experience"]; del _noexp["copy"][_rq]
+        check(f"D4: financing.copy.{_rq} is required for ENABLED financing even "
+              f"without `experience` (runtime parity)",
+              any(f"copy.{_rq}" in e and "required" in e for e in
+                  validate_financing(_fc(_noexp), allowed_source_hosts=_FHOSTS).errors))
+    for _rt in sorted(PAYMENT_CHOICE_RETIRED_COPY):
+        _res = _fmut(); _res["copy"][_rt] = {"en": "back", "es": "back"}
+        check(f"D4: retired financing.copy.{_rt} -> error under payment-choice",
+              any(f"copy.{_rt}" in e and "retired" in e for e in
+                  validate_financing(_fc(_res), allowed_source_hosts=_FHOSTS).errors))
+        # RETIRED copy is deliberately NOT widened the way required copy was.
+        # The two are asymmetric because the runtime is asymmetric: a required
+        # key is read by name and rendered, so its absence is a blank control a
+        # customer sees; a retired key is read by nothing, so its presence is
+        # inert. An agenda-era config predating `experience` legitimately still
+        # carries `agendaMark` and friends, and erroring on them would break
+        # exactly the backward compatibility `experience` was left optional to
+        # preserve — for zero customer benefit. Retirement stays scoped to an
+        # EXPLICIT payment-choice declaration.
+        _res2 = _fmut(); del _res2["experience"]
+        _res2["copy"][_rt] = {"en": "back", "es": "back"}
+        check(f"D4: retired financing.copy.{_rt} is tolerated without the experience",
+              not any(f"copy.{_rt}" in e and "retired" in e for e in
+                      validate_financing(_fc(_res2), allowed_source_hosts=_FHOSTS).errors))
+    check("D4: required and retired copy sets are disjoint",
+          not (set(PAYMENT_CHOICE_REQUIRED_COPY) & set(PAYMENT_CHOICE_RETIRED_COPY)))
+
+    # ---- runtime parity: the three states, as whole-config verdicts ---------
+    # Stated once at config level rather than per key, so a future change that
+    # widens or narrows the gate has to move all three at the same time.
+    #
+    # The rule being pinned: what the RUNTIME renders decides what the
+    # validator requires. `financing.experience` selects nothing at runtime —
+    # index.html never reads it — so it cannot be what decides whether the
+    # copy those controls render is required.
+    _rp_ok = _fmut(); del _rp_ok["experience"]
+    check("D4 parity: enabled + NO experience + complete required copy -> valid",
+          validate_financing(_fc(_rp_ok), allowed_source_hosts=_FHOSTS).ok)
+
+    _rp_gap = _fmut(); del _rp_gap["experience"]; del _rp_gap["copy"]["reviewOption"]
+    check("D4 parity: enabled + NO experience + a missing required key -> named error",
+          any("copy.reviewOption" in e and "required" in e for e in
+              validate_financing(_fc(_rp_gap), allowed_source_hosts=_FHOSTS).errors))
+
+    _rp_off = _fmut(); del _rp_off["experience"]; _rp_off["enabled"] = False
+    for _k in PAYMENT_CHOICE_REQUIRED_COPY:
+        _rp_off["copy"].pop(_k, None)
+    check("D4 parity: DISABLED + NO experience -> acquires NO required-copy obligation",
+          not any(f"copy.{_k}" in e
+                  for _k in PAYMENT_CHOICE_REQUIRED_COPY
+                  for e in validate_financing(
+                      _fc(_rp_off), allowed_source_hosts=_FHOSTS).errors))
+
+    _rp_off2 = _fmut(); _rp_off2["enabled"] = False
+    for _k in PAYMENT_CHOICE_REQUIRED_COPY:
+        _rp_off2["copy"].pop(_k, None)
+    check("D4 parity: DISABLED + explicit payment-choice -> still no copy obligation",
+          not any(f"copy.{_k}" in e
+                  for _k in PAYMENT_CHOICE_REQUIRED_COPY
+                  for e in validate_financing(
+                      _fc(_rp_off2), allowed_source_hosts=_FHOSTS).errors))
+
+    # ---- experience + esReviewStatus ---------------------------------------
+    _xp = _fmut(); _xp["experience"] = "sleep-plan"
+    check("financing.experience outside the enum -> error",
+          any("experience" in e for e in
+              validate_financing(_fc(_xp), allowed_source_hosts=_FHOSTS).errors))
+    _xp2 = _fmut(); _xp2["experience"] = ["payment-choice"]
+    check("financing.experience of the wrong TYPE -> error (no hashing crash)",
+          any("experience" in e for e in
+              validate_financing(_fc(_xp2), allowed_source_hosts=_FHOSTS).errors))
+    _xp3 = _fmut(); del _xp3["experience"]
+    check("financing.experience absent -> no experience error (never required)",
+          not any("experience" in e for e in
+                  validate_financing(_fc(_xp3), allowed_source_hosts=_FHOSTS).errors))
+    for _ok_status in sorted(FINANCING_ES_REVIEW_STATUSES):
+        _rs = _fmut(); _rs["esReviewStatus"] = _ok_status
+        check(f"financing.esReviewStatus '{_ok_status}' validates (shipped state stays legal)",
+              not any("esReviewStatus" in e for e in
+                      validate_financing(_fc(_rs), allowed_source_hosts=_FHOSTS).errors))
+    _rs2 = _fmut(); _rs2["esReviewStatus"] = "approved"
+    check("financing.esReviewStatus outside the enum -> error",
+          any("esReviewStatus" in e for e in
+              validate_financing(_fc(_rs2), allowed_source_hosts=_FHOSTS).errors))
+    _rs3 = _fmut(); _rs3["esReviewStatus"] = 7
+    check("financing.esReviewStatus of the wrong TYPE -> error",
+          any("esReviewStatus" in e for e in
+              validate_financing(_fc(_rs3), allowed_source_hosts=_FHOSTS).errors))
+
+    # ---- canonical path identity: injective, and uniqueness is enforced -----
+    check("path encoding keeps [A-Za-z0-9-] and hex-escapes everything else",
+          _fin_path_id("promo", "Synchrony") == "promo-Synchrony"
+          and _fin_path_id("plan", "lacks-in-house") == "plan-lacks-in-house"
+          and _fin_path_id("promo", "Synchrony Bank") == "promo-Synchrony_20Bank"
+          and _fin_path_id("promo", "Café") == "promo-Caf_c3_a9"
+          and _fin_path_id("promo", "a_b") == "promo-a_5fb")
+    # Values that COLLIDED under the retired slugifier must stay distinct.
+    for _a, _b, _why in [
+        ("Synchrony Bank", "Synchrony-Bank", "space vs hyphen"),
+        ("Synchrony", "SYNCHRONY", "case (two distinct provider groups)"),
+        ("Café", "Caf!", "non-ASCII vs punctuation"),
+        ("General", "", "a real provider vs the no-provider fallback"),
+        ("a b", "a-b", "space vs hyphen, again"),
+        ("x_y", "x-y", "underscore vs hyphen"),
+    ]:
+        check(f"path ids stay distinct where the old slugifier collided: {_why}",
+              _fin_path_id("promo", _a) != _fin_path_id("promo", _b))
+    # TOTALITY. The module's own contract says validate_financing "never
+    # raises" and turns malformed author input into a VERDICT. An unpaired
+    # surrogate broke that: .encode("utf-8") raised, so the build produced a
+    # traceback instead of a report -- and could not refuse the one config
+    # shape that also breaks the runtime encoder. Found by adversarial review.
+    _LONE = "a" + chr(0xD800) + "b"
+    check("path encoding REFUSES an unpaired surrogate instead of raising",
+          _fin_path_encode(_LONE) is None and _fin_path_id("plan", _LONE) is None)
+    check("...and a well-formed astral character still encodes",
+          _fin_path_encode("a" + chr(0x1F6CF) + "b") == "a_f0_9f_9b_8fb")
+    # An INSTALLMENT plan, because that is the arm whose path id derives from
+    # the plan id (the promotional arm derives from the provider, covered below).
+    _sur = _fmut()
+    _sur["plans"].append({
+        "id": "lease" + _LONE + "own", "kind": "closed-end-installment",
+        "provider": "Retailer", "verified": True,
+        "verifiedAt": _sur["verifiedAt"],
+        "sourceUrl": "https://www.lacks.com/financing",
+        "headline": {"en": "In-House Credit", "es": "Credito Interno"},
+        "detail": {"en": "D", "es": "D"},
+        "disclosure": {"en": "X", "es": "X"}})
+    _sur_rep = validate_financing(_fc(_sur), allowed_source_hosts=_FHOSTS)
+    check("an unencodable plan id is a named ERROR, not a traceback",
+          any("unpaired surrogate" in e for e in _sur_rep.errors))
+    check("...and the report is still a report (validate_financing stayed total)",
+          isinstance(_sur_rep.errors, list) and not _sur_rep.ok)
+    _sur2 = _fmut(); _sur2["plans"][0]["provider"] = "Prov" + chr(0xDFFF)
+    check("an unencodable PROVIDER is refused the same way",
+          any("unpaired surrogate" in e for e in
+              validate_financing(_fc(_sur2), allowed_source_hosts=_FHOSTS).errors))
+
+    # NON-STRING IDENTITY VALUES. The mirror used to str()-serialise these, so
+    # {"toString": None} became a valid-looking id HERE while the JS runtime
+    # THREW on the same input — the two mirrors disagreed on exactly the value
+    # that broke the browser. Both now refuse it, and the author still gets the
+    # specific "id must be a string" error rather than a second message about
+    # canonical ids.
+    for _label, _bad in (("dict", {"toString": None}), ("list", [1, 2]),
+                         ("int", 7), ("float", 1.5), ("bool", True),
+                         ("dict-with-callable-looking-key", {"a": 1})):
+        check(f"path encoding refuses a non-string identity value ({_label})",
+              _fin_path_encode(_bad) is None and _fin_path_id("plan", _bad) is None)
+    # AN EMPTY ENCODING IS AN IDENTITY ONLY FOR THE PROMOTIONAL GROUP. Refusing
+    # non-strings while still admitting a blank one closed half the hole: a plan
+    # with a null or blank id produced the TRUTHY stub id "plan-", which the
+    # runtime treated as a selectable path.
+    check("None/'' still map to the LEGITIMATE empty encoding at the encoder",
+          _fin_path_encode(None) == "" and _fin_path_encode("") == "")
+    check("a providerless promotional group keeps its identity",
+          _fin_path_id("promo", None) == "promo-"
+          and _fin_path_id("promo", "") == "promo-")
+    for _kind in ("plan", "scenario"):
+        check(f"a blank {_kind} identity is REFUSED, not turned into the stub '{_kind}-'",
+              _fin_path_id(_kind, None) is None and _fin_path_id(_kind, "") is None)
+    check("ordinary non-empty strings are unaffected for every kind",
+          _fin_path_id("plan", "lacks-in-house") == "plan-lacks-in-house"
+          and _fin_path_id("scenario", "mexico-delivery") == "scenario-mexico-delivery"
+          and _fin_path_id("promo", "Synchrony") == "promo-Synchrony")
+    for _blank_label, _blank in (("null", None), ("empty string", "")):
+        _bl = _fmut()
+        _bl["plans"].append({
+            "id": _blank, "kind": "lease-to-own", "provider": "Retailer",
+            "verified": True, "verifiedAt": _bl["verifiedAt"],
+            "sourceUrl": "https://www.lacks.com/financing",
+            "headline": {"en": "B", "es": "B"}, "detail": {"en": "D", "es": "D"}})
+        _bl_rep = validate_financing(_fc(_bl), allowed_source_hosts=_FHOSTS)
+        check(f"a {_blank_label} plan id keeps the required-id error",
+              any("id is required" in e for e in _bl_rep.errors))
+        check(f"...and a {_blank_label} id is NOT mis-reported as an unpaired surrogate",
+              not any("unpaired surrogate" in e for e in _bl_rep.errors))
+        check(f"...and validate_financing stays total for a {_blank_label} id",
+              isinstance(_bl_rep.errors, list) and not _bl_rep.ok)
+    _obj = _fmut()
+    _obj["plans"].append({
+        "id": {"toString": None}, "kind": "lease-to-own", "provider": "Retailer",
+        "verified": True, "verifiedAt": _obj["verifiedAt"],
+        "sourceUrl": "https://www.lacks.com/financing",
+        "headline": {"en": "M", "es": "M"}, "detail": {"en": "D", "es": "D"}})
+    _obj_rep = validate_financing(_fc(_obj), allowed_source_hosts=_FHOSTS)
+    check("a non-string plan id keeps its own specific 'must be a string' error",
+          any("must be a string" in e for e in _obj_rep.errors))
+    check("...and is NOT also reported as an unpaired surrogate (one clear message)",
+          not any("unpaired surrogate" in e for e in _obj_rep.errors))
+    check("...and validate_financing stayed total (a report, not a traceback)",
+          isinstance(_obj_rep.errors, list) and not _obj_rep.ok)
+
+    check("a path id is safe as a DOM/CSS identifier (no colon, no space)",
+          all(re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]*",
+                           _fin_path_id(_k, "Synchrony Bank / Café #1"))
+              for _k in ("promo", "plan", "scenario")))
+    # ---- per-surface placement policy (item 1.5) ---------------------------
+    check("financing.surfaces absent -> valid (every surface enabled)",
+          "surfaces" not in _fmut()
+          and validate_financing(_fc(_fmut()), allowed_source_hosts=_FHOSTS).ok)
+    for _combo in ({"drawer": False}, {"sleepSystem": False},
+                   {"drawer": False, "sleepSystem": False},
+                   {"drawer": True, "sleepSystem": True},
+                   {"drawer": True, "sleepSystem": False}, {}):
+        _sf = _fmut(); _sf["surfaces"] = dict(_combo)
+        check(f"financing.surfaces {sorted(_combo.items())} -> valid",
+              validate_financing(_fc(_sf), allowed_source_hosts=_FHOSTS).ok)
+    for _bad_key in ("sleepsystem", "sleepSystems", "Drawer", "handoff",
+                     "results", "sheet", ""):
+        _sf = _fmut(); _sf["surfaces"] = {"drawer": False, _bad_key: False}
+        check(f"financing.surfaces unknown key {_bad_key!r} -> error",
+              any("addressable surface" in e for e in
+                  validate_financing(_fc(_sf), allowed_source_hosts=_FHOSTS).errors))
+    for _bad_val in ("false", "true", 0, 1, None, [], {}):
+        _sf = _fmut(); _sf["surfaces"] = {"drawer": _bad_val}
+        check(f"financing.surfaces.drawer {_bad_val!r} -> error (JSON boolean only)",
+              any("surfaces.drawer" in e and "JSON boolean" in e for e in
+                  validate_financing(_fc(_sf), allowed_source_hosts=_FHOSTS).errors))
+    for _bad_shape in ("drawer", 7, True, [], 0.5):
+        _sf = _fmut(); _sf["surfaces"] = _bad_shape
+        check(f"financing.surfaces of the wrong TYPE ({_type_name(_bad_shape)}) -> error",
+              any("surfaces must be an object" in e for e in
+                  validate_financing(_fc(_sf), allowed_source_hosts=_FHOSTS).errors))
+    check("the addressable surface set is exactly drawer + sleepSystem",
+          FINANCING_SURFACES == {"drawer", "sleepSystem"})
+
+    _dup = _fmut()
+    _dup["plans"].append(json.loads(json.dumps(_dup["plans"][0])))
+    _dup["plans"][1]["id"] = "syn-second"
+    check("two promotional plans from ONE provider stay one path (no false collision)",
+          not any("canonical id" in e for e in
+                  validate_financing(_fc(_dup), allowed_source_hosts=_FHOSTS).errors))
 
     fdet = _fmut(); del fdet["plans"][0]["detail"]
     check("financing exact terms without adjacent conditions -> error",
@@ -4829,6 +5610,101 @@ def _self_test() -> int:
         check(f"neutral payment orientation validates clean: {_lbl}",
               _fin_with(lambda m, t=_ok: m["copy"].__setitem__(
                   "body", {"en": t, "es": t})).ok)
+    # ---- the D4 collocation, and every near miss ----------------------------
+    # "Payment preference" / "Preferencia de pago" is owner-adopted copy that
+    # must not be reworded, so the reviewed allowlist gained exactly that
+    # collocation. The point of these cases is that it gained NOTHING else:
+    # `preference` does not become a general licence to use a payment noun.
+    for _lbl, _adopted in (
+            ("EN adopted label", "Payment preference"),
+            ("ES adopted label", "Preferencia de pago"),
+            ("EN plural form", "Payment preferences"),
+            ("ES plural form", "Preferencias de pago"),
+            ("EN in a sentence", "Your payment preference is recorded for the specialist."),
+            ("ES in a sentence", "Tu preferencia de pago queda anotada."),
+    ):
+        check(f"D4 adopted payment collocation passes: {_lbl}",
+              not _exact_claim_signals(_adopted))
+        check(f"D4 adopted payment collocation validates clean: {_lbl}",
+              _fin_with(lambda m, t=_adopted: m["copy"].__setitem__(
+                  "body", {"en": t, "es": t})).ok)
+    for _lbl, _near in (
+            ("hyphenated, not the reviewed two-word phrase", "Payment-preference"),
+            ("ES 'del pago', a different collocation", "Preferencia del pago"),
+            ("reversed word order", "Preference of payment"),
+            ("ES reversed word order", "Pago de preferencia"),
+            ("a second, uncollocated payment noun survives",
+             "Payment preference: ask about payment."),
+            ("ES second, uncollocated payment noun",
+             "Preferencia de pago: pregunta por el pago."),
+            ("the noun alone is still bare", "Preference"
+             " and payment"),
+    ):
+        check(f"D4 near miss is still REJECTED: {_lbl}",
+              "payment-noun" in _exact_claim_signals(_near))
+    # A cadence or duration marker is unaffected by the collocation: the
+    # allowlist neutralises the payment NOUN, never the exact-term markers.
+    for _lbl, _bad in (
+            ("ES monthly payment preference", "Preferencia de pago mensual"),
+            ("EN payment preference with a term", "Payment preference: 12 months"),
+    ):
+        _sig = _exact_claim_signals(_bad)
+        check(f"D4: the collocation does not neutralise exact-term markers: {_lbl}",
+              len(_sig) > 0 and "duration-unit" in _sig)
+    check("D4: the allowlist addition is the only one (the guard was not broadened)",
+          _bare_payment_noun("Payment information is available in store.")
+          and _bare_payment_noun("Ask your specialist about payment.")
+          and _bare_payment_noun("Choose a payment program.")
+          and not _bare_payment_noun("Payment preference"))
+    # The adopted D4 strings themselves, verbatim, must all validate clean.
+    for _k, _en, _es in (
+            ("paymentPreferenceLabel", "Payment preference", "Preferencia de pago"),
+            ("optionsExploredLabel", "Options explored", "Opciones exploradas"),
+            ("reviewOption", "Review this option", "Revisar esta opción"),
+            ("hideDetails", "Hide details", "Ocultar detalles"),
+            ("considerOption", "Consider this option", "Considerar esta opción"),
+            ("currentlyConsidering", "Currently considering ✓", "En consideración ✓"),
+            ("clearPreference", "Clear preference", "Quitar preferencia"),
+            ("preferenceNone", "Not selected", "Sin seleccionar"),
+            ("exploreConsequence",
+             "Explore options together. Nothing is submitted and no application is started.",
+             "Exploren las opciones juntos. No se envía nada y no se inicia ninguna solicitud."),
+    ):
+        check(f"D4 adopted copy trips no guarded signal: {_k}",
+              not _exact_claim_signals(_en) and not _exact_claim_signals(_es))
+        check(f"D4 adopted copy validates in place: {_k}",
+              _fin_with(lambda m, k=_k, e=_en, s=_es: m["copy"].__setitem__(
+                  k, {"en": e, "es": s})).ok)
+    # The governed no-submission sentence, character-for-character, IN THE
+    # SHIPPED SOURCE.
+    #
+    # These two were tautologies — `"<literal>" in "<literal>"` with both
+    # operands written here — so they could not fail and said nothing about
+    # what ships. Found in review. They now read the canonical financing source
+    # off disk, which is the only file an author edits, and a precondition
+    # proves the read actually produced the key rather than an empty default.
+    _canon_path = os.path.join(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__))), "incoming", "lacks_financing.json")
+    if os.path.exists(_canon_path):
+        with open(_canon_path, encoding="utf-8") as _fh:
+            _canon_copy = (json.load(_fh).get("financing") or {}).get("copy") or {}
+        _consequence = _canon_copy.get("exploreConsequence") or {}
+        check("D4 precondition: exploreConsequence was actually read from the "
+              "canonical source (so the two pins below are not vacuous)",
+              isinstance(_consequence, dict)
+              and bool(_consequence.get("en")) and bool(_consequence.get("es")))
+        check("D4: the shipped EN no-submission sentence is preserved verbatim",
+              "Nothing is submitted and no application is started."
+              in _consequence.get("en", ""))
+        check("D4: the shipped ES no-submission sentence is preserved verbatim",
+              "No se envía nada y no se inicia ninguna solicitud."
+              in _consequence.get("es", ""))
+        check("D4: the shipped payment-preference label is exact, both languages",
+              (_canon_copy.get("paymentPreferenceLabel") or {}).get("en")
+              == "Payment preference"
+              and (_canon_copy.get("paymentPreferenceLabel") or {}).get("es")
+              == "Preferencia de pago")
+
     # HONESTY PINS (behavioural). These document the detector's real posture so
     # a future edit cannot quietly restore a description that contradicts it.
     check("posture: a BARE duration unit is rejected with no numeral attached",

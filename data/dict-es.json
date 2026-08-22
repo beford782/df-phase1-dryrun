@@ -16,17 +16,19 @@
   "safety.restart_keep": "Seguir en esta sesión",
   "safety.restart_confirm": "Empezar con otro cliente",
   "safety.timeout_title": "¿Sigues comparando?",
-  "safety.timeout_body": "Pausamos tu sesión para proteger tu privacidad.",
+  "safety.timeout_body": "Sesión en pausa. Sigue en esta sesión donde la dejaste o empieza con otro cliente para borrarla.",
   "safety.timeout_continue": "Seguir en esta sesión",
   "safety.timeout_confirm": "Empezar con otro cliente",
   "safety.timeout_remaining": "Quedan {seconds} segundos",
   "safety.timeout_final_warning": "Esta sesión se borrará en unos {seconds} segundos.",
+  "privacy.data_use_preview": "Durante esta sesión en la tienda, tus respuestas permanecen en esta tableta y se usan para crear tus resultados y el resumen para tu especialista. Reiniciar las borra.",
+  "privacy.data_use_live": "Tus respuestas se usan en esta tableta para crear tus resultados y el resumen para tu especialista. Solo se envían si eliges recibir tu Resumen de Sueño por correo. Reiniciar las borra.",
 
   "footer.powered": "Desarrollado por <strong>DreamFinder</strong>",
 
   "review.category": "Casi Listo",
   "review.title": "Revisión rápida",
-  "review.help": "Asegúrate de que todo esté bien, luego crearemos tu combinación.",
+  "review.help": "Estas respuestas crean tus resultados y el resumen que tu especialista revisará contigo.",
   "review.looks_good": "Se Ve Bien →",
   "nav.back": "← Atrás",
 

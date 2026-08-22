@@ -1,7 +1,7 @@
 # DreamFinder — Lacks Furniture
 
 Personalized mattress finder kiosk for Lacks Furniture showrooms (South Texas / Rio Grande Valley, EN+ES). A single-page
-tablet web app: customers take a 9–12 question sleep quiz, get personalized
+tablet web app: customers take a 9–10 question sleep quiz, get personalized
 mattress recommendations across Gold/Silver/Bronze tiers, browse accessories,
 and receive their results plus a discount code by email. Salespeople get a
 handoff screen showing the customer's saved picks.

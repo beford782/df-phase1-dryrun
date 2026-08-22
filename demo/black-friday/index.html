@@ -298,6 +298,17 @@
       color: var(--landing-muted, var(--color-text-subtle));
     }
 
+    /* Data-use sentence: supporting copy at body size, never smaller than the
+       help lines it sits beside; the same muted ink the sub-copy uses. */
+    .landing-data-use {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--landing-muted, var(--color-text-muted));
+      max-width: 760px;
+      margin: 10px 0 18px;
+    }
+
     .landing-outcome {
       border-top: 1px solid var(--landing-rule, var(--color-border));
       border-bottom: 1px solid var(--landing-rule, var(--color-border));
@@ -1074,14 +1085,34 @@
       margin-bottom: 28px;
     }
 
+    /* The PAINTED line stays hairline; the INTERACTION band is 44 CSS px.
+       Vertical padding grows the border box (which is what hit-testing uses)
+       while background-clip keeps the paint inside the 0.5px content box, so
+       the band is invisible. The negative margins absorb the extra 44px so
+       the slider occupies exactly the vertical space it always did
+       (-22 + 44.5 + -8 = 14.5px, the old 0.5px line + 14px gap). The 20px
+       painted thumb is untouched. `outline: none` is deliberately NOT set:
+       the control joins the shared :focus-visible ring below. */
     .noct-slider-track {
       -webkit-appearance: none;
       appearance: none;
+      /* content-box is load-bearing, not tidiness: the global reset makes
+         every element border-box, which would make `height` the BORDER box
+         and let the 22px padding collapse the content box to 0 — clipping the
+         painted line out of existence while the band still measured 44px. */
+      box-sizing: content-box;
       width: 100%;
       height: 0.5px;
+      padding: 22px 0;
       background: var(--color-border);
-      outline: none;
-      margin: 0 0 14px;
+      background-clip: content-box;
+      margin: -22px 0 -8px;
+      /* Required on every interactive element (CLAUDE.md). It matters more
+         here than on a button: the band above is a 44px transparent target
+         inside a page that scrolls, so the control must not also carry the
+         double-tap delay. `manipulation` still permits panning and pinch
+         zoom, so a vertical drag begun in the band can still scroll. */
+      touch-action: manipulation;
     }
 
     .noct-slider-track::-webkit-slider-thumb {
@@ -1124,6 +1155,7 @@
       gap: 16px;
     }
 
+    /* Single-selector rule: the quiz suite greps this body for the 44px floor. */
     .noct-quiz-back {
       background: transparent;
       border: none;
@@ -1133,10 +1165,17 @@
       letter-spacing: 0.1em;
       cursor: pointer;
       touch-action: manipulation;
-      padding: 8px 4px;
+      padding: 8px 10px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
     }
 
-    .noct-quiz-back:hover { color: var(--color-text); }
+    /* Hover decoration is gated so an iPad tap cannot leave a control stuck
+       in its hover skin after the finger lifts. */
+    @media (hover: hover) {
+      .noct-quiz-back:hover { color: var(--color-text); }
+    }
 
     .noct-quiz-next {
       background: transparent;
@@ -1152,9 +1191,11 @@
       transition: background 0.15s ease, color 0.15s ease;
     }
 
-    .noct-quiz-next:hover:not(:disabled) {
-      background: var(--color-accent);
-      color: var(--color-bg);
+    @media (hover: hover) {
+      .noct-quiz-next:hover:not(:disabled) {
+        background: var(--color-accent);
+        color: var(--color-bg);
+      }
     }
 
     .noct-quiz-next:disabled {
@@ -1204,6 +1245,9 @@
       color: var(--color-text-muted);
     }
 
+    /* Single-selector rule: the quiz suite greps this body for the 44px floor.
+       The row's own height is set by the category/question/answer stack
+       (~60px), so the taller control changes no Review layout. */
     .noct-review-edit {
       background: transparent;
       border: 0.5px solid var(--color-border);
@@ -1213,15 +1257,20 @@
       letter-spacing: 0.25em;
       text-transform: uppercase;
       padding: 10px 16px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
       border-radius: var(--radius);
       cursor: pointer;
       touch-action: manipulation;
       transition: border-color 0.15s ease, color 0.15s ease;
     }
 
-    .noct-review-edit:hover {
-      border-color: var(--color-accent);
-      color: var(--color-accent);
+    @media (hover: hover) {
+      .noct-review-edit:hover {
+        border-color: var(--color-accent);
+        color: var(--color-accent);
+      }
     }
 
     /* ===== WARM CONSULTATION: QUESTIONS + REVIEW =====
@@ -1334,17 +1383,31 @@
       max-width: 560px;
     }
 
+    /* Slice 3: a refined consultation form, not an illustrated card quiz.
+       Flat editorial answer rows — no pictogram, badge, shadow or gradient.
+       The 6px left rail is RESERVED transparent at rest so that selecting an
+       option paints it without moving a single pixel of text (same technique
+       as the tier tabs' transparent forced-colors border). */
     body:has(#questionScreen.active) .noct-quiz-option {
       min-height: 88px;
-      padding: 20px 22px;
+      padding: 20px 22px 20px 17px;
       background: rgba(255, 255, 255, 0.24);
       border: 1px solid var(--consultation-rule);
+      border-left: 6px solid transparent;
       color: var(--consultation-ink);
     }
 
-    body:has(#questionScreen.active) .noct-quiz-option:hover {
-      border-color: var(--consultation-brass);
-      background: rgba(255, 255, 255, 0.42);
+    @media (hover: hover) {
+      body:has(#questionScreen.active) .noct-quiz-option:hover {
+        border-color: var(--consultation-brass);
+        /* The rail belongs to the SELECTED state alone. `border-color` above
+           would paint the reserved 6px left edge too, and a hovered option
+           would read as chosen — so the rail is held transparent here. The
+           .selected rule below is equally specific and comes later, so a
+           hovered SELECTED option still keeps its ink rail. */
+        border-left-color: transparent;
+        background: rgba(255, 255, 255, 0.42);
+      }
     }
 
     body:has(#questionScreen.active) .noct-quiz-option .opt-label {
@@ -1353,21 +1416,33 @@
 
     body:has(#questionScreen.active) .noct-quiz-option .opt-sub {
       color: var(--consultation-muted);
+      font-size: 15px;
+      line-height: 1.45;
     }
 
+    /* Selected state, owner-ruled: a restrained warm tint PLUS geometry — the
+       6px rail lights up and the remaining boundary doubles to 2px. The tonal
+       shift alone never carries the state, so a customer who cannot separate
+       these two warm tones still sees a bar appear and the frame thicken.
+       Padding compensates the extra 1px on the three non-rail sides, so the
+       label and sublabel do not move at all. #F2E9DB is the brass mixed 14%
+       into the paper tone, written literally so tests/contrast_check.mjs can
+       measure it directly instead of re-deriving a color-mix(). */
     body:has(#questionScreen.active) .noct-quiz-option.selected {
-      background: var(--consultation-red);
+      background: #F2E9DB;
+      border-width: 2px;
+      border-left-width: 6px;
       border-color: var(--accent-ink);
-      color: var(--on-store-primary);
+      color: var(--consultation-ink);
+      padding: 19px 21px 19px 17px;
     }
 
     body:has(#questionScreen.active) .noct-quiz-option.selected .opt-sub {
-      /* Descendant of a store-primary-filled control, so it needs the computed
-         on-primary foreground too — a near-white here measured ~1.5:1. The
-         0.82 opacity is retained and the COMPOSITED result is asserted in
-         tests/contrast_check.mjs, not assumed. */
-      color: var(--on-store-primary);
-      opacity: 0.82;
+      /* The selected surface is now a light warm tint, not a store-primary
+         fill, so the sublabel keeps the ordinary muted ink at full opacity.
+         The COMPOSITED result is asserted in tests/contrast_check.mjs. */
+      color: var(--consultation-muted);
+      opacity: 1;
     }
 
     body:has(#questionScreen.active) .noct-slider-value {
@@ -1381,7 +1456,9 @@
 
     body:has(#questionScreen.active) .noct-slider-track {
       height: 2px;
-      background: var(--consultation-rule);
+      /* background-COLOR, not the shorthand: the shorthand would reset the
+         base rule's background-clip and paint the whole 44px band. */
+      background-color: var(--consultation-rule);
     }
 
     body:has(#questionScreen.active) .noct-slider-track::-webkit-slider-thumb {
@@ -1405,9 +1482,11 @@
       color: var(--consultation-muted);
     }
 
-    body:has(#questionScreen.active) .noct-quiz-back:hover,
-    body:has(#reviewScreen.active) .noct-quiz-back:hover {
-      color: var(--accent-ink);
+    @media (hover: hover) {
+      body:has(#questionScreen.active) .noct-quiz-back:hover,
+      body:has(#reviewScreen.active) .noct-quiz-back:hover {
+        color: var(--accent-ink);
+      }
     }
 
     body:has(#questionScreen.active) .noct-quiz-next,
@@ -1421,10 +1500,12 @@
       padding: 15px 28px;
     }
 
-    body:has(#questionScreen.active) .noct-quiz-next:hover:not(:disabled),
-    body:has(#reviewScreen.active) .noct-quiz-next:hover:not(:disabled) {
-      background: color-mix(in srgb, var(--consultation-red) 88%, #000);
-      color: var(--on-store-primary);
+    @media (hover: hover) {
+      body:has(#questionScreen.active) .noct-quiz-next:hover:not(:disabled),
+      body:has(#reviewScreen.active) .noct-quiz-next:hover:not(:disabled) {
+        background: color-mix(in srgb, var(--consultation-red) 88%, #000);
+        color: var(--on-store-primary);
+      }
     }
 
     body:has(#questionScreen.active) .noct-quiz-next:disabled {
@@ -1477,9 +1558,11 @@
       padding: 9px 12px;
     }
 
-    body:has(#reviewScreen.active) .noct-review-edit:hover {
-      border-color: var(--accent-ink);
-      color: var(--accent-ink);
+    @media (hover: hover) {
+      body:has(#reviewScreen.active) .noct-review-edit:hover {
+        border-color: var(--accent-ink);
+        color: var(--accent-ink);
+      }
     }
 
     @media (max-width: 700px) {
@@ -1500,7 +1583,11 @@
 
       body:has(#questionScreen.active) .noct-quiz-option {
         min-height: 76px;
-        padding: 17px 18px;
+        padding: 17px 18px 17px 13px;
+      }
+
+      body:has(#questionScreen.active) .noct-quiz-option.selected {
+        padding: 16px 17px 16px 13px;
       }
 
       body:has(#reviewScreen.active) .noct-review-list {
@@ -2093,12 +2180,19 @@
       font-weight: 500;
     }
 
+    /* The one honest statement about match strength ("Match strength is
+       relative within each tier" / "La afinidad es relativa dentro de cada
+       nivel", D3) shipped at 11px — below body size, unreadable at arm's
+       length on the mounted tablet. Raised to body size by the trust gate;
+       the wording, the dictionary key, the markup and the muted ink token
+       are unchanged (results_presentation_check pins them). */
     .noct-tier-descriptor .tier-relativity {
       display: block;
-      margin-top: 6px;
-      font-size: 11px;
+      margin-top: 8px;
+      font-size: 15px;
+      line-height: 1.45;
       color: var(--color-text-muted);
-      letter-spacing: 0.04em;
+      letter-spacing: 0.01em;
     }
 
     .noct-toppick {
@@ -9406,7 +9500,13 @@
     .noct-profile-name:focus-visible,
     .noct-profile-priority-toggle:focus-visible,
     .noct-profile-cta:focus-visible,
-    .noct-profile-secondary:focus-visible {
+    .noct-profile-secondary:focus-visible,
+    .noct-quiz-headline:focus-visible,
+    .noct-quiz-option:focus-visible,
+    .noct-quiz-back:focus-visible,
+    .noct-quiz-next:focus-visible,
+    .noct-review-edit:focus-visible,
+    .noct-slider-track:focus-visible {
       outline: 3px solid var(--focus-ring-outer);
       outline-offset: 2px;
       box-shadow: 0 0 0 5px var(--focus-ring-inner);
@@ -9421,7 +9521,13 @@
       .noct-profile-name:focus-visible,
       .noct-profile-priority-toggle:focus-visible,
       .noct-profile-cta:focus-visible,
-      .noct-profile-secondary:focus-visible {
+      .noct-profile-secondary:focus-visible,
+      .noct-quiz-headline:focus-visible,
+      .noct-quiz-option:focus-visible,
+      .noct-quiz-back:focus-visible,
+      .noct-quiz-next:focus-visible,
+      .noct-review-edit:focus-visible,
+      .noct-slider-track:focus-visible {
         outline-color: CanvasText;
         box-shadow: none;
       }
@@ -9445,6 +9551,118 @@
        forced-colors block as the focus one. */
     @media (forced-colors: active) {
       .noct-tier-tab.active { border: 2px solid CanvasText; }
+    }
+    /* Quiz option state under forced colors.
+
+       Two things the previous version got wrong, both found in review:
+
+       1. CASCADE. It selected `.noct-quiz-option[aria-pressed="true"]` — (0,2,0)
+          — against the normal selected rule
+          `body:has(#questionScreen.active) .noct-quiz-option.selected` at (1,3,1),
+          which already declares border-width: 2px. Media queries add no
+          specificity, and border-width is not a colour property, so forced
+          colours never touch it: the 3px simply lost the cascade and the rule
+          was inert. These rules re-scope to the quiz screen and add the
+          attribute on top of .selected, giving (1,4,1) — strictly greater than
+          the normal rule, so they win regardless of source order.
+
+       2. TRANSPARENCY. It relied on the resting rail staying `transparent`
+          under forced colours so only the selected rail would paint. Forced
+          colours are not required to preserve a transparent border-color, and
+          if the rail paints on every option the cue vanishes. So the resting
+          option no longer depends on a reserved transparent rail here: it gets
+          a UNIFORM 1px boundary on all four sides, and the selected option a
+          3px frame with a 6px left rail. That difference is pure geometry and
+          survives any colour forcing.
+
+       BOTH rules pin `border-color: CanvasText` explicitly, and they have to be
+       on both: the resting selector is (1,2,1), which loses to the normal
+       selected rule's `border-color: var(--accent-ink)` at (1,3,1), so a colour
+       declared only on the resting rule would never reach a selected option.
+       The selected rule here is (1,4,1) and wins. Pinning the colour is what
+       makes the boundary genuinely uniform — a uniform WIDTH alone still left
+       the left edge carrying the base rule's `solid transparent`, whose
+       visibility is up to the UA, and forced colours does not guarantee it.
+       Same idiom as the tier tab above.
+
+       Padding compensates on every side so neither the text nor the border box
+       moves between states (border + padding per side is 21/23/21/23 in both,
+       matching the normal-state totals exactly).
+
+       Placed after the focus block above — contrast_check anchors the file's
+       FIRST forced-colors block as the focus one. */
+    @media (forced-colors: active) {
+      body:has(#questionScreen.active) .noct-quiz-option {
+        border-width: 1px;
+        border-color: CanvasText;
+        padding: 20px 22px;
+      }
+
+      body:has(#questionScreen.active) .noct-quiz-option.selected[aria-pressed="true"] {
+        border-width: 3px;
+        border-left-width: 6px;
+        border-color: CanvasText;
+        padding: 18px 20px 18px 17px;
+      }
+    }
+    /* Payment Choice control states under forced colors (Slice 4 / D4).
+       Same doctrine as the quiz option rules above, and the same two failure
+       modes avoided:
+
+       1. CASCADE. Each rule here is scoped so its specificity strictly outranks
+          the author rule it has to beat. .fin-btn-ghost / .fin-btn-secondary
+          declare their grey and near-black borders at (0,1,0), and the normal
+          pressed rule .fin-not-now[aria-pressed="true"] declares an author
+          colour at (0,2,0) — so a colour pinned only on the resting selector
+          could never reach a pressed control. The scoped selectors below are
+          (0,2,0) and (0,3,0) respectively and win regardless of source order.
+
+       2. FILL. Forced colors strips background fills, so the considering state
+          cannot be carried by its warm tint. The cue is GEOMETRY — a 2px
+          boundary against the 1px of every resting control — plus, for the
+          marker, the presence of the marker's own words.
+
+       Widths and padding are deliberately NOT restated for the pressed control:
+       the normal rule already pairs 2px with calc() padding compensation, so
+       the text and the border box stay exactly where they are in both states.
+       Only colour is forced here, except on the marker, whose 2px is restated
+       because nothing else in this block guarantees it.
+
+       Placed after the focus block above - contrast_check anchors the file's
+       FIRST forced-colors block as the focus one. */
+    @media (forced-colors: active) {
+      .fin-card .fin-path-review,
+      .fin-card .fin-path-consider,
+      .fin-card .fin-path-clear {
+        border-color: CanvasText;
+      }
+      .fin-card .fin-path-marker {
+        border-width: 2px;
+        border-color: CanvasText;
+      }
+      .fin-handoff__interest .fin-not-now[aria-pressed="false"] {
+        border-width: 1px;
+        border-color: CanvasText;
+      }
+      .fin-handoff__interest .fin-not-now[aria-pressed="true"] {
+        border-width: 2px;
+        border-color: CanvasText;
+      }
+    }
+    /* The narrow breakpoint needs its own forced-colors geometry: the rules
+       above carry the same (1,2,1)/(1,4,1) specificity as their counterparts in
+       the max-width: 700px block far earlier in the file, so without this they
+       would win there by source order and shift the text. Totals here are
+       18/19/18/19, matching the narrow normal state. Colour is inherited from
+       the block above and needs no repeat. Must stay AFTER that block. */
+    @media (forced-colors: active) and (max-width: 700px) {
+      body:has(#questionScreen.active) .noct-quiz-option {
+        padding: 17px 18px;
+      }
+
+      body:has(#questionScreen.active) .noct-quiz-option.selected[aria-pressed="true"] {
+        padding: 15px 16px 15px 13px;
+      }
     }
 
     /* Sheet (modal dialog) */
@@ -9532,16 +9750,44 @@
       font-size: 0.78rem; color: #5E594E; line-height: 1.6; margin: 0;
     }
     .fin-offer__prequal { font-size: 0.82rem; color: #4E483C; margin: 0.7rem 0 0; }
-    .fin-agenda-toggle {
-      min-height: 48px; margin-top: 1rem; padding: 0.7rem 1rem;
-      border: 1px solid #8A6B00; border-radius: 999px;
-      background: transparent; color: #493900; font-weight: 700;
-      font-size: 0.86rem; text-align: left; cursor: pointer;
+    /* ---- Payment Choice path controls (Slice 4 / D4) ----------------------
+       Review/Hide, Consider and Clear all carry .fin-btn, so they inherit the
+       shipped 48px minimum height, touch-action: manipulation and the semantic
+       two-ring :focus-visible indicator (with its forced-colors CanvasText
+       fallback) rather than re-declaring a private interaction floor — which is
+       what the retired .fin-agenda-toggle did, including its own one-off focus
+       ring. */
+    .fin-path-review { margin-top: 0.9rem; }
+    .fin-path-panel { margin: 0.7rem 0 0; }
+    /* Consider and Clear share a WRAPPING row: at 200% zoom, and in Spanish,
+       "Considerar esta opcion" and "Quitar preferencia" do not fit side by side
+       in a card, and a non-wrapping row would push the second control out of
+       the card rather than onto its own line. */
+    .fin-path-actions {
+      display: flex; flex-wrap: wrap; align-items: center;
+      gap: 0.55rem; margin-top: 0.9rem;
     }
-    .fin-agenda-toggle.is-marked {
-      background: #F1E5B5; border-color: #493900;
+    /* The considering marker is a STATEMENT, not a control: no button element,
+       no aria-pressed, no pointer affordance, nothing focusable. Its 2px
+       boundary against the controls' 1px is the cue that survives forced
+       colors; the warm fill alone would not. */
+    .fin-path-marker {
+      display: inline-flex; align-items: center;
+      min-height: 48px;
+      padding: calc(0.7rem - 1px) calc(1.1rem - 1px);
+      border: 2px solid #211E19; border-radius: var(--radius);
+      background: #F2E9DB; color: #211E19;
+      font-family: var(--font-sans); font-size: 0.88rem;
     }
-    .fin-agenda-toggle:focus-visible { outline: 3px solid #1F65A6; outline-offset: 3px; }
+    /* "Not right now" is the model's one reversible two-state control, so it is
+       the one that carries aria-pressed. Pressed adds 1px of border per side and
+       takes 1px of padding back, so the label and the box never move between
+       states. */
+    .fin-not-now[aria-pressed="true"] {
+      border-width: 2px; border-color: #211E19;
+      background: #F2E9DB; color: #211E19;
+      padding: calc(0.7rem - 1px) calc(1.5rem - 1px);
+    }
     .fin-disclosure {
       margin-top: 1.2rem; padding: 0.9rem 1rem;
       background: #F3EDE0; border-left: 3px solid var(--store-primary);
@@ -9579,9 +9825,25 @@
 
     /* Handoff module */
     .fin-handoff { text-align: left; }
-    .fin-agenda-list { margin: 0.75rem 0; padding-left: 1.25rem; }
-    .fin-agenda-list li { margin: 0.35rem 0; }
-    .fin-agenda-consequence { font-size: 0.84rem; color: #5E594E; line-height: 1.5; }
+    /* The D4 handoff rows: a real definition list, one labelled row per
+       dimension. Rows wrap so a long Spanish label and its value stack instead
+       of overflowing at 200% zoom. */
+    .fin-pref-rows { margin: 0.75rem 0 0.9rem; }
+    .fin-pref-row {
+      display: flex; flex-wrap: wrap; gap: 0.2rem 0.85rem; margin: 0 0 0.6rem;
+    }
+    .fin-pref-row__label {
+      font-family: var(--font-sans); font-size: 0.72rem; letter-spacing: 1.4px;
+      text-transform: uppercase; color: #6B6455; min-width: 9.5rem;
+    }
+    .fin-pref-row__value {
+      margin: 0; font-size: 0.95rem; color: #211E19; line-height: 1.45;
+    }
+    .fin-explored-list { margin: 0; padding-left: 1.15rem; }
+    .fin-explored-list li { margin: 0.2rem 0; }
+    .fin-explore-consequence {
+      font-size: 0.84rem; color: #5E594E; line-height: 1.5; margin: 0 0 0.9rem;
+    }
     .fin-handoff__headline {
       font-family: var(--font-serif);
       font-size: 1.45rem; color: #17140F; margin: 0.3rem 0 0.8rem;
@@ -9994,6 +10256,16 @@
         <span class="landing-time-estimate" id="landingTimeEstimate">≈ 4 minutes</span>
       </div>
 
+      <!-- Data-use sentence (trust gate, 2026-08-21). ONE statement of what the
+           app does with the answers, in the variant that is true for this
+           deployment mode: the preview-mode sentence while gasUrl is blank
+           (nothing is sent), the live-mode sentence otherwise. Selected by
+           renderDataUseStatement() from the generic dictionaries; hidden and
+           EMPTY until then, and hidden again if the variant is missing, so no
+           template promise and no other mode's sentence can ever render. Plain
+           paragraph in reading order: not focusable, not live, no landmark. -->
+      <p class="landing-data-use" id="landingDataUse" hidden></p>
+
       <!-- Outcome row. Promotion-neutral default: no program (Savings Pass or
            Payment Choice) may be promised before store-config loads — the
            configured voice.outcomeItems replaces this at render time. -->
@@ -10051,7 +10323,7 @@
     <div class="noct-quiz">
       <div class="noct-quiz-eyebrow" id="reviewEyebrow">Almost there</div>
       <h2 class="noct-quiz-headline" id="reviewHeadline">Quick <span class="accent">review</span></h2>
-      <p class="noct-quiz-help" id="reviewHelp">Make sure everything looks right, then we'll build your match.</p>
+      <p class="noct-quiz-help" id="reviewHelp"></p>
       <div class="noct-review-list" id="reviewList"></div>
       <div class="noct-quiz-nav">
         <button class="noct-quiz-back" onclick="prevQuestion()" ontouchend="event.preventDefault();prevQuestion();" id="reviewBackBtn">&larr; Back</button>
@@ -10120,9 +10392,6 @@
           <button type="button" class="fin-btn fin-btn-primary" id="resultsFinancingExplore"
                   onclick="window.openFinancingSheet('results')"
                   ontouchend="event.preventDefault();window.openFinancingSheet('results');"></button>
-          <button type="button" class="fin-btn fin-btn-secondary" id="resultsFinancingAsk"
-                  onclick="window.requestFinancingFollowup('results')"
-                  ontouchend="event.preventDefault();window.requestFinancingFollowup('results');"></button>
         </div>
       </section>
 
@@ -10212,6 +10481,14 @@
            sheet is visible — live regions inside hidden containers don't
            reliably announce — and only when a card fell back to staleNotice. -->
       <div class="sr-only" id="financingSheetStatus" role="status" aria-live="polite"></div>
+      <!-- SEPARATE region for preference ACTIONS (Consider / Clear). It is
+           deliberately not the freshness region above: the two describe
+           different things and are written by different code paths, so sharing
+           one element would let a Consider announcement erase a stale-terms
+           notice — or be erased by one — purely on timing. Written only by
+           announcePayAction(); cleared by the session wipe and by a language
+           switch. -->
+      <div class="sr-only" id="financingSheetAction" role="status" aria-live="polite" aria-atomic="true"></div>
       <p class="fin-sheet-body" id="financingSheetBody"></p>
       <p class="fin-fit-first" id="financingSheetFitFirst"></p>
       <div class="fin-cards" id="financingSheetCards"></div>
@@ -10225,8 +10502,8 @@
            onclick="window.logFinancingLinkClick('sheet')"></a>
         <span class="fin-external-note" id="financingSheetExternal"></span>
         <button type="button" class="fin-btn fin-btn-secondary" id="financingSheetSpecialist"
-                onclick="window.requestFinancingFollowup('sheet')"
-                ontouchend="event.preventDefault();window.requestFinancingFollowup('sheet');"></button>
+                onclick="window.closeFinancingSheet()"
+                ontouchend="event.preventDefault();window.closeFinancingSheet();"></button>
       </div>
     </div>
   </div>
@@ -10279,9 +10556,6 @@
             <button type="button" class="fin-btn fin-btn-secondary" id="drawerFinancingExplore"
                     onclick="window.openFinancingSheet('drawer')"
                     ontouchend="event.preventDefault();window.openFinancingSheet('drawer');"></button>
-            <button type="button" class="fin-btn fin-btn-ghost" id="drawerFinancingMark"
-                    onclick="window.requestFinancingFollowup('drawer')"
-                    ontouchend="event.preventDefault();window.requestFinancingFollowup('drawer');"></button>
           </div>
         </div>
         <div class="drawer-promotion" id="drawerPromotion">
@@ -10421,16 +10695,18 @@
            is no intervening h2, so h3 skipped a level. Styling is class-based
            (.fin-handoff__headline), so the tag change is visual-neutral. -->
       <h2 class="fin-handoff__headline" id="hf2FinancingHeadline"></h2>
+      <!-- The D4 rows: payment preference, options explored, the exploration
+           consequence line, and the reversible "Not right now" control. Built
+           by renderHandoffFinancing(); emptied by the session wipe. -->
       <div class="fin-handoff__interest" id="hf2FinancingInterest"></div>
       <!-- Module-scoped announcement region for the HANDOFF's own action
-           controls (Not right now / Change). Populated by
-           announceFinInterest(), whose only caller is
-           setFinancingInterestChoice(); cleared by the session wipe and by
-           a language switch. The sheet's agenda toggles deliberately do NOT
-           write here — they are aria-pressed toggles and announce
-           themselves, and a sheet opened from the handoff would otherwise
-           speak through a region behind the modal. Mirrors the financing
-           sheet's own status region pattern (2d79731). -->
+           control ("Not right now" and its undo). Populated by
+           announcePayAction(), whose only caller here is setPaymentNotNow();
+           cleared by the session wipe and by a language switch. The SHEET's
+           Consider/Clear announcements go to #financingSheetAction instead: a
+           sheet opened from the handoff would otherwise speak through a region
+           sitting behind the modal. The disclosure toggles write to neither —
+           they carry aria-expanded and announce themselves. -->
       <div
         class="sr-only"
         id="hf2FinancingStatus"
@@ -10454,12 +10730,9 @@
         </div>
       </div>
       <div class="fin-actions">
-        <button type="button" class="fin-btn fin-btn-secondary" id="hf2FinancingExplore"
+        <button type="button" class="fin-btn fin-btn-primary" id="hf2FinancingExplore"
                 onclick="window.openFinancingSheet('handoff')"
                 ontouchend="event.preventDefault();window.openFinancingSheet('handoff');"></button>
-        <button type="button" class="fin-btn fin-btn-primary" id="hf2FinancingSpecialist"
-                onclick="window.requestFinancingFollowup('handoff')"
-                ontouchend="event.preventDefault();window.requestFinancingFollowup('handoff');"></button>
       </div>
     </section>
 
@@ -10542,8 +10815,7 @@
               <button class="noct-email-send-btn" id="emailSendBtn" onclick="sendResults()" ontouchend="event.preventDefault();sendResults();">Save My Sleep Brief &rarr;</button>
               <div class="email-preview-note" id="emailPreviewNote">Preview mode: live email delivery isn't connected yet.</div>
               <div class="noct-email-privacy" id="emailPrivacy">
-                <span id="emailPrivacyLead" data-store="email-privacy">We'll only use your email to send your results.</span>
-                <span id="emailPrivacyStatic"> Your info is never sold to third parties. Unsubscribe anytime.</span>
+                <span id="emailPrivacyLead" data-store="email-privacy"></span>
                 <a href="#" onclick="event.preventDefault();document.getElementById('privacyOverlay').classList.add('visible');" id="emailPrivacyLink">Privacy &amp; Terms</a>
               </div>
             </div>
@@ -10947,30 +11219,106 @@
       return (f && f.copy && f.copy[key]) ? L(f.copy[key]) : '';
     }
 
-    // Presentation-only discussion agenda — never affects recommendations.
-    // Module state only (no storage), so it cannot leak between customers;
-    // reset by the single authoritative session wipe.
-    var financingAgenda = {};
-    var financingAgendaDismissed = false;
-    // Whether this customer actually opened the Payment Choice sheet. Gates the
-    // email packet's "You explored…" wording (COPY-15): without it the email
-    // asserted exploration for customers who never opened any financing content.
-    var financingExplored = false;
+    // ---- Per-surface financing placement (item 1.5) -------------------------
+    // financing.surfaces disables a DUPLICATE financing placement without
+    // deleting it. This deployment ships drawer:false and sleepSystem:false
+    // because both repeated the same generic orientation the Results module and
+    // the handoff already carry: on the way to a single sheet the customer met
+    // the same paragraph three times, and repetition is what made the financing
+    // read louder than the sleep fit it is supposed to follow.
+    //
+    // DISABLING RATHER THAN DELETING is deliberate, and the reason is specific.
+    // Phase 2 may want a per-product price anchor on the drawer; and the
+    // analytics `placement` enum still carries 'drawer' and 'sleep-system'.
+    // Retiring those enum values here would retire values a live call site still
+    // passes, and NOTHING catches that — the diagnostics contract holds the
+    // logged event set and EVENT_FIELDS to set equality, but it never inspects
+    // enum VALUES, so an unlisted value is dropped at runtime with only an
+    // anonymous count. The markup, the renderers, the call sites, the CSS and
+    // the enum values therefore all stay exactly where they are; only the flag
+    // decides whether they render.
+    //
+    // A MISSING flag means ENABLED. Another retailer's config that predates this
+    // field keeps both surfaces, which is what "config-driven and backward
+    // compatible" has to mean in a white-label template. Only an explicit
+    // `false` turns a surface off.
+    function finSurfaceEnabled(name) {
+      var f = getFinancingConfig();
+      var surfaces = f && f.surfaces;
+      if (!surfaces || typeof surfaces !== 'object') return true;
+      return surfaces[name] !== false;
+    }
+
+    // ===== PAYMENT CHOICE — the D4 state model ===============================
+    //
+    // TWO observable dimensions, and nothing else:
+    //
+    //   payExplored — an ORDERED, de-duplicated list of canonical path ids in
+    //                 first-deliberate-open order. Descriptive history, never
+    //                 intent: opening a path's governed details records it
+    //                 exactly once, nothing else records anything, and nothing
+    //                 ever removes an entry. Opening the sheet itself records
+    //                 NOTHING — arriving at a room is not choosing a door.
+    //   payPref     — exactly one of: null (nothing selected), a canonical path
+    //                 id (the single path currently being considered), or
+    //                 PAY_NOT_NOW (an authoritative, reversible pause).
+    //
+    // payOpen is NOT a third dimension. It is ephemeral disclosure UI state —
+    // which panels are expanded — and is deliberately invisible to the handoff,
+    // the email, the diagnostics and the customer's recorded position. It exists
+    // so a rerender can redraw the panels the customer left open; nothing else
+    // may read it.
+    //
+    // This replaces the salesperson-marked "discussion agenda" (a set of
+    // independently toggled topics). That model could not express the two things
+    // the conversation actually has — what was looked at, and what is being
+    // considered — and its toggles let one path be simultaneously "marked" with
+    // three others, which read as four preferences.
+    //
+    // Module state only (no storage), so it cannot leak between customers; all
+    // three are reset by the single authoritative session wipe. None of them is
+    // read by the scoring engine, the Sleep Brief, the email packet, the GAS
+    // payload or any diagnostic event — sleep fit first, payment choice second.
+    var payExplored = [];
+    var payPref = null;
+    var payOpen = {};
+    var PAY_NOT_NOW = 'not_now';
+
     var _financeReturnFocus = null;
     var _finModuleImpressionLogged = false;
-    // True when the last renderFinancingSheet() swapped any card's exact
-    // terms for the generic staleNotice — drives the sheet's status region.
+    // True when the last renderFinancingSheet() swapped any path's exact
+    // terms for the generic staleNotice — drives the sheet's freshness region.
     var _finSheetStale = false;
-    // Queued agenda announcement work, tracked so a second transition
-    // supersedes the first and the wipe can cancel stale work.
-    var _finInterestAnnounceTimer = null;
+    // Queued preference-action announcement work. ONE slot, deliberately.
+    //
+    // All four announcement strings describe the SAME variable. The sheet's
+    // region carries currentlyConsidering / preferenceCleared and the handoff's
+    // carries preferenceNotNow / preferenceCleared, and every one of them is a
+    // statement about payPref — two VIEWS of one value, split by which control
+    // the customer operated, not two independent facts. So the invariant is:
+    // AT MOST ONE PENDING ANNOUNCEMENT ACROSS ALL REGIONS, AND IT DESCRIBES THE
+    // CURRENT payPref. A queued message goes stale the instant payPref moves
+    // again, wherever the next transition is operated, and cancelling it is the
+    // correct outcome rather than an erasure.
+    //
+    // A per-region slot was tried and reverted: it made a second transition in
+    // another region leave the first message pending, so a screen reader
+    // announced a payment position the customer had already left — and it also
+    // removed the cross-region cancellation that was the only thing fixing the
+    // stale-message case in the first place. Only the ORDERING in
+    // announcePayAction() was ever wrong.
+    var _payAnnounceTimer = null;
 
-    // Email body for the save packet: "You explored…" only when the customer
-    // opened the sheet or marked interest; otherwise the neutral availability
-    // body. Falls back to emailBody for configs without emailBodyAvailable.
+    // Email body for the save packet. D4 ruling: payment state is entirely
+    // excluded from email, so this is the NEUTRAL availability body in EVERY
+    // state. A customer who explored three paths and one who opened nothing
+    // receive identical wording — the email cannot disclose a payment position
+    // to anyone who later reads the inbox. The previous two-state version chose
+    // between an "explored" body and this one, which leaked the fact of
+    // exploration; both the flag that drove it (financingExplored) and the
+    // state-specific copy key (emailBody) are retired.
     function finEmailBody() {
-      var explored = financingExplored || finAgendaSelected().length > 0;
-      return explored ? FC('emailBody') : (FC('emailBodyAvailable') || FC('emailBody'));
+      return FC('emailBodyAvailable');
     }
 
     function finLayoutClass() {
@@ -10980,110 +11328,383 @@
     function finEventBase(placement) {
       var f = getFinancingConfig() || {};
       // Privacy-safe by construction: placement, language and layout only.
-      // Agenda choices, plan identifiers, PII and quiz answers are excluded.
+      // The payment preference, the explored history, path identifiers, PII and
+      // quiz answers are all excluded — and D4 adds no event of its own, so
+      // Consider, Clear and Not-right-now emit nothing at all.
       return { placement: placement, lang: currentLang, layout: finLayoutClass(),
                offerVersion: f.offerVersion || null };
     }
 
-    function finAgendaKey(prefix, value) {
-      var slug = String(value || '').trim().toLowerCase()
-        .replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');
-      return prefix + ':' + slug;
+    // ---- Canonical Payment Choice path identity -------------------------------
+    // A path id is KIND '-' ENCODED, where KIND is one of three fixed tokens
+    // (none of which contains '-') and ENCODED is the identifying config value
+    // with every character outside [A-Za-z0-9-] escaped as '_' followed by its
+    // UTF-8 bytes in lowercase hex. A literal '_' becomes '_5f', so the escape
+    // marker is never ambiguous.
+    //
+    // WHY NOT THE PREVIOUS SLUGIFIER. finAgendaKey() lower-cased the value and
+    // replaced each run of unsupported characters with a single '-'. That is
+    // LOSSY, and it collided on values a real config can hold:
+    //
+    //   "Provider Bank" and "Provider-Bank"   -> both "provider-bank"
+    //   "Provider" and "PROVIDER"              -> both "provider", even though
+    //                                             finPromotionalByProvider keeps
+    //                                             them as two distinct groups
+    //   "Café" and "Caf!"                      -> both "caf"
+    //   a provider literally named "General"   -> the same key as a promotional
+    //                                             group with NO provider, which
+    //                                             fell back to the literal
+    //                                             'general'
+    //
+    // Two distinct payment paths sharing one id means one preference row, one
+    // explored entry and one set of DOM ids for both: the customer's Consider
+    // lands on a path they did not choose, and the salesperson reads the wrong
+    // one off the handoff. That is not a cosmetic id problem.
+    //
+    // The escape below is INJECTIVE — it is decodable, so distinct values always
+    // produce distinct ids — and the result matches [A-Za-z][A-Za-z0-9_-]*. The
+    // old keys embedded a COLON ("promotional:provider"), which getElementById
+    // tolerates but querySelector parses as a pseudo-class, so those ids could
+    // never be used with querySelector or in a CSS selector without escaping.
+    // Returns '' — never throws — for a value that cannot be encoded. The only
+    // such value is a string containing an UNPAIRED SURROGATE (the thing
+    // JSON.parse('"\ud800"') produces), on which encodeURIComponent raises
+    // URIError. That was uncaught, and the throw did not stay local: it escaped
+    // renderHandoffFinancing() after the module was already visible — leaving a
+    // permanently blank Payment Choice block — it escaped openFinancingSheet()
+    // after its own guard but before the sheet was revealed, so the CTA died
+    // silently, and inside switchLanguage() it stopped every renderer queued
+    // after it, leaving the app half-translated. Found by adversarial review.
+    //
+    // Failing CLOSED is what a payment surface owes: an unencodable value
+    // yields no id, finPaymentPaths() drops the path (it filters on a truthy
+    // id), and everything else keeps rendering. The path is not selectable,
+    // which is correct — an id that cannot be formed cannot be compared, and a
+    // preference that cannot be compared cannot be cleared. tools/validation.py
+    // refuses such a config at build time, so this is defence in depth behind a
+    // gate, not the gate itself.
+    //
+    // THE FAILURE SENTINEL IS null; '' IS A LEGITIMATE ENCODING.
+    //
+    // Two distinct outcomes, deliberately distinguished:
+    //   ''   — the value encoded to nothing. Legitimate: a promotional group
+    //          with no provider is identified by the empty string and keeps a
+    //          usable id ('promo-').
+    //   null — the value has no canonical identity at all. The caller drops the
+    //          path; it cannot be selected, which is correct, because an id
+    //          that cannot be formed cannot be compared and a preference that
+    //          cannot be compared cannot be cleared.
+    //
+    // NO COERCION OUTSIDE THE STRING CASE. A previous version wrapped
+    // String(value) in a try here and then let finPathId() run the SAME
+    // coercion again outside it, and justified that with the claim that a
+    // native JSON parse cannot produce a value that throws on coercion. THAT
+    // CLAIM WAS FALSE, and an external review disproved it: JSON.parse
+    // ('{"toString": null}') yields a plain object whose own toString is not
+    // callable, and String() on it throws TypeError. Any non-callable toString
+    // does it — null, a number, a string, an array. finGroupedPlans admits such
+    // a plan on its `kind` alone, so finPaymentPaths reached the throw, and it
+    // escaped exactly the way the unpaired-surrogate defect did: through
+    // renderHandoffFinancing after the module was visible, through
+    // openFinancingSheet after its guard, and through the language switch.
+    //
+    // So identity values are now required to BE strings rather than coerced
+    // into them. Only null/undefined are still admitted, mapping to the
+    // legitimate empty encoding, because that is the shape the providerless
+    // promotional path has always relied on. Everything else — object, array,
+    // number, boolean — is refused without ever being touched by String().
+    // tools/validation.py rejects a non-string id with its own specific error,
+    // so this is defence in depth behind a gate, not the gate itself.
+    function finPathEncode(value) {
+      if (value === null || value === undefined) return '';
+      if (typeof value !== 'string') return null;
+      // encodeURIComponent leaves [A-Za-z0-9-_.!~*'()] alone and percent-escapes
+      // everything else as its UTF-8 bytes, which is exactly the byte walk
+      // needed here without depending on TextEncoder. It raises URIError on an
+      // unpaired surrogate — the value JSON.parse('"\ud800"') produces — which
+      // is the other way a string can have no canonical identity.
+      var esc;
+      try {
+        esc = encodeURIComponent(value);
+      } catch (err) {
+        return null;
+      }
+      var out = '';
+      for (var i = 0; i < esc.length; i++) {
+        var ch = esc.charAt(i);
+        if (ch === '%') { out += '_' + esc.substr(i + 1, 2).toLowerCase(); i += 2; continue; }
+        if (ch === '-' || (ch >= '0' && ch <= '9')
+            || (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')) { out += ch; continue; }
+        // The remaining characters encodeURIComponent does NOT escape:
+        // _ . ! ~ * ' ( ) — all ASCII. Escaped here so the alphabet stays
+        // [A-Za-z0-9-_] and a literal '_' cannot be read as an escape marker.
+        out += '_' + ('0' + ch.charCodeAt(0).toString(16)).slice(-2);
+      }
+      return out;
     }
 
-    // One agenda item per promotional provider, one per non-promotional path,
-    // and one for the Mexico-delivery scenario. Exact offer variants never
-    // become separate choices: this orients a conversation, not an application.
-    function finAgendaItems() {
+    var FIN_PATH_KINDS = ['promo', 'plan', 'scenario'];
+
+    function finPathId(kind, value) {
+      // ONE coercion, and it happens inside the encoder or not at all. The
+      // sentinel carries the verdict, so nothing here needs to re-derive it —
+      // which is what previously reintroduced the throw this guard exists to
+      // stop. '' means "no id"; every caller filters on a truthy id.
+      var enc = finPathEncode(value);
+      if (enc === null) return '';
+      // AN EMPTY ENCODING IS AN IDENTITY ONLY FOR THE PROMOTIONAL GROUP.
+      //
+      // finPromotionalByProvider groups promotional plans by their trimmed
+      // provider string, and a group whose provider is missing or blank is a
+      // real, presentable path — it renders as the generic "Promotional
+      // financing" card. Its identity IS the empty string, so 'promo-' is a
+      // legitimate id.
+      //
+      // A plan or a scenario has no such case. Their identity is a plan id or
+      // a presentationScenario, both of which validation requires to be
+      // present and non-blank ("id is required"). A blank one reaching here
+      // means the config bypassed that gate, and admitting it produced a
+      // TRUTHY id — 'plan-' — which then survived finPaymentPaths()'s filter,
+      // resolved through finPathById(), emitted controls with ids like
+      // finPathReview-plan-, and could be stored as payPref. That is a
+      // malformed path made selectable, which is exactly what this whole
+      // encoder guard exists to prevent; refusing non-strings while admitting
+      // a blank one closed half the hole. Found by external review.
+      if (enc === '' && kind !== 'promo') return '';
+      return kind + '-' + enc;
+    }
+
+    // DOM ids derived from a path id. Every one is [A-Za-z][A-Za-z0-9_-]*, so
+    // they are safe for getElementById, querySelector AND a CSS selector.
+    function finPathDom(prefix, pathId) { return prefix + '-' + pathId; }
+
+    // ---- The canonical payment paths ------------------------------------------
+    // One path per promotional PROVIDER, one per installment/evergreen plan, and
+    // one per presentation scenario — the same partition the sheet renders, so a
+    // card and its path can never disagree. Exact offer variants never become
+    // separate paths: this orients a conversation, not an application.
+    //
+    // Labels are language-dependent and are therefore recomputed on every call;
+    // IDS ARE NOT — they derive from the provider string, the plan id or the
+    // scenario enum, none of which is language-dependent. That is what lets a
+    // language switch swap every label while preserving payExplored, payPref and
+    // payOpen exactly.
+    //
+    // A path with no resolvable label is dropped: it cannot be named on the
+    // handoff, so it must not be selectable either.
+    function finPaymentPaths() {
       var f = getFinancingConfig() || {};
       var groups = finGroupedPlans(f.plans || []);
-      var items = [];
+      var es = currentLang === 'es';
+      var paths = [];
       finPromotionalByProvider(groups.promotional).forEach(function(grp) {
-        var provider = String(grp.provider || '').trim();
-        items.push({
-          key: finAgendaKey('promotional', provider || 'general'),
+        var provider = grp.provider;
+        paths.push({
+          id: finPathId('promo', provider),
+          group: 'promotional',
+          plans: grp.plans,
           label: provider
-            ? (currentLang === 'es' ? 'Financiamiento promocional ' + provider : provider + ' promotional financing')
-            : (currentLang === 'es' ? 'Financiamiento promocional' : 'Promotional financing')
+            ? (es ? ('Financiamiento promocional ' + provider) : (provider + ' promotional financing'))
+            : (es ? 'Financiamiento promocional' : 'Promotional financing')
         });
       });
-      groups.installment.concat(groups.evergreen).forEach(function(p) {
-        items.push({ key: finAgendaKey('plan', p.id), label: L(p.headline) });
+      groups.installment.forEach(function(p) {
+        paths.push({ id: finPathId('plan', p.id), group: 'installment',
+                     plans: [p], label: L(p.headline) });
+      });
+      groups.evergreen.forEach(function(p) {
+        paths.push({ id: finPathId('plan', p.id), group: 'evergreen',
+                     plans: [p], label: L(p.headline) });
       });
       (groups['scenario-mexico'] || []).forEach(function(p) {
-        items.push({ key: finAgendaKey('scenario', p.presentationScenario), label: L(p.headline) });
+        paths.push({ id: finPathId('scenario', p.presentationScenario),
+                     group: 'scenario-mexico', plans: [p], label: L(p.headline) });
       });
-      return items.filter(function(item) { return item.key && item.label; });
+      return paths.filter(function(x) { return x.id && x.label; });
     }
 
-    function finAgendaSelected() {
-      return finAgendaItems().filter(function(item) { return financingAgenda[item.key] === true; });
+    // Resolve a path id against the CURRENT configuration. An unknown or stale
+    // id resolves to null, and every caller treats null as "no such path": the
+    // action no-ops and the renderer omits the row. A raw id is never displayed —
+    // it is an internal token, not customer-facing text.
+    function finPathById(id) {
+      if (typeof id !== 'string' || !id) return null;
+      var list = finPaymentPaths();
+      for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i];
+      return null;
     }
 
-    // Sheet agenda control. This is a TOGGLE, not an action: it has two
-    // persistent states (marked / unmarked), it is independent of every
-    // other agenda control, and the customer and salesperson flip it back
-    // and forth during the conversation. aria-pressed is therefore the
-    // correct semantic, and it is what announces the change — the control
-    // must not also write to the handoff live region.
-    //
-    // Contrast with the handoff's "Not right now" / "Change" controls
-    // (renderHandoffFinancing): those are ACTIONS. Each performs a
-    // transition and is then replaced by its counterpart, so they carry no
-    // aria-pressed and DO announce through the handoff region.
-    function finAgendaControl(item) {
-      if (!item) return '';
-      var marked = financingAgenda[item.key] === true;
-      return '<button type="button" class="fin-agenda-toggle' + (marked ? ' is-marked' : '') + '" '
-        + 'id="finAgenda-' + finEsc(item.key) + '" data-agenda-key="' + finEsc(item.key) + '" '
-        + 'aria-pressed="' + (marked ? 'true' : 'false') + '" '
-        + 'onclick="window.toggleFinancingAgenda(this.getAttribute(\'data-agenda-key\'))" '
-        + 'ontouchend="event.preventDefault();window.toggleFinancingAgenda(this.getAttribute(\'data-agenda-key\'));">'
-        + finEsc(marked ? FC('agendaMarked') : FC('agendaMark')) + '</button>';
+    function payIsExplored(id) { return payExplored.indexOf(id) !== -1; }
+
+    // Append in FIRST-DELIBERATE-OPEN order, exactly once. Re-opening a path
+    // already in the history changes neither its presence nor its position.
+    function payRecordExplored(id) {
+      if (!payIsExplored(id)) payExplored.push(id);
     }
 
-    window.toggleFinancingAgenda = function(key) {
-      var valid = finAgendaItems().some(function(item) { return item.key === key; });
-      if (!valid) return;
-      var origin = document.activeElement;
-      var restoreFocus = !!(origin && origin.getAttribute
-        && origin.getAttribute('data-agenda-key') === key);
-      financingAgenda[key] = financingAgenda[key] !== true;
-      if (!financingAgenda[key]) delete financingAgenda[key];
-      financingAgendaDismissed = false;
-      analytics.log('financing_agenda_changed', finEventBase('sheet'));
+    // ---- The state transitions -------------------------------------------------
+    // Every entry point validates its path id against finPathById() FIRST, so an
+    // unknown or stale id is a no-op rather than a state write, and never
+    // reaches a renderer as text.
+
+    // Disclosure toggle. Opening records exploration (this is the only thing
+    // that does); closing changes neither history nor preference. Deliberately
+    // NO announcement: the control carries aria-expanded, which assistive
+    // technology reports from the button the customer just operated — the same
+    // doctrine that kept the retired sheet toggles out of the handoff region.
+    window.reviewPaymentPath = function(id) {
+      if (!finPathById(id)) return;
+      var control = finPathDom('finPathReview', id);
+      var keepFocus = payFocusOrigin(control);
+      if (payOpen[id] === true) {
+        delete payOpen[id];
+      } else {
+        payOpen[id] = true;
+        payRecordExplored(id);
+      }
       renderAllFinancingSurfaces();
-      if (restoreFocus) {
-        var replacement = document.getElementById('finAgenda-' + key);
-        if (replacement && replacement.isConnected && typeof replacement.focus === 'function') {
-          replacement.focus();
-        }
-      }
-      // Deliberately NO announceFinInterest() here. These sheet controls are
-      // TOGGLES: each carries its own aria-pressed, so assistive technology
-      // reports the state change from the control the customer and
-      // salesperson just operated. Routing them through the HANDOFF live
-      // region was wrong three ways — a sheet opened FROM the handoff would
-      // speak through a region sitting behind the modal; unmarking one path
-      // while others remained marked still announced a generic "marked"; and
-      // it crossed the sheet/handoff boundary, so the region stopped
-      // describing the screen it belongs to. The handoff announcer now serves
-      // only the handoff's own action controls (setFinancingInterestChoice).
+      if (keepFocus) payRestoreFocus(control);
     };
 
-    window.requestFinancingFollowup = function(placement) {
-      if (placement === 'sheet') {
-        analytics.log('financing_agenda_reviewed', finEventBase(placement));
-        window.closeFinancingSheet();
-        return;
-      }
-      window.openFinancingSheet(placement);
+    // Consider is DELIBERATE and ONE-WAY. It is not a toggle: pressing it again
+    // for the path that is already the preference is an idempotent no-op, never
+    // an unset. Clear is the only way to unset a path preference, and it is a
+    // separately named subordinate control — which is also why Consider carries
+    // no aria-pressed.
+    window.considerPaymentPath = function(id) {
+      if (!finPathById(id)) return;
+      if (payPref === id) return;                  // idempotent, never a toggle
+      var keepFocus = payFocusOrigin(finPathDom('finPathConsider', id));
+      // Considering a path ensures it is explored — a customer can be handed a
+      // path by the salesperson and choose it without opening the panel — and
+      // REPLACES whatever was there, including an active Not right now.
+      payRecordExplored(id);
+      payPref = id;
+      renderAllFinancingSurfaces();
+      // Successor control for the same path: Consider is replaced by the
+      // "currently considering" marker plus Clear.
+      if (keepFocus) payRestoreFocus(finPathDom('finPathClear', id));
+      announcePayAction('financingSheetAction', 'currentlyConsidering');
     };
 
-    // The handoff financing module is a valid focus destination only while
-    // the handoff screen is active and the module itself is visible. Explicit
-    // screen-state + hidden-ancestor checks — offsetParent is unreliable for
-    // this app's overlay/`:has()`-themed layouts, so it is not used here.
+    // Clear applies ONLY to the exact path that is currently the preference.
+    // A stale id, a different path, or PAY_NOT_NOW (which is unset by its own
+    // control, not by this one) all no-op. History is never touched.
+    window.clearPaymentPreference = function(id) {
+      if (!finPathById(id)) return;
+      if (payPref !== id) return;
+      var keepFocus = payFocusOrigin(finPathDom('finPathClear', id));
+      payPref = null;
+      renderAllFinancingSurfaces();
+      if (keepFocus) payRestoreFocus(finPathDom('finPathConsider', id));
+      announcePayAction('financingSheetAction', 'preferenceClearedAnnounce');
+    };
+
+    // "Not right now" is the one genuinely reversible two-state control in the
+    // model — it holds a state the customer flips back and forth — so it is the
+    // one that carries aria-pressed. Pressing it while active returns to
+    // "nothing selected"; pressing it while a path is selected replaces that
+    // path. Either way the explored history is PRESERVED: not_now suppresses
+    // the explored row in the handoff presentation only, and undoing it restores
+    // the row unchanged.
+    window.setPaymentNotNow = function() {
+      var control = 'hf2FinancingNotNow';
+      var keepFocus = payFocusOrigin(control);
+      var turningOn = payPref !== PAY_NOT_NOW;
+      payPref = turningOn ? PAY_NOT_NOW : null;
+      renderAllFinancingSurfaces();
+      if (keepFocus) payRestoreFocus(control);
+      announcePayAction('hf2FinancingStatus',
+        turningOn ? 'preferenceNotNowAnnounce' : 'preferenceClearedAnnounce');
+    };
+
+    // ---- Focus restoration across a rerender -----------------------------------
+    // The rule is IDENTITY, both halves.
+    //
+    // The element focused when the action fired must be the exact control for
+    // the exact path the action names — not "something inside the sheet", and
+    // not "a control for this path". On a hybrid iPad a hardware keyboard can
+    // leave a visible ring on path A's button while a finger taps path B:
+    // ontouchend calls preventDefault(), so the tap moves no focus at all and
+    // document.activeElement is STILL A. Restoring "whatever was focused" would
+    // put the ring back on A after B's rerender — a path the customer did not
+    // operate. (Same defect, same fix, as the quiz's selectOption.)
+    //
+    // And the focus must have been KEYBOARD-visible. A touch activation that
+    // left no ring must not acquire one from the rerender.
+    function payFocusOrigin(controlId) {
+      try {
+        var active = document.activeElement;
+        return !!(active && active.id === controlId
+          && typeof active.matches === 'function'
+          && active.matches(':focus-visible'));
+      } catch (err) { return false; }
+    }
+
+    // No timer, no frame: the focus call is synchronous, and preventScroll keeps
+    // a long card list from jumping (idiom shared with the quiz restore).
+    function payRestoreFocus(successorId) {
+      var el = successorId ? document.getElementById(successorId) : null;
+      if (el && el.isConnected && typeof el.focus === 'function') {
+        try { el.focus({ preventScroll: true }); } catch (err) { el.focus(); }
+      }
+    }
+
+    // ---- Preference-action announcements ---------------------------------------
+    // TWO separate live regions, and they must stay separate:
+    //
+    //   #financingSheetStatus — the freshness/stale status of the exact terms.
+    //   #financingSheetAction — Consider / Clear, inside the sheet.
+    //   #hf2FinancingStatus   — Not right now / undo, on the handoff.
+    //
+    // A preference action and the freshness status describe different things and
+    // are written by different code paths; sharing one region would let a
+    // Consider announcement erase a stale-terms notice (or be erased by one)
+    // purely on timing.
+    //
+    // Identical messages CAN repeat — the same action can be re-requested — so
+    // each announcement clears the region and repopulates it in a short deferred
+    // callback: the clear+set pair is a guaranteed DOM mutation even for repeated
+    // text. FC(key) is resolved INSIDE the callback so a language switch landing
+    // mid-defer announces current-language text, and the callback re-checks
+    // visibility so a region behind a closed sheet or a hidden handoff is never
+    // populated.
+    function payRegionLive(regionId) {
+      if (regionId === 'hf2FinancingStatus') return finHandoffVisible();
+      var sheet = document.getElementById('financingSheet');
+      return !!(sheet && !sheet.hidden);
+    }
+
+    function announcePayAction(regionId, key) {
+      var region = document.getElementById(regionId);
+      if (!region) return;
+      // Supersede ANY pending message — this region's or the other's — and do
+      // it BEFORE the liveness test. Both halves matter and neither is
+      // sufficient alone:
+      //
+      //   * cancelling across regions is what stops a stale statement about
+      //     payPref surviving a transition operated on the other surface;
+      //   * doing it before the liveness test is what lets a transition whose
+      //     own region has gone dark still cancel the message it just made
+      //     false. With the test first, that message landed anyway.
+      if (_payAnnounceTimer !== null) {
+        clearTimeout(_payAnnounceTimer);
+        _payAnnounceTimer = null;
+      }
+      if (!payRegionLive(regionId)) return;
+      region.textContent = '';
+      _payAnnounceTimer = setTimeout(function() {
+        _payAnnounceTimer = null;
+        if (!payRegionLive(regionId)) return;
+        var el = document.getElementById(regionId);
+        if (el) el.textContent = FC(key) || '';
+      }, 50);
+    }
+
+    // The financing handoff module is a valid announcement/focus destination only
+    // while the handoff screen is active and the module itself is visible.
+    // Explicit screen-state + hidden-ancestor checks — offsetParent is unreliable
+    // for this app's overlay/`:has()`-themed layouts, so it is not used here.
     function finHandoffVisible() {
       var screen = document.getElementById('hf2Screen');
       var mod = document.getElementById('hf2Financing');
@@ -11091,88 +11712,36 @@
         && mod && !mod.hidden && !mod.closest('[hidden]'));
     }
 
-    // Announce a HANDOFF action in the module-scoped status region.
-    // SOLE CALLER: setFinancingInterestChoice() — the handoff's own
-    // "Not right now" / "Change" action buttons. The sheet's agenda toggles
-    // are aria-pressed toggles and announce themselves; they must never
-    // reach this region (see toggleFinancingAgenda). Identical messages CAN
-    // repeat — the same action can be re-requested — so each announcement
-    // clears the region and repopulates it in a short
-    // deferred callback: the clear+set pair is a guaranteed DOM mutation
-    // even for repeated text. FC(key) is resolved inside the callback so a
-    // language switch landing mid-defer announces current-language text; the
-    // callback re-checks visibility so a hidden handoff is never populated.
-    function announceFinInterest(state) {
-      var region = document.getElementById('hf2FinancingStatus');
-      if (!region || !finHandoffVisible()) return;
-      // Exactly the two states setFinancingInterestChoice() accepts. There is
-      // no 'interested' announcement: the sheet's agenda toggles carry their
-      // own aria-pressed and never reach this region.
-      var key = state === 'not_now' ? 'interestNotNowAnnounce'
-        : 'interestClearedAnnounce';
-      if (_finInterestAnnounceTimer !== null) clearTimeout(_finInterestAnnounceTimer);
-      region.textContent = '';
-      _finInterestAnnounceTimer = setTimeout(function() {
-        _finInterestAnnounceTimer = null;
-        if (!finHandoffVisible()) return;
-        var el = document.getElementById('hf2FinancingStatus');
-        if (el) el.textContent = FC(key) || '';
-      }, 50);
+    // Drop BOTH preference-action regions without announcing anything. A region
+    // keeps whatever was last announced, so after a language switch it held the
+    // PREVIOUS language's sentence — an EN sentence sitting in an ES interface
+    // until the next state change. Emptying an aria-live region is a removal, not
+    // an addition, so assistive technology queues no utterance for it: the stale
+    // text goes away silently, which is exactly what a language switch should do.
+    // Any queued announcement is cancelled first, so an utterance composed in the
+    // old language cannot land after the switch. Deliberately NOT applied to
+    // #financingSheetStatus: that region is re-announced in the new language on
+    // purpose by updateFinancingSheetStatus() when the sheet is open.
+    //
+    // This clears ANNOUNCEMENTS ONLY. payExplored, payPref and payOpen are
+    // untouched — a language switch is a copy swap, not a reset.
+    function clearPayAnnouncements() {
+      cancelPayAnnouncePending();
+      ['hf2FinancingStatus', 'financingSheetAction'].forEach(function(id) {
+        var region = document.getElementById(id);
+        if (region) region.textContent = '';
+      });
     }
 
-    // Drop the handoff interest announcement without announcing anything.
-    // The region keeps whatever was last announced, so after a language switch
-    // it held the PREVIOUS language's sentence — an EN sentence sitting in an
-    // ES interface until the next state change. Emptying an aria-live region
-    // is a removal, not an addition, so assistive technology queues no
-    // utterance for it: the stale text goes away silently, which is exactly
-    // what a language switch should do. Any queued announcement is cancelled
-    // first, so an utterance composed in the old language cannot land after
-    // the switch. Deliberately NOT applied to #financingSheetStatus: that
-    // region is re-announced in the new language on purpose by
-    // updateFinancingSheetStatus() when the sheet is open.
-    function clearFinInterestAnnouncement() {
-      if (_finInterestAnnounceTimer !== null) {
-        clearTimeout(_finInterestAnnounceTimer);
-        _finInterestAnnounceTimer = null;
-      }
-      var region = document.getElementById('hf2FinancingStatus');
-      if (region) region.textContent = '';
-    }
-
-    // Cancel any queued handoff-agenda announcement work. The wipe calls this
-    // before clearing financing state so no
-    // stale queued work from the prior customer can run after reset.
-    function cancelFinInterestPending() {
-      if (_finInterestAnnounceTimer !== null) {
-        clearTimeout(_finInterestAnnounceTimer);
-        _finInterestAnnounceTimer = null;
+    // Cancel any queued announcement work. The wipe calls this before clearing
+    // payment state so no stale queued work from the prior customer can run
+    // after reset.
+    function cancelPayAnnouncePending() {
+      if (_payAnnounceTimer !== null) {
+        clearTimeout(_payAnnounceTimer);
+        _payAnnounceTimer = null;
       }
     }
-
-    // Handoff interest prompt: interested / not_now / back to undecided.
-    // Focus + announcement repair lives HERE, not in renderHandoffFinancing():
-    // this wrapper only ever fires from the handoff module's own controls, so
-    // it may safely restore focus into the rebuilt module. The renderer stays
-    // focus-neutral because it is also re-run from other screens (results
-    // marking, language switch), where pulling focus into the hidden handoff
-    // screen would be wrong.
-    window.setFinancingInterestChoice = function(state) {
-      if (state !== 'not_now' && state !== 'undecided') return;
-      var container = document.getElementById('hf2FinancingInterest');
-      var hadFocusInside = !!(container && document.activeElement
-        && container.contains(document.activeElement));
-      financingAgendaDismissed = state === 'not_now';
-      if (state === 'not_now') financingAgenda = {};
-      analytics.log('financing_agenda_changed', finEventBase('handoff'));
-      renderAllFinancingSurfaces();
-      if (hadFocusInside && finHandoffVisible()) {
-        var target = document.getElementById(state === 'not_now'
-          ? 'hf2FinancingInterestChange' : 'hf2FinancingInterestNotNow');
-        if (target && target.isConnected && typeof target.focus === 'function') target.focus();
-      }
-      announceFinInterest(state);
-    };
 
     window.logFinancingLinkClick = function(placement) {
       analytics.log('official_financing_link_click', finEventBase(placement));
@@ -11195,7 +11764,11 @@
       renderFinancingSheet();
       backdrop.hidden = false;
       sheet.hidden = false;
-      financingExplored = true;
+      // Deliberately records NOTHING. Opening the sheet is arriving at the
+      // room, not choosing a door: payExplored, payPref and payOpen are all
+      // unchanged here. The retired financingExplored flag was set at exactly
+      // this point and was the sole reason the email packet could tell an
+      // explorer from a non-explorer.
       document.body.classList.add('fin-sheet-open');
       analytics.log('finance_details_open', finEventBase(placement));
       var title = document.getElementById('financingSheetTitle');
@@ -11219,9 +11792,14 @@
       sheet.hidden = true;
       backdrop.hidden = true;
       // Clear so the next open re-announces (a repeat of identical text is
-      // not a mutation and would stay silent).
-      var status = document.getElementById('financingSheetStatus');
-      if (status) status.textContent = '';
+      // not a mutation and would stay silent). BOTH sheet regions, plus any
+      // queued action announcement — otherwise the departing text is still
+      // sitting there when the sheet is reopened.
+      cancelPayAnnouncePending();
+      ['financingSheetStatus', 'financingSheetAction'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = '';
+      });
       document.body.classList.remove('fin-sheet-open');
       if (_financeReturnFocus && typeof _financeReturnFocus.focus === 'function') {
         _financeReturnFocus.focus();
@@ -11250,6 +11828,76 @@
 
     function finEsc(s) { return escapeHtml(String(s == null ? '' : s)); }
 
+    // ---- One payment path's controls + collapsed disclosure ------------------
+    //
+    // A BUTTON plus a hidden panel, deliberately NOT <details>/<summary>.
+    //
+    // The reason is the focus trap's BOUNDARY COMPUTATION, not reachability.
+    // finSheetKeydown enumerates `button, [href], [tabindex="-1"]#...Title` to
+    // decide which element is first and which is last, and preventDefaults Tab
+    // only at those two. A <summary> is natively focusable but matches none of
+    // those selectors, so it would be reachable by Tab in the middle of the
+    // dialog while being INVISIBLE to the trap's model of the focusable set —
+    // the computed boundary would no longer be the real one. (An earlier
+    // version of this comment claimed a <summary> would be "unreachable by
+    // Tab"; that was wrong, and is corrected here rather than left to mislead
+    // the next reader of a focus-trap contract.)
+    //
+    // It also matches the house pattern: every other disclosure in this app —
+    // the Sleep Brief priorities, the construction reveal — is a native button
+    // carrying aria-expanded and aria-controls.
+    //
+    // The panel is hidden with the `hidden` attribute, so while collapsed it is
+    // display:none and drops out of BOTH the tab order and the trap's
+    // offsetParent filter.
+    //
+    // Consider is a ONE-WAY native action button and carries NO aria-pressed:
+    // it is not a two-state control, and labelling it as one would tell
+    // assistive technology that pressing it again unsets it. When a path IS the
+    // preference, Consider is replaced by a visible NON-INTERACTIVE marker plus
+    // a separately named subordinate Clear.
+    //
+    // `bodyHtml` is the governed detail markup; the caller decides whether that
+    // is the exact terms or the generic staleNotice, so a STALE path stays fully
+    // reviewable — its disclosure simply reveals the governed notice instead of
+    // rates and terms.
+    function finPathBlock(path, bodyHtml) {
+      if (!path) return bodyHtml || '';
+      var open = payOpen[path.id] === true;
+      var panelId = finPathDom('finPathPanel', path.id);
+      var reviewId = finPathDom('finPathReview', path.id);
+      var considerId = finPathDom('finPathConsider', path.id);
+      var clearId = finPathDom('finPathClear', path.id);
+      var isPref = payPref === path.id;
+      var html = ''
+        + '<button type="button" class="fin-btn fin-btn-ghost fin-path-review" id="' + finEsc(reviewId) + '" '
+        + 'aria-expanded="' + (open ? 'true' : 'false') + '" '
+        + 'aria-controls="' + finEsc(panelId) + '" '
+        + 'data-path-id="' + finEsc(path.id) + '" '
+        + 'onclick="window.reviewPaymentPath(this.getAttribute(\'data-path-id\'))" '
+        + 'ontouchend="event.preventDefault();window.reviewPaymentPath(this.getAttribute(\'data-path-id\'));">'
+        + finEsc(open ? FC('hideDetails') : FC('reviewOption')) + '</button>'
+        + '<div class="fin-path-panel" id="' + finEsc(panelId) + '"'
+        + (open ? '' : ' hidden') + '>' + (bodyHtml || '') + '</div>'
+        + '<div class="fin-path-actions">';
+      if (isPref) {
+        html += '<span class="fin-path-marker" id="' + finEsc(finPathDom('finPathMarker', path.id)) + '">'
+          + finEsc(FC('currentlyConsidering')) + '</span>'
+          + '<button type="button" class="fin-btn fin-btn-ghost fin-path-clear" id="' + finEsc(clearId) + '" '
+          + 'data-path-id="' + finEsc(path.id) + '" '
+          + 'onclick="window.clearPaymentPreference(this.getAttribute(\'data-path-id\'))" '
+          + 'ontouchend="event.preventDefault();window.clearPaymentPreference(this.getAttribute(\'data-path-id\'));">'
+          + finEsc(FC('clearPreference')) + '</button>';
+      } else {
+        html += '<button type="button" class="fin-btn fin-btn-secondary fin-path-consider" id="' + finEsc(considerId) + '" '
+          + 'data-path-id="' + finEsc(path.id) + '" '
+          + 'onclick="window.considerPaymentPath(this.getAttribute(\'data-path-id\'))" '
+          + 'ontouchend="event.preventDefault();window.considerPaymentPath(this.getAttribute(\'data-path-id\'));">'
+          + finEsc(FC('considerOption')) + '</button>';
+      }
+      return html + '</div>';
+    }
+
     function renderFinancingSheet() {
       var f = getFinancingConfig();
       if (!f) return;
@@ -11267,9 +11915,9 @@
       var groups = finGroupedPlans(plans);
       var cards = [];
       var anyStale = false;
-      var agendaItems = finAgendaItems();
-      function agendaFor(key) {
-        return agendaItems.filter(function(item) { return item.key === key; })[0] || null;
+      var paths = finPaymentPaths();
+      function pathFor(id) {
+        return paths.filter(function(x) { return x.id === id; })[0] || null;
       }
 
       // Card 1 — promotional financing (exact offers, freshness-gated), one
@@ -11300,9 +11948,9 @@
           + finEsc(provider
               ? (es ? ('Financiamiento promocional ' + provider) : (provider + ' promotional financing'))
               : (es ? 'Financiamiento promocional' : 'Promotional financing'))
-          + '</h3>' + synBody
-          + (FC('prequalNote') ? '<p class="fin-offer__prequal">' + finEsc(FC('prequalNote')) + '</p>' : '')
-          + finAgendaControl(agendaFor(finAgendaKey('promotional', provider || 'general')))
+          + '</h3>'
+          + finPathBlock(pathFor(finPathId('promo', provider)), synBody
+              + (FC('prequalNote') ? '<p class="fin-offer__prequal">' + finEsc(FC('prequalNote')) + '</p>' : ''))
           + '</article>');
       });
 
@@ -11316,26 +11964,26 @@
         cards.push('<article class="fin-card"><div class="fin-card__icon" aria-hidden="true">'
           + '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 9.5 10 3l7 6.5M5 8.5V17h10V8.5"/><path d="M8.5 17v-4.5h3V17"/></svg>'
           + '</div><h3 class="fin-card__title">' + finEsc(L(ih.headline)) + '</h3>'
-          + (ihFresh
-              ? '<p class="fin-offer__detail">' + finEsc(L(ih.detail)) + '</p>'
-              : '<p class="fin-offer__detail">' + finEsc(FC('staleNotice')) + '</p>')
-          + (ih.disclosure ? '<p class="fin-offer__disclosure">' + finEsc(L(ih.disclosure)) + '</p>' : '')
-          + finAgendaControl(agendaFor(finAgendaKey('plan', ih.id)))
+          + finPathBlock(pathFor(finPathId('plan', ih.id)),
+              (ihFresh
+                ? '<p class="fin-offer__detail">' + finEsc(L(ih.detail)) + '</p>'
+                : '<p class="fin-offer__detail">' + finEsc(FC('staleNotice')) + '</p>')
+              + (ih.disclosure ? '<p class="fin-offer__disclosure">' + finEsc(L(ih.disclosure)) + '</p>' : ''))
           + '</article>');
       });
 
-      // Evergreen paths stay separate so each can become a precise specialist
-      // agenda item. They remain orientation-only and never show payment math.
+      // Evergreen paths stay separate so each can become a precise payment
+      // preference. They remain orientation-only and never show payment math.
       groups.evergreen.forEach(function(p) {
         cards.push('<article class="fin-card"><div class="fin-card__icon" aria-hidden="true">'
           + '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M4 16V4M4 10c4 0 4-4 8-4h4M4 14c4 0 4 4 8 4h4"/><path d="M13.5 3.5 16 6l-2.5 2.5M13.5 15.5 16 18l-2.5-2.5" stroke-linejoin="round"/></svg>'
           + '</div><h3 class="fin-card__title">' + finEsc(L(p.headline)) + '</h3>'
-          + '<p class="fin-offer__detail">' + finEsc(L(p.detail)) + '</p>'
-          + '<p class="fin-offer__disclosure">'
-          + (es ? 'Hay opciones adicionales disponibles. Los detalles del programa, costos, elegibilidad y términos de propiedad se confirman en tienda.'
-                : 'Additional options are available. Program details, costs, eligibility, and ownership terms are confirmed in store.')
-          + '</p>'
-          + finAgendaControl(agendaFor(finAgendaKey('plan', p.id)))
+          + finPathBlock(pathFor(finPathId('plan', p.id)),
+              '<p class="fin-offer__detail">' + finEsc(L(p.detail)) + '</p>'
+              + '<p class="fin-offer__disclosure">'
+              + (es ? 'Hay opciones adicionales disponibles. Los detalles del programa, costos, elegibilidad y términos de propiedad se confirman en tienda.'
+                    : 'Additional options are available. Program details, costs, eligibility, and ownership terms are confirmed in store.')
+              + '</p>')
           + '</article>');
       });
 
@@ -11370,19 +12018,19 @@
         cards.push('<article class="fin-card fin-card--mexico"><div class="fin-card__icon" aria-hidden="true">'
           + '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="10" cy="10" r="7.5"/><path d="M2.5 10h15M10 2.5c2.5 2.3 2.5 12.7 0 15c-2.5-2.3-2.5-12.7 0-15Z"/></svg>'
           + '</div><h3 class="fin-card__title">' + finEsc(L(mx.headline)) + '</h3>'
-          + (mxFresh
-              ? '<p class="fin-offer__detail">' + finEsc(L(mx.detail)) + '</p>'
-                + (mx.representativeExample
-                    ? '<p class="fin-offer__detail fin-offer__example">' + finEsc(L(mx.representativeExample)) + '</p>' : '')
-              : '<p class="fin-offer__detail">' + finEsc(FC('staleNotice')) + '</p>')
-          + (mx.disclosure ? '<p class="fin-offer__disclosure">' + finEsc(L(mx.disclosure)) + '</p>' : '')
-          + (mxLink
-              ? '<a class="fin-official-link" href="' + finEsc(mxLink) + '" target="_blank" rel="noopener noreferrer" '
-                + 'onclick="window.logMexicoFinancingOpen()">'
-                + finEsc(es ? ('Detalles en ' + mxHost + ' (se abre en otro sitio)') : ('Details on ' + mxHost + ' (opens a separate site)'))
-                + '</a>'
-              : '')
-          + finAgendaControl(agendaFor(finAgendaKey('scenario', mx.presentationScenario)))
+          + finPathBlock(pathFor(finPathId('scenario', mx.presentationScenario)),
+              (mxFresh
+                ? '<p class="fin-offer__detail">' + finEsc(L(mx.detail)) + '</p>'
+                  + (mx.representativeExample
+                      ? '<p class="fin-offer__detail fin-offer__example">' + finEsc(L(mx.representativeExample)) + '</p>' : '')
+                : '<p class="fin-offer__detail">' + finEsc(FC('staleNotice')) + '</p>')
+              + (mx.disclosure ? '<p class="fin-offer__disclosure">' + finEsc(L(mx.disclosure)) + '</p>' : '')
+              + (mxLink
+                  ? '<a class="fin-official-link" href="' + finEsc(mxLink) + '" target="_blank" rel="noopener noreferrer" '
+                    + 'onclick="window.logMexicoFinancingOpen()">'
+                    + finEsc(es ? ('Detalles en ' + mxHost + ' (se abre en otro sitio)') : ('Details on ' + mxHost + ' (opens a separate site)'))
+                    + '</a>'
+                  : ''))
           + '</article>');
       }
 
@@ -11390,7 +12038,7 @@
       document.getElementById('financingSheetDisclosure').textContent = FC('disclosureFooter');
       // Official-page link fails closed: an unsafe sourceUrl hides the link
       // and its external-site note. The sheet itself, generic orientation,
-      // disclosures, and the specialist action all remain available.
+      // disclosures, and the Done action all remain available.
       setAllowedFinancingLink(
         document.getElementById('financingSheetLink'),
         f.sourceUrl,
@@ -11398,7 +12046,7 @@
            : storeName() + "'s official financing page",
         document.getElementById('financingSheetExternal'));
       var spec = document.getElementById('financingSheetSpecialist');
-      spec.textContent = FC('agendaDone');
+      spec.textContent = FC('sheetDone');
       _finSheetStale = anyStale;
       // Live-update the status region on re-renders of an already-open sheet
       // (language switch); no-op while hidden — openFinancingSheet defers the
@@ -11430,11 +12078,13 @@
       document.getElementById('resultsFinancingEyebrow').textContent = FC('eyebrow');
       document.getElementById('resultsFinancingLead').textContent = FC('resultsLead');
       document.getElementById('resultsFinancingFitFirst').textContent = FC('fitFirst');
+      // ONE route into Payment Choice from Results, labelled with the governed
+      // cta. The second button that stood beside it opened the SAME sheet under
+      // a different name ("Plan the conversation", or a hardcoded
+      // "Review agenda (N)" once anything was marked) — a duplicate destination
+      // presented as a choice, and the only surface in the app that printed a
+      // count of the customer's payment interest.
       document.getElementById('resultsFinancingExplore').textContent = FC('cta');
-      var agendaCount = finAgendaSelected().length;
-      document.getElementById('resultsFinancingAsk').textContent = agendaCount
-        ? (currentLang === 'es' ? 'Revisar agenda (' + agendaCount + ')' : 'Review agenda (' + agendaCount + ')')
-        : FC('resultsAsk');
       // An impression means the customer SAW the module, so it is logged only
       // when the results screen is actually on screen. This renderer also runs
       // from renderAllFinancingSurfaces() on a language switch, which happens
@@ -11458,27 +12108,28 @@
         && mod && !mod.hidden && !mod.closest('[hidden]'));
     }
 
-    function renderDrawerFinancingMark() {
-      var mark = document.getElementById('drawerFinancingMark');
-      if (mark) {
-        var count = finAgendaSelected().length;
-        mark.textContent = count
-          ? (currentLang === 'es' ? 'Revisar agenda (' + count + ')' : 'Review agenda (' + count + ')')
-          : FC('drawerMark');
-      }
-    }
-
+    // Dormant when financing.surfaces.drawer is false: the box, its renderer,
+    // its call sites, its CSS and its 'drawer' analytics placement all remain —
+    // the hidden attribute simply keeps it out of the layout AND the
+    // accessibility tree, exactly as a disabled financing experience does.
     function renderDrawerFinancing() {
       var box = document.getElementById('drawerFinancing');
       if (!box) return;
-      if (!financingEnabled()) { box.hidden = true; return; }
+      if (!financingEnabled() || !finSurfaceEnabled('drawer')) {
+        box.hidden = true;
+        return;
+      }
       box.hidden = false;
       document.getElementById('drawerFinancingLabel').textContent = FC('drawerTitle');
       document.getElementById('drawerFinancingBody').textContent = FC('drawerBody');
       document.getElementById('drawerFinancingExplore').textContent = FC('cta');
-      renderDrawerFinancingMark();
     }
 
+    // ---- The handoff's D4 rows -------------------------------------------------
+    // Two labelled rows in a real definition list, plus the reversible
+    // "Not right now" control. This is what the salesperson reads; it is a
+    // record of the conversation, never a product choice and never an
+    // application.
     function renderHandoffFinancing() {
       var mod = document.getElementById('hf2Financing');
       if (!mod) return;
@@ -11488,33 +12139,55 @@
       mod.hidden = false;
       document.getElementById('hf2FinancingEyebrow').textContent = FC('eyebrow');
       document.getElementById('hf2FinancingHeadline').textContent = FC('handoffHeadline');
-      // The handoff shows only paths the customer marked in the orientation
-      // sheet. This is a conversation agenda, not a product choice or an
-      // application, and it never alters the mattress recommendations.
-      var interestEl = document.getElementById('hf2FinancingInterest');
-      var selected = finAgendaSelected();
-      if (selected.length) {
-        interestEl.innerHTML = '<p class="fin-interest-prompt">' + finEsc(FC('agendaPrompt')) + '</p>'
-          + '<ul class="fin-agenda-list">'
-          + selected.map(function(item) { return '<li>' + finEsc(item.label) + '</li>'; }).join('')
-          + '</ul><p class="fin-agenda-consequence">' + finEsc(FC('agendaConsequence')) + '</p>';
-      // ACTION buttons, deliberately without aria-pressed: each performs a
-      // transition and is then replaced by its counterpart, rather than
-      // holding a state the customer toggles. They announce through
-      // announceFinInterest(); the sheet's agenda toggles do not.
-      } else if (financingAgendaDismissed) {
-        interestEl.innerHTML = '<p class="fin-interest-prompt">' + finEsc(FC('agendaDismissed')) + '</p>'
-          + '<button type="button" class="fin-btn fin-btn-ghost" id="hf2FinancingInterestChange" '
-          + 'onclick="window.setFinancingInterestChoice(\'undecided\')" '
-          + 'ontouchend="event.preventDefault();window.setFinancingInterestChoice(\'undecided\');">'
-          + finEsc(currentLang === 'es' ? 'Cambiar' : 'Change') + '</button>';
-      } else {
-        interestEl.innerHTML = '<p class="fin-interest-prompt">' + finEsc(FC('agendaEmpty')) + '</p>'
-          + '<button type="button" class="fin-btn fin-btn-ghost" id="hf2FinancingInterestNotNow" '
-          + 'onclick="window.setFinancingInterestChoice(\'not_now\')" '
-          + 'ontouchend="event.preventDefault();window.setFinancingInterestChoice(\'not_now\');">'
-          + finEsc(FC('agendaNotNow')) + '</button>';
+
+      var paths = finPaymentPaths();
+      function labelFor(id) {
+        for (var i = 0; i < paths.length; i++) if (paths[i].id === id) return paths[i].label;
+        return '';        // unknown/stale id: NEVER rendered, never as a raw id
       }
+      var notNow = payPref === PAY_NOT_NOW;
+      var prefLabel = notNow ? FC('preferenceNotNow')
+        : (payPref ? labelFor(payPref) : '');
+      // A preference pointing at a path this configuration no longer has reads
+      // as "Not selected" rather than as a blank row or a raw token.
+      if (!prefLabel) prefLabel = FC('preferenceNone');
+
+      // The explored row shows the preserved history MINUS whatever is
+      // currently being considered — a path already named on the preference row
+      // must not be listed a second time as merely "explored".
+      //
+      // "Not right now" SUPPRESSES this row. That suppression is presentation
+      // only: payExplored is untouched, so undoing Not right now restores the
+      // row exactly as it was. Unresolvable ids drop out silently.
+      var exploredLabels = notNow ? [] : payExplored
+        .filter(function(id) { return id !== payPref; })
+        .map(labelFor)
+        .filter(function(x) { return !!x; });
+
+      var rows = '<div class="fin-pref-row">'
+        + '<dt class="fin-pref-row__label">' + finEsc(FC('paymentPreferenceLabel')) + '</dt>'
+        + '<dd class="fin-pref-row__value">' + finEsc(prefLabel) + '</dd>'
+        + '</div>';
+      if (exploredLabels.length) {
+        rows += '<div class="fin-pref-row">'
+          + '<dt class="fin-pref-row__label">' + finEsc(FC('optionsExploredLabel')) + '</dt>'
+          + '<dd class="fin-pref-row__value"><ul class="fin-explored-list">'
+          + exploredLabels.map(function(x) { return '<li>' + finEsc(x) + '</li>'; }).join('')
+          + '</ul></dd></div>';
+      }
+
+      // "Not right now" is the model's one genuinely reversible two-state
+      // control — the customer flips it back and forth — so aria-pressed is the
+      // correct semantic here and nowhere else in D4.
+      document.getElementById('hf2FinancingInterest').innerHTML =
+        '<dl class="fin-pref-rows">' + rows + '</dl>'
+        + '<p class="fin-explore-consequence">' + finEsc(FC('exploreConsequence')) + '</p>'
+        + '<button type="button" class="fin-btn fin-btn-ghost fin-not-now" id="hf2FinancingNotNow" '
+        + 'aria-pressed="' + (notNow ? 'true' : 'false') + '" '
+        + 'onclick="window.setPaymentNotNow()" '
+        + 'ontouchend="event.preventDefault();window.setPaymentNotNow();">'
+        + finEsc(FC('preferenceNotNow')) + '</button>';
+
       // Neutral program-category chips only — never rate/term headlines here
       // (rates belong solely to the freshness-gated sheet cards). Open-end
       // promos get a generic category label (their headlines ARE rates); all
@@ -11540,7 +12213,7 @@
       // Phone continuation fails closed as a unit: an unsafe sourceUrl hides
       // the whole block (QR, "scan to open" copy, written destination,
       // external note) rather than leaving scan instructions pointing
-      // nowhere. Specialist controls and program categories stay available.
+      // nowhere. Payment Choice controls and program categories stay available.
       // Rendering is deterministic — a later valid render restores it.
       var linkOk = setAllowedFinancingLink(
         document.getElementById('hf2FinancingLink'),
@@ -11558,8 +12231,6 @@
           + storeName() + ' (' + document.getElementById('hf2FinancingLink').textContent + ')';
       }
       document.getElementById('hf2FinancingExplore').textContent = FC('cta');
-      document.getElementById('hf2FinancingSpecialist').textContent = selected.length
-        ? FC('agendaChange') : FC('resultsAsk');
     }
 
     // Refresh every financing surface (called after language switches; each
@@ -11915,8 +12586,10 @@
       // switching updates financing text and accessible labels. The handoff
       // interest announcement is dropped first: it is the one financing string
       // no renderer rewrites, so it would otherwise sit in the previous
-      // language. Clearing announces nothing (see clearFinInterestAnnouncement).
-      clearFinInterestAnnouncement();
+      // language. Clearing announces nothing (see clearPayAnnouncements), and
+      // it clears ANNOUNCEMENTS ONLY - payExplored, payPref and payOpen all
+      // survive a language switch, which is a copy swap and not a reset.
+      clearPayAnnouncements();
       renderAllFinancingSurfaces();
       // The guided Sleep System and shared review are rendered dynamically,
       // so refresh their copy without resetting any selected products or trial state.
@@ -12831,11 +13504,13 @@
         if (ogDesc && textBlock.metaDescription) ogDesc.setAttribute('content', textBlock.metaDescription);
         var ogTitle = document.getElementById('ogTitle');
         if (ogTitle && textBlock.ogTitle) ogTitle.setAttribute('content', textBlock.ogTitle);
+        // Retailer privacy prose is config or NOTHING: the template carries no
+        // fallback promise of its own (trust gate).
         document.querySelectorAll('[data-store="email-privacy"]').forEach(function(el) {
-          el.textContent = textBlock.emailPrivacy || el.textContent;
+          el.textContent = textBlock.emailPrivacy || '';
         });
         document.querySelectorAll('[data-store="privacy-policy-contact"]').forEach(function(el) {
-          el.textContent = textBlock.privacyPolicyContact || el.textContent;
+          el.textContent = textBlock.privacyPolicyContact || '';
         });
         // Privacy & Terms overlay body — retailer-specific draft copy (text/text_es).
         document.querySelectorAll('[data-store="privacy-draft-notice"]').forEach(function(el) {
@@ -12845,7 +13520,7 @@
           el.textContent = textBlock.privacyHeading || el.textContent;
         });
         document.querySelectorAll('[data-store="privacy-body"]').forEach(function(el) {
-          el.textContent = textBlock.privacyBody || el.textContent;
+          el.textContent = textBlock.privacyBody || '';
         });
         document.querySelectorAll('[data-store="disclaimer-heading"]').forEach(function(el) {
           el.textContent = textBlock.disclaimerHeading || el.textContent;
@@ -12874,6 +13549,40 @@
     // ===== NOCTURNAL LANDING RENDERER =====
     // Populates the welcome screen from STORE_CONFIG.voice / voice_es / storeName / brands / discount / text*.
     // Safe to call before STORE_CONFIG is loaded (no-ops on missing data); re-runs on every language switch.
+    // ----- Deployment mode: does anything leave this tablet? (trust gate)
+    // ONE truth for every surface that speaks about it. Live delivery exists
+    // only when a GAS endpoint is configured AND the active promotion scenario
+    // does not block submission — the same two conditions sendResults() gates
+    // its POST on. The welcome data-use sentence, the email screen's preview
+    // note and the send path must never disagree about this.
+    function emailDeliveryLive() {
+      var gasUrl = (STORE_CONFIG && STORE_CONFIG.gasUrl) || '';
+      var scenario = (typeof getActivePromotionScenario === 'function') ? getActivePromotionScenario() : null;
+      var scenarioBlocksEmail = !!(scenario && scenario.disableEmailSubmission);
+      return !!gasUrl && !scenarioBlocksEmail;
+    }
+
+    // The single customer-facing data-use sentence. Generic app truth, so it
+    // lives in the dictionaries in two variants and the runtime selects the
+    // one that is true for this deployment: preview (nothing is sent) while
+    // no live endpoint exists, live (sent only if the customer chooses to
+    // email) otherwise. Fail-safe: t() returns the KEY on a miss, and a
+    // missing variant renders NOTHING — never the key, never the other mode's
+    // sentence — with the element hidden so the layout does not carry a blank.
+    function renderDataUseStatement() {
+      var el = document.getElementById('landingDataUse');
+      if (!el) return;
+      var key = emailDeliveryLive() ? 'privacy.data_use_live' : 'privacy.data_use_preview';
+      var text = (typeof t === 'function') ? t(key) : '';
+      if (typeof text === 'string' && text.trim() && text !== key) {
+        el.textContent = text;
+        el.hidden = false;
+      } else {
+        el.textContent = '';
+        el.hidden = true;
+      }
+    }
+
     function renderNocturnalLanding() {
       if (!STORE_CONFIG) return;
       var es = currentLang === 'es';
@@ -12916,6 +13625,7 @@
       }
       setText('landingHeritage', textBlock.heritage);
       setText('landingTrustBadge', textBlock.ownershipBadge);
+      renderDataUseStatement();
 
       // Store locations: optional label + city list (subtle premium row). Source
       // values come from STORE_CONFIG (trusted, same-origin) — safe to innerHTML.
@@ -13059,6 +13769,9 @@
       if (!sameScreen && typeof focusScreenDestination === 'function') {
         focusScreenDestination(id);
       }
+      // A true screen transition owns the first question render that follows
+      // it (startQuiz, Review -> Edit, Review -> Back); see afterQuestionChange.
+      if (!sameScreen && typeof noteQuestionScreenEntered === 'function') noteQuestionScreenEntered();
     }
 
     // ----- START QUIZ -----
@@ -13164,11 +13877,54 @@
       return text.slice(0, idx) + '<span class="accent">' + phrase + '</span>' + text.slice(idx + phrase.length);
     }
 
-    // Column count: <=3 vertical list, <=6 two-col, else three-col
+    // Column count: 1-3 vertical list, 4-8 two-col. The live Quiz never emits
+    // cols-3 (Slice 3 owner ruling). The two-column cap deliberately favours
+    // readable bilingual option labels over fitting the eight-option question
+    // inside a 748px landscape viewport — the screen already scrolls, and a
+    // cramped three-column card wall is what the ruling replaced.
     function quizColsClass(n) {
       if (n <= 3) return 'cols-1';
-      if (n <= 6) return 'cols-2';
-      return 'cols-3';
+      return 'cols-2';
+    }
+
+    // ----- QUESTION CHANGE: scroll reset + headline focus (trust gate, 2026-08-21)
+    // Advancing inside the question screen is a same-screen re-render, so
+    // showScreen()'s scroll reset and focus move never ran: after Next on a
+    // tall question the next question's eyebrow, progress row and headline
+    // rendered ABOVE the viewport and keyboard focus fell to BODY (measured on
+    // the mounted 1194x748 orientation: headline top -6px; -216px at 390x844;
+    // -308px at 200% zoom). renderQuestion() records the id it last rendered;
+    // a render whose id DIFFERS is a question change and gets exactly
+    // showScreen()'s scroll idiom plus focus on the new headline, in the
+    // focusScreenDestination() idiom (tabindex="-1" on the heading, synchronous
+    // focus({preventScroll:true}) behind the shared refusal gate). Same-id
+    // renders are NOT changes and do nothing here: an answer tap (selectOption
+    // restores focus to the activated option, Slice 3) and a language switch
+    // (restoreLanguageFocus() owns it). showScreen() nulls the record on every
+    // TRUE screen transition, so the first render after startQuiz(),
+    // Review -> Edit and Review -> Back is owned by the screen transition and
+    // is not double-handled. No timer, no frame, no live region, no
+    // announcement: this is sighted-user scroll/focus work under 1.2's
+    // surviving criteria, not the retired transition-announcement item.
+    var _renderedQuestionId = null;
+    function noteQuestionScreenEntered() {
+      _renderedQuestionId = null;
+    }
+    function afterQuestionChange() {
+      if (typeof screenTransitionOwnedElsewhere === 'function' && screenTransitionOwnedElsewhere()) return;
+      var screen = document.getElementById('questionScreen');
+      if (!screen || !screen.classList || !screen.classList.contains('active')) return;
+      // Scroll to top on question change — the same reset showScreen() performs.
+      if (typeof window.scrollTo === 'function') window.scrollTo(0, 0);
+      screen.scrollTop = 0;
+      var heading = document.getElementById('questionHeadline');
+      if (!heading || typeof heading.focus !== 'function') return;
+      if (typeof isFocusRestorable === 'function' && !isFocusRestorable(heading)) return;
+      try {
+        heading.focus({ preventScroll: true });
+      } catch (err) {
+        heading.focus();
+      }
     }
 
     window.renderQuestion = function() {
@@ -13211,7 +13967,7 @@
             </div>
             <div class="noct-quiz-progress-pct">${stepIdx + 1} / ${total}</div>
           </div>
-          <h2 class="noct-quiz-headline">${headlineHtml}</h2>
+          <h2 class="noct-quiz-headline" id="questionHeadline" tabindex="-1">${headlineHtml}</h2>
           <p class="noct-quiz-help">${L(qHelp)}</p>
           <div class="noct-slider-wrap">
             <div class="noct-slider-value" id="sliderVal">${val}</div>
@@ -13256,18 +14012,28 @@
             </div>
             <div class="noct-quiz-progress-pct">${stepIdx + 1} / ${total}</div>
           </div>
-          <h2 class="noct-quiz-headline">${headlineHtml}</h2>
+          <h2 class="noct-quiz-headline" id="questionHeadline" tabindex="-1">${headlineHtml}</h2>
           <p class="noct-quiz-help">${L(qHelp)}</p>
           ${isMulti ? '<p class="noct-quiz-multi-note">' + multiNote + '</p>' : ''}
           <div class="noct-quiz-options ${colClass}">
-            ${displayOptions.map(opt => `
-              <button class="noct-quiz-option ${isMulti ? (selected.includes(opt.id) ? 'selected' : '') : (selected === opt.id ? 'selected' : '')}"
+            ${displayOptions.map(opt => {
+              // aria-pressed carries the selected state (same idiom as the
+              // tier tabs and the compare buttons); the fill and the rail are
+              // its visual echo, never the state itself. The stable id lets
+              // selectOption() hand keyboard focus to the replacement button
+              // after the rerender. Touch handling is the shipped
+              // onclick + ontouchend pair, unchanged (Invariant 10).
+              const isSel = isMulti ? selected.includes(opt.id) : selected === opt.id;
+              return `
+              <button class="noct-quiz-option ${isSel ? 'selected' : ''}"
+                id="qopt-${q.id}-${opt.id}"
+                aria-pressed="${isSel ? 'true' : 'false'}"
                 onclick="selectOption('${q.id}', '${opt.id}', ${isMulti})"
                 ontouchend="event.preventDefault();selectOption('${q.id}', '${opt.id}', ${isMulti});">
                 <span class="opt-label">${L(opt.label)}</span>
                 ${opt.sublabel ? `<span class="opt-sub">${L(opt.sublabel)}</span>` : ''}
               </button>
-            `).join('')}
+            `;}).join('')}
           </div>
           <div class="noct-quiz-nav">
             ${currentQuestion > 0
@@ -13281,6 +14047,12 @@
       container.style.animation = 'none';
       container.offsetHeight;
       container.style.animation = '';
+      // A question CHANGE is a render whose id differs from the one last
+      // rendered on this screen visit; same-id re-renders and the first render
+      // after a screen transition are not (see afterQuestionChange above).
+      var questionChanged = _renderedQuestionId !== null && _renderedQuestionId !== q.id;
+      _renderedQuestionId = q.id;
+      if (questionChanged) afterQuestionChange();
     }
 
     // Quality tiers (gold/silver/bronze) map directly to price indicators.
@@ -13307,6 +14079,41 @@
     }
 
     window.selectOption = function(qId, optId, isMulti) {
+      // Keyboard-only focus restoration. renderQuestion() replaces the whole
+      // option list, so an option activated with Enter/Space would drop focus
+      // to BODY and a keyboard customer would lose their place mid-question.
+      // The check runs BEFORE the rerender and is deliberately narrow:
+      //   - touch: ontouchend calls preventDefault(), so the button never took
+      //     focus and activeElement is not an option — nothing to restore;
+      //   - mouse: the button does take focus but does NOT match
+      //     :focus-visible, so the branch is skipped;
+      //   - keyboard: focused AND :focus-visible — the only case that restores.
+      //
+      // The identity check is load-bearing, not defensive. Testing only "is
+      // some focus-visible option active" was a defect (found in review): on a
+      // hybrid iPad, after activating option A with a hardware keyboard,
+      // TAPPING option B moves no focus at all — ontouchend calls
+      // preventDefault() — so activeElement is STILL A and still matches
+      // :focus-visible. The old guard captured A and put the focus ring back
+      // on the wrong answer after the rerender. Restoration is therefore gated
+      // on the active element being the very option being activated; the id is
+      // rebuilt from the same parts the renderer used to emit it.
+      //
+      // No timer, no frame: the focus call is synchronous, and preventScroll
+      // keeps a long option list from jumping (idiom shared with
+      // focusDataError() and the tier-tab restore).
+      var restoreId = null;
+      try {
+        var activatedId = 'qopt-' + qId + '-' + optId;
+        var active = document.activeElement;
+        if (active && active.id === activatedId
+            && active.classList
+            && active.classList.contains('noct-quiz-option')
+            && typeof active.matches === 'function'
+            && active.matches(':focus-visible')) {
+          restoreId = active.id;
+        }
+      } catch (err) { restoreId = null; }
       if (isMulti) {
         if (!answers[qId]) answers[qId] = [];
         if (optId === 'none') {
@@ -13326,6 +14133,12 @@
         answers[qId] = optId;
       }
       renderQuestion();
+      if (restoreId) {
+        var replacement = document.getElementById(restoreId);
+        if (replacement && typeof replacement.focus === 'function') {
+          try { replacement.focus({ preventScroll: true }); } catch (err) { replacement.focus(); }
+        }
+      }
     }
 
     // When the user taps "Edit" on the review screen we enter edit mode:
@@ -13425,11 +14238,12 @@
           ? 'Revisión <span class="accent">rápida</span>'
           : 'Quick <span class="accent">review</span>';
       }
-      if (help) {
-        help.textContent = es
-          ? "Asegúrate de que todo esté bien, luego construiremos tu combinación."
-          : "A quick check, then your specialist builds your recommendations.";
-      }
+      // The audience statement (trust gate): these answers build the matches
+      // AND the summary the specialist reviews — the Consultation Summary
+      // renders implications derived from the sleep-issue and health answers,
+      // and the customer should not be surprised by that. Dictionary copy;
+      // the previous inline line claimed the specialist builds the matches.
+      if (help) help.textContent = t('review.help');
       if (backBtn) backBtn.innerHTML = es ? '&larr; Atrás' : '&larr; Back';
       // D1: the quiz finish control names the destination it opens.
       if (nextBtn) nextBtn.textContent = t('brief.quiz_finish');
@@ -14130,15 +14944,18 @@
       //
       // Silence cuts both ways: a call site renamed without its entry here
       // keeps logging, drops its entire payload, and reports nothing amiss.
-      // That is exactly how the agenda rename lost placement/lang/layout.
+      // That is exactly how the retired agenda rename lost placement/lang/layout.
       // tests/session_async_check.mjs now holds this map and the call sites to
       // set equality in both directions, so the names cannot drift apart again.
       //
       // Deliberately absent: name, email, phone, answers, mattressId, itemId,
       // accessoryId, topPick, allMatches, reaction/feedback, goal/choice/
       // position, the snoring/reflux/backPain health booleans (a boolean is
-      // still a raw quiz answer), financing `interest` (the customer's own
-      // stated position), and sessionId (an identifier that correlates a
+      // still a raw quiz answer), the whole D4 payment model - payPref,
+      // payExplored, payOpen and every path identifier, which is why Consider,
+      // Clear, Review and Not-right-now emit NO event at all and the two
+      // agenda events that used to fire on them are retired outright - and
+      // sessionId (an identifier that correlates a
       // customer across the whole log with no consumer that needs it — it is
       // kept in memory only to seed generateSavingsPass()).
       ENUMS: {
@@ -14175,7 +14992,6 @@
           sleep_system_item_removed: { step: 'step' },
           sleep_system_step_viewed: { step: 'step' },
           sleep_system_decision_recorded: { step: 'step', status: 'decisionStatus' },
-          financing_agenda_changed: fin, financing_agenda_reviewed: fin,
           official_financing_link_click: fin, mexico_financing_details_open: fin,
           finance_details_open: fin, finance_module_impression: fin
         };
@@ -15695,9 +16511,9 @@
       // Savings Pass is disabled; the consumers below live inside #dreamCodeBox,
       // which stays hidden in that state.
       var pass = savingsPassEnabled() ? generateSavingsPass(analytics.sessionId) : null;
-      var _emailScenario = getActivePromotionScenario();
-      var isDemoMode = !(STORE_CONFIG && STORE_CONFIG.gasUrl)
-        || !!(_emailScenario && _emailScenario.disableEmailSubmission);
+      // Preview vs live is the shared emailDeliveryLive() truth (trust gate):
+      // gasUrl configured AND the active scenario does not block submission.
+      var isDemoMode = !emailDeliveryLive();
       var setText = function(id, text) {
         var el = document.getElementById(id);
         if (el) el.textContent = text;
@@ -15740,14 +16556,13 @@
       setText('emailSendBtn', es ? 'Guardar Mi Resumen →' : 'Save My Sleep Brief →');
       setText('emailPrivacyLink', es ? 'Privacidad y Términos' : 'Privacy & Terms');
       setText('emailStartOver', es ? '↺ Empezar de nuevo' : '↺ Start over');
-      // Privacy line: EN lead stays config-driven (store-config text.emailPrivacy);
-      // ES lead is translated inline because text_es.emailPrivacy is not supplied.
-      setText('emailPrivacyLead', es
-        ? 'Solo usaremos tu correo para enviarte tus resultados.'
-        : ((STORE_CONFIG && STORE_CONFIG.text && STORE_CONFIG.text.emailPrivacy) || "We'll only use your email to send your results."));
-      setText('emailPrivacyStatic', es
-        ? ' Tu información nunca se vende. Puedes cancelar la suscripción en cualquier momento.'
-        : ' Your info is never sold to third parties. Unsubscribe anytime.');
+      // Privacy line: retailer policy copy from store-config text.emailPrivacy /
+      // text_es.emailPrivacy (language-merged), and nothing else. The template
+      // used to append a hardcoded absolute not-sold / unsubscribe promise
+      // here in both languages — a white-label breach and a claim no code
+      // kept — and ignored the configured Spanish lead. Retired by the trust
+      // gate; a retailer with no configured line shows no line.
+      setText('emailPrivacyLead', localizedConfigBlock('text').emailPrivacy || '');
 
       // Preview-mode note under the CTA — shown only while live email is not wired.
       var noteEl = document.getElementById('emailPreviewNote');
@@ -16092,8 +16907,12 @@
           primary: (STORE_CONFIG.colors && STORE_CONFIG.colors.storePrimary) || '',
           accent: (STORE_CONFIG.colors && STORE_CONFIG.colors.accent) || ''
         },
-        // Payment Choice email content stays category-level. The customer's
-        // agenda choices remain on the shared tablet and are not transmitted.
+        // Payment Choice email content stays category-level, and every value
+        // below is CONFIG-DERIVED. No part of the customer's payment position
+        // is transmitted: not payPref, not payExplored, not payOpen, not a path
+        // identifier. `body` is finEmailBody(), which returns the neutral
+        // availability copy in EVERY D4 state — a customer who explored three
+        // paths and one who opened nothing send byte-identical packets.
         financing: financingEnabled() ? (function () {
           var f = getFinancingConfig();
           return {
@@ -17408,7 +18227,7 @@
       // complete plan. NEVER a subtotal, an accessory-only payment, or any
       // "add $X to unlock" math — mattress prices are intentionally absent at
       // runtime, so no displayed sum could represent the real transaction.
-      var financingBlock = financingEnabled()
+      var financingBlock = (financingEnabled() && finSurfaceEnabled('sleepSystem'))
         ? '<div class="sleep-system__financing" id="sleepSystemFinancing">' +
             '<div class="sleep-system__plan-eyebrow">' + escapeHtml(FC('eyebrow')) + '</div>' +
             '<p>' + escapeHtml(FC('sleepSystemGuidance')) + '</p>' +
@@ -18939,10 +19758,11 @@
     // the enclosing script scope (the harness declares each of them):
     //
     //   analytics, t, switchLanguage, showScreen, applyTranslations,
-    //   cancelFinInterestPending, clearFinInterestAnnouncement,
+    //   cancelPayAnnouncePending, clearPayAnnouncements,
     //   currentQuestion, answers, editingFromReview, _resultsState,
-    //   currentLang, financingAgenda, financingAgendaDismissed, financingExplored,
-    //   _finModuleImpressionLogged, _financeReturnFocus, _langFocusHintId
+    //   currentLang, payExplored, payPref, payOpen,
+    //   _finModuleImpressionLogged, _financeReturnFocus, _finSheetStale,
+    //   _langFocusHintId
     //
     // Nothing in here reads or writes any browser persistence mechanism or a
     // backend — the suite greps this block to prove it. The customer session is
@@ -19588,14 +20408,34 @@
       'compareCols', 'compareTraySlots',
       'hf2PicksList', 'hf2AccessoriesList', 'hf2BriefWho', 'hf2BriefContext',
       'hf2BriefProfile', 'hf2SleepSystemSection', 'hf2Priorities',
-      'emailPreview', 'emailRecap', 'accessoriesGrid'
+      // Slice 4 (D4): every financing container built from customer state.
+      // The sheet cards carry the disclosure panels and the Consider/Clear
+      // controls; the handoff block carries the preference and explored rows;
+      // the programs strip is rebuilt per render. All three are regenerated by
+      // their own render path before they can be seen again.
+      'financingSheetCards', 'hf2FinancingInterest', 'hf2FinancingPrograms',
+      'emailPreview', 'emailRecap', 'accessoriesGrid',
+      // Trust gate (2026-08-21): the four Sleep System containers carry
+      // answer-derived prose (e.g. that a base targets the back pain the
+      // customer mentioned). Each is rebuilt by its own renderer before it can
+      // be seen again, but the Welcome line says Restart CLEARS the answers,
+      // and a container the previous render still fills is not cleared.
+      // (Found by the privacy audit; measured after a confirmed Restart.)
+      'sleepSystemMain', 'sleepSystemGuidance', 'sleepSystemRail', 'sleepSystemPlanList'
     ];
 
     // Short customer-derived strings, including every announcement region that
     // would otherwise still be holding the previous customer's last utterance.
     var SESSION_TEXT_IDS = [
       'dreamCodeValue', 'dreamCodePct', 'emailError', 'drawerNavLabel', 'accStatus',
-      'hf2FinancingStatus', 'financingSheetStatus', 'sessionSafetyLive', 'dataErrorLive',
+      // Trust gate (2026-08-21): answer-derived drawer text (shortlist fit line,
+      // pillow prompt title and reason) is overwritten before the drawer can open
+      // again, but the wipe owns every answer-derived surface, not only the
+      // visible ones (found by the privacy re-review). No quote characters in
+      // this comment: the session suite parses the quoted ids from this block.
+      'drawerShortlistFit', 'drawerSystemPromptTitle', 'drawerSystemPromptReason',
+      'hf2FinancingStatus', 'financingSheetStatus', 'financingSheetAction',
+      'sessionSafetyLive', 'dataErrorLive',
       'resultsRevealTitle', 'resultsRevealSubtitle',
       'revealCertCode', 'revealCertPctNum', 'revealCertScope', 'revealCertExpiry',
       'revealCertTerms'
@@ -19777,8 +20617,8 @@
         // tests/session_async_check.mjs. Promise continuations cannot be
         // cancelled at all once dispatched; they fail closed on the epoch
         // instead (see sessionBound).
-        cancelFinInterestPending();
-        clearFinInterestAnnouncement();
+        cancelPayAnnouncePending();
+        clearPayAnnouncements();
         clearSessionTimers();
         window._profileRevealInFlight = false;
         window._resultsRevealInFlight = false;
@@ -19828,12 +20668,18 @@
         if (typeof window.updateCompareTray === 'function') window.updateCompareTray();
         if (typeof window._updatePicksBadge === 'function') window._updatePicksBadge();
 
-        // --- 5. financing discussion agenda -------------------------------
-        // Module state only, exactly as before: financing has never been
-        // written to any persistent store.
-        financingAgenda = {};
-        financingAgendaDismissed = false;
-        financingExplored = false;
+        // --- 5. Payment Choice state (D4) ---------------------------------
+        // Module state only, exactly as before: payment has never been written
+        // to any persistent store. All three dimensions plus the freshness
+        // status and the sheet's stored opener are cleared by NAME and with NO
+        // typeof guard: a guard would let a renamed or deleted binding pass
+        // silently, leaving the previous customer's payment position in place
+        // for the next one. A missing binding must fail loudly here.
+        payExplored = [];
+        payPref = null;
+        payOpen = {};
+        _finSheetStale = false;
+        _financeReturnFocus = null;
         _finModuleImpressionLogged = false;
 
         // --- 6. contact values, three ways --------------------------------
@@ -20271,7 +21117,7 @@
       <div data-store="privacy-draft-notice" style="font-size:0.62rem; font-style:italic; color:rgba(248,246,241,0.45); margin-bottom:0.85rem;">Draft policy — pending retailer approval before live use.</div>
       <div data-store="privacy-heading" style="font-size:0.9rem; font-weight:700; color:var(--color-gold-bright); margin-bottom:0.75rem;">Privacy</div>
       <div style="font-size:0.68rem; color:rgba(248,246,241,0.7); line-height:1.65; margin-bottom:1rem;">
-        <span data-store="privacy-body">DreamFinder collects your name, email, and optional phone number to deliver your mattress recommendations. Your information is only used for this purpose and is never sold or shared with third parties.</span> <span data-store="privacy-policy-contact">To access or remove your information, contact your local store.</span>
+        <span data-store="privacy-body"></span> <span data-store="privacy-policy-contact"></span>
       </div>
       <div data-store="disclaimer-heading" style="font-size:0.9rem; font-weight:700; color:var(--color-gold-bright); margin-bottom:0.75rem;">Disclaimer</div>
       <div data-store="disclaimer-body" style="font-size:0.68rem; color:rgba(248,246,241,0.7); line-height:1.65;">DreamFinder is a product recommendation tool. Match percentages and Sleep Brief guidance are generated from your quiz answers and should be treated as starting points, not guarantees. This tool does not provide medical advice — consult a healthcare provider for medical sleep concerns. Discounts and product availability are subject to store terms.</div>

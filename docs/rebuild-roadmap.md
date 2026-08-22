@@ -9,25 +9,103 @@ owner-review decisions (see "Phase 1 direction decisions — recorded
 see the open-decisions register. Device hardening remains BLOCKING for
 showroom use.**
 
-**Last updated:** 2026-08-14 *(documentation-only reconciliation: records the
-Nocturne owner-review decisions D1–D6, the 2026-08-12 screen-reader
-out-of-scope ruling's effect on 1.2, the settled tier-tab direction, the
-adopted Payment Choice state model, the Daybreak PRs #42/#43 and the
-2026-08-13 owner-approved scoring change they carried, and corrects statements
-that survived from before the 2026-08-12 Phase 1 authorization. No product
-code moves in this revision.)*
+**Last updated:** 2026-08-22 *(records the owner's 2026-08-21 product-direction
+rulings on the Trust integrity gate — R1 merge order: draft PR #54 (the gate)
+merges before draft PR #53 (Slice 5), which then integrates the resulting
+`main` and proves the combined behaviour; R2 heritage stays Welcome-only this
+cycle; R3 the shipped Gold-first / within-tier presentation is retained this
+cycle with the 15px relativity note, options B–D deferred, nothing in 3.3
+authorized; R4 the removed hardcoded "never sold / unsubscribe" promise is
+never restored and no other absolute promise is authored; R5 the idle
+dialog's body becomes behaviourally exact and dictionary-driven (shipped on
+the branch, Spanish provisional); R6 "since 1935" stays as shipped,
+provisional, the BBB 1924 entry unresolved, no anniversary arithmetic; R7 a
+one-time VoiceOver sanity pass on the mounted iPad is REQUIRED before #54
+leaves draft; R8 the mounted-device gate stands. These are product-direction
+rulings only — not legal, native-language, device or showroom approval, and
+not authorization to merge either PR. The conflict forecast between the two
+branches is re-stated as five files (it was three before the Sleep System
+containers joined the wipe inventory). The previous revision, 2026-08-21,
+inserted the **Phase 1 cross-cutting gate —
+Trust integrity and transparency** (🔨, on branch `claude/phase1-trust-integrity`
+from `4a76503`), discovered by the 2026-08-21 quiz trust investigation
+(`docs/quiz-trust-investigation-2026-08-21.md`). By owner instruction it sits
+after Slice 4 Payment Choice and before Slice 5 Sleep Plan in the approved
+order; it repairs shipped trust defects that cross the ownership of 1.2, 1.3 and
+1.6 and closes none of those items. It records the in-quiz heritage rail as not
+approved, adds the tier-presentation, heritage, founding-year, privacy-approval,
+specialist-audience, idle-dialog-wording, measurement and VoiceOver questions
+to the register, and
+re-points the reconciliation baseline. It closes nothing else: no scoring, tier,
+threshold, touch, persistence or financing-influence change is implied or made;
+Spanish stays provisional — with the privacy sentences now owed native review
+FIRST; device hardening still blocks showroom use; Phase 0 stays closed. The
+previous revision, 2026-08-20, closed out Slice 4: PR #51 merged as `b2acd7e`
+with all four manual gates passed and owner-reported, the final reviewed head
+`ee6e402` green in CI and clean on external review, and the Pages deployment
+verified at exactly the merge commit; item 1.5 moved ⬜ → ✅. The
+2026-08-17 revision recorded the Slice 4 Payment
+Choice owner
+rulings — the preserved "Payment preference" wording and its narrow validator
+allowlist, the two-dimension durable model, the D4 rows landing on the existing
+handoff only, the four key renames, the nine adopted copy strings, the ten
+retired ones, the not-right-now transition table, first-open exploration
+ordering, handoff-only suppression, the stale-path disclosure, the accepted
+cache-skew window, the two retired diagnostics, the total email exclusion and
+the drawer/Sleep System surface disable — and re-pointed the reconciliation
+baseline and next-item pointer once Slice 3 had merged. The
+2026-08-16 revision recorded the Slice 3 Quiz owner rulings — zero option
+icons, the two-column grid cap, and the five authorized accessibility repairs —
+together with the honest 47-icon audit ledger. The 2026-08-14 revision recorded
+the Nocturne owner-review decisions D1–D6, the 2026-08-12 screen-reader
+out-of-scope ruling's effect on 1.2, the settled tier-tab direction, the adopted
+Payment Choice state model, the Daybreak PRs #42/#43 and the 2026-08-13
+owner-approved scoring change they carried.)*
 **Original roadmap baseline:** `42ff5f3a2158bc68219b1c87cb6356f146009fdc` — GitHub
 `main` when this document's phase statuses were written, the merge commit of
 PR #16 (2026-08-05). It is **not** current `main`. GitHub state is
 authoritative; a local checkout never is.
-**Reconciliation baseline:** `83d4646e5af611a14a7b3fbd66f5a0604bb7886e` — GitHub
-`main` at this revision; PR #43 merge commit (2026-08-14, Daybreak PR 2).
-**Next implementation item:** per the approved 2026-08-14 slice order — after
-this reconciliation merges: (1) Results tier-tab restyle and card hierarchy
-(1.3 Proceeds, hero-plus-support grid per D3); then (2) the Sleep Brief
-recomposition under 1.1's lifted gate (constellation component first, then the
-reveal composition). The full recommended order is recorded in the 2026-08-14
-decision block. The two conditions Phase 1 implementation required — the 0.4
+**Reconciliation baseline:** `4a765034b402ddfbfdb8bfcf3313cf2ee6c8e88b` — GitHub
+`main` at this revision; PR #52 merge commit (2026-08-20, the docs-only Slice 4
+close-out), and the commit the trust-integrity branch was cut from. The prior
+baseline was `b2acd7edfb0aa2dfb3add2cf55d7489c0fe50c2a` (PR #51, Nocturne
+Slice 4, the Payment Choice model per D4, 2026-08-20), before that
+`5436deaea432ec87eb6b4d9f06cd82a85fb1910c` (PR #47, Nocturne Slice 3,
+2026-08-16), before that `b05d47fdf88c54d2dda666e7e3c6b475aa1cc734` (PR #46,
+Nocturne Slice 2, 2026-08-16), and before that
+`83d4646e5af611a14a7b3fbd66f5a0604bb7886e` (PR #43,
+Daybreak PR 2, 2026-08-14).
+**Merged slices and current work:** per the approved 2026-08-14 slice order, items
+(1), (2), (3) and (4) have all merged — Slice 1, the Results tier-tab restyle
+and hero-plus-support card hierarchy (1.3 per D3), as PR #45; Slice 2, the Sleep
+Brief recomposition and Sleep Signature (1.1 per D1+D2), as PR #46;
+Slice 3, the Quiz visual pass (1.2), as PR #47; and Slice 4, Payment Choice
+(1.5 per D4), as PR #51, merged 2026-08-20 as `b2acd7e` with its four manual
+gates passed and its Pages deployment verified. **Slice 4 is complete, not the
+current item.** Unlike
+Slices 1–3 it was not presentation-only: it replaced an interaction model. It
+still changed nothing the engine computes — the Phase 1 output-regression
+fixture and its pinned sha256 are byte-identical across it — and it added no
+telemetry, no email content and no payment math.
+
+**Current work (2026-08-21), two branches.** The owner-inserted **Phase 1
+cross-cutting gate — Trust integrity and transparency** is `🔨` on
+`claude/phase1-trust-integrity` (cut from `4a76503`); it is placed in the
+approved order after Slice 4 and before Slice 5, and its block sits after item
+1.7. **(5) Slice 5 — the Sleep Plan screen (D5 / item 1.7)** is `🔨` on
+`claude/nocturne-slice5-sleep-plan` (commits C0–C7, draft PR #53, unmerged).
+*(An earlier revision of this paragraph said Slice 5 was `⬜`, approved to build
+and not started; it began on its own branch — draft PR #53, head `6decbef` —
+before 2026-08-21. The gate is Slice 5's prerequisite in the approved order,
+and the merge order is **ruled (owner, 2026-08-21): the gate — draft PR #54 —
+merges first; Slice 5 — draft PR #53 — then updates from the resulting
+`main`, resolves the forecast both-added conflicts semantically, rebuilds the
+demo bundle and re-runs the complete suite on the combined tree.** Slice 5
+was developed concurrently and its branch work continues; #53's current CI is
+not post-gate integration proof. The ruling authorizes neither merge.)* Item 1.7 carries its own scope
+and exit, and its Payment Choice row was deliberately excluded from Slice 4 by
+owner ruling 3. The full recommended order is
+recorded in the 2026-08-14 decision block. The two conditions Phase 1 implementation required — the 0.4
 mounted-device evidence closing Phase 0, AND Blake explicitly opening Phase 1 —
 **are both met** (2026-08-10 and 2026-08-12 respectively). Every merge still
 passes the phase-wide device-matrix merge gate and the Phase 1 output
@@ -193,6 +271,14 @@ None of these are negotiable by a redesign.
    for reviewed staff/device state only.
 7. **Diagnostics are allowlisted per event and value-validated**, and the logged
    event set and `EVENT_FIELDS` are held to set equality in both directions.
+   The contract governs whatever event set exists, in both directions and at any
+   size: adding an event without declaring it drops its whole payload, and
+   declaring one nothing logs leaves dead contract surface — so **retiring an
+   event means removing it from both halves in the same change**, which is how
+   Slice 4 removed the two agenda events. *(What the guard does NOT cover is
+   enum VALUES: an unlisted `placement` value is dropped at runtime with only an
+   anonymous count. That gap is why 1.5 config-disables the drawer and Sleep
+   System surfaces instead of retiring their placement values.)*
 8. **The kiosk collects no financial data.** Applications happen only on approved
    external Lacks/lender pages.
 9. **Focus, wipe and language safety.** Focus ownership is respected (safety
@@ -207,6 +293,32 @@ None of these are negotiable by a redesign.
     allowlisted source, or it does not change. The suppressed, fail-closed
     presentation **is** the correct demonstration of stale state. *(Made
     permanent governance 2026-08-14, promoted from a prototype-round rule.)*
+12. **Native-Spanish linguistic approval is consolidated, not per-slice.**
+    *(Owner ruling 2026-08-15.)* The native-Spanish review of customer-facing
+    ES copy is **deferred to a single consolidated pass at the end of
+    development**, rather than gating each slice. A slice therefore does not
+    wait on a Spanish linguistic sign-off to merge. What each slice still
+    owes, without exception:
+    - **EN and ES functional testing** on the device matrix (both
+      orientations, both languages) — the language toggle, layout under
+      Spanish text expansion, and every ES surface the slice touches.
+    - **Automated EN/ES parity** — identical dictionary key sets, every new
+      key present and genuinely translated in both languages, and the
+      slice's own suite executing its ES path.
+    - **A copy inventory**: every new or changed ES string the slice ships is
+      listed in its PR, so the consolidated review has a complete ledger to
+      work from rather than reconstructing it from diffs.
+    Deferral is not approval. Until that consolidated pass happens, shipped
+    ES copy is provisional, and this invariant is what records that it is
+    owed. It does not touch the separate, still-open native-Spanish
+    **claim-equivalence** reviewer for catalog claims (see the claim
+    inventory), which remains its own gate.
+    *(2026-08-21: the customer-facing privacy / data-use sentences are the
+    one recorded exception to the deferral — a wrong translation there changes
+    a promise, so they are owed native review before showroom use, ahead of
+    the consolidated pass. Recorded on the owner's 2026-08-21 instruction that
+    privacy copy receives native-review priority, which the investigation had
+    also recommended. See the Phase 1 cross-cutting Trust integrity gate.)*
 
 ---
 
@@ -214,7 +326,7 @@ None of these are negotiable by a redesign.
 
 Closes out before Phase 1 implementation begins.
 
-### 0.1 — Agenda analytics contract ✅
+### 0.1 — Financing analytics contract ✅
 
 **Shipped.** PR #11 (merged `5a9cd10`) corrected an event rename that had left
 `EVENT_FIELDS` declaring two retired names while two live events went undeclared —
@@ -227,6 +339,17 @@ set equality in both directions, and any `analytics.log()` call whose event name
 cannot be statically enumerated fails the suite. Implementation and mutation
 evidence live in `tests/session_async_check.mjs` and in the PR history; they are
 not restated here.
+
+*(Terminology, 2026-08-17: this item is named for the two **agenda** events it
+repaired — `financing_agenda_changed` and `financing_agenda_reviewed`. Slice 4
+**retired both outright, with no replacement**, because a payment preference is
+the customer's own position and no consumer needs it; the heading is renamed
+accordingly. The item stays ✅: what 0.1 delivered was the set-equality contract,
+not those two names, and that contract is exactly what let two events be removed
+in one change without either half drifting — the same suite that caught the
+rename now proves the retirement. The four surviving financing events are
+`finance_module_impression`, `finance_details_open`,
+`official_financing_link_click` and `mexico_financing_details_open`.)*
 
 ### 0.2 — This roadmap ✅
 
@@ -627,6 +750,12 @@ finalized tier-tab direction (1.3's adoption clause, satisfied by "the tabs
 stand", D3). Everything else on the list stands, including the reason gate,
 Phase 2, Phase 3, and the showroom blocker.)*
 
+*(2026-08-21: Blake Ford instructed, in conversation, that a cross-cutting
+Trust integrity and transparency gate be inserted after Slice 4 and before
+Slice 5. Its work lies inside 1.2 and 1.6 (⬜) and 1.3's Proceeds (neither
+gated output), so it proceeds under this authorization and lifts nothing on
+the list above.)*
+
 ### Standing Phase 1 constraints
 
 1. **Nothing here changes what is recommended** (Invariant 2). Scoring, ranking,
@@ -941,7 +1070,12 @@ below-threshold comparison cue is retired from the Results cards by this
 decision — surfacing position, never selecting by the field; the
 below-threshold cues that survive elsewhere (the HF2 pick card's line and
 the Sleep System step badge) are untouched and remain later-slice
-territory. Three further owner-directed repairs ship in the same slice: the
+territory. *(2026-08-21: the relativity line shipped at 11px, below body size
+for the one honest statement about tier-relative match strength; the
+cross-cutting Trust integrity gate (block after 1.7) raises it to body size
+with contrast and size assertions. Its wording, its semantics, the tabs, the
+Gold-first default, the engine's order and everything else in this ruling are
+unchanged — legibility only.)* Three further owner-directed repairs ship in the same slice: the
 promotions offer cue now receives the engine's full qualified list instead
 of a presentation-layer slice (behaviorally identical at the engine's cap
 of 3; cue and cards can no longer diverge), a one-entry tier no longer
@@ -974,9 +1108,19 @@ Currently considering ✓ / Clear preference / the exploration-consequence line
 preserving the governed no-submission sentence verbatim) enter
 `incoming/lacks_financing.json` through the pipeline — Spanish provisional
 under the native-review gate — and the governed keys still carrying retired
-agenda vocabulary (`agendaNotNow`, `interestNotNowAnnounce`,
-`interestClearedAnnounce`) are renamed in the envelope in that same adoption
-change.
+agenda vocabulary are renamed in the envelope in that same adoption change.
+*(Renames DONE, Slice 4 commit C1, output-identical — every value preserved
+character-for-character: `agendaNotNow` → `preferenceNotNow`,
+`interestNotNowAnnounce` → `preferenceNotNowAnnounce`,
+`interestClearedAnnounce` → `preferenceClearedAnnounce`, `agendaDone` →
+`sheetDone`.)*
+*(Copy count corrected, 2026-08-17: the adopted set is NINE, not eight. The
+2026-08-17 Slice 4 authorization added `preferenceNone` — "Not selected" /
+"Sin seleccionar" — which the eight above had no way to express: the preference
+row needs a value when nothing is selected, and leaving it blank would read as a
+rendering failure rather than as a state. All nine shipped in commit C2; the
+governed no-submission sentence is preserved character-for-character in both
+languages and pinned by exact tests.)*
 
 **D5 — Sleep Plan and Consultation Summary.** (a) The **Sleep Plan is
 commissioned as a new production screen** (see the new item 1.7) between
@@ -1008,7 +1152,9 @@ recorded as Invariant 11.
 **What D1–D6 are not.** Not final pixel-level visual approval — every merged
 slice still passes the device-matrix merge gate (both orientations, EN and
 ES) and Blake's live review, as every shipped slice has. Not Spanish
-approval — the native-Spanish review gate stands over all new ES copy. Not a
+approval — ES copy remains provisional until the consolidated end-of-
+development native-Spanish pass (Invariant 12, owner ruling 2026-08-15;
+before that ruling this gate blocked each slice). Not a
 scoring, ranking, tier, threshold, cap, back-fill or firmness change — the
 output-regression fixture holds. Not showroom-use authorization — device
 hardening remains blocking.
@@ -1023,7 +1169,24 @@ interaction, then plan/handoff rows); (5) Sleep Plan screen (D5/1.7 —
 finalist-state machinery, then the screen); (6) Consultation Summary, then
 Welcome, drawer, email (1.6).
 
+*(2026-08-21: by owner instruction, a **cross-cutting Trust integrity and
+transparency gate** is inserted after (4) Payment Choice and before (5) Sleep
+Plan — see the gate block after item 1.7. It is an integrity repair and a
+prerequisite for the later customer-facing screens, not a new visual feature,
+and it does not change the approved D1–D6 direction. Slice 5 had already begun
+on `claude/nocturne-slice5-sleep-plan` (C0–C7, draft PR #53, unmerged) when the
+gate was inserted; its branch work continues, and by owner ruling (2026-08-21)
+it merges after the gate and integrates the resulting `main`. Nothing here
+changes Slice 5's scope or exit.)*
+
 ### 1.1 — Sleep Brief ⬜
+
+**Slice 2 merged 2026-08-16 (PR #46, merge `b05d47f`)** — the D1 recomposition
+plus the D2 Sleep Signature. The status mark above still reads ⬜ ("approved to
+build, not started"), which this merge contradicts; moving it is the owner's
+call, not this slice's, so it is flagged rather than changed. Native-Spanish
+approval remains deferred to the consolidated end-of-development review
+(Invariant 12).
 
 **Gate lifted 2026-08-14.** The gate read: approver Blake, unblocked by his
 approval of a reviewed prototype, recorded here with the date, over two output
@@ -1139,6 +1302,160 @@ deferred task.
 quiz without changing scoring, answer structure, touch behaviour, or
 navigation semantics. Auto-advance stays a separate locked journey decision —
 see 3.4 🔒.
+
+**Icon review — COMPLETE, and the ruling is ZERO icons (owner, 2026-08-16).**
+The review the bullet above required has been done, and Blake ruled that the
+Quiz displays **no option icons at all**. The honest ledger, recorded here so
+the count is auditable rather than asserted:
+
+| Outcome of the 47-mapping review | Count |
+|---|---|
+| Configured option-icon mappings reviewed | **47** |
+| Pass the meaning test above | **18** |
+| Fail it | **28** |
+| Semantically deferred (neither clearly meaningful nor clearly harmful) | **1** |
+| Introduced into the customer UI | **0** |
+
+**"Passes the meaning test" is not pre-approval to render an icon later.** The
+18 passing mappings are recorded as *reviewed and not disqualified*, nothing
+more; introducing any of them is a new decision, not a resumption of this one.
+The 47 dormant `icon` fields stay in `incoming/dreamfinder_quiz.json` → the
+workbook → `data/quiz.json`, and `validate_quiz`'s requirement that every
+option carry one stays in force — the data contract is unchanged, only the
+renderer never reads it. Selective introduction of the 18, any new icon
+vocabulary, deletion of the dormant fields, and cleanup of the orphaned
+`.opt-icon` / `.option-btn` / `.options-grid` CSS are all explicitly out of
+scope for Slice 3.
+
+What the 28 failures fail on, with real examples from the shipped data:
+
+- *Medicalising* — `nerve_pain → lightning`, `reflux → flame`,
+  `back_pain → spine`, `hip_pain → pressure`, `allergies → sneeze`,
+  `snoring → snore`. Clinical iconography on a furniture showroom floor.
+- *Characterising the customer* — `body_type/petite → cloud`,
+  `average → weight`, `athletic → support`, `plus → support`,
+  `getting_older → aging`. These depict the shopper's body or age, which the
+  meaning test above already calls worse than no icon.
+- *Confusing* — `trigger/moving → family`, `trigger/upgrade → cloud`,
+  `too_soft → couch`.
+- *Merely decorative* — `trigger/browsing → smile`,
+  `temperature/comfortable → smile`, `rarely → check`, and both `none → check`
+  mappings.
+- *Colliding* — one glyph carrying several unrelated meanings defeats the
+  purpose: `flame` serves temperature/hot, sleep_issues/hot **and**
+  health_conditions/reflux; `combo` serves sleep_position/combo and
+  sleep_issues/tossing; `support` serves both `athletic` and `plus`; `weight`
+  serves `average` and `extra_support`.
+
+The one deferred mapping is `sleep_position/no_idea → question`: whether a
+question-mark glyph dignifies "I'm not sure" or signals confusion is a copy
+question, not an icon question, and it is not being answered here.
+
+**Visual direction — owner-ruled 2026-08-16:** *"A refined consultation form,
+not an illustrated card quiz."* Implemented as flat, restrained editorial
+answer rows on the existing warm consultation palette. Preserved unchanged:
+the eyebrow, the progress rule, the question headline and its italic accent
+treatment, the help copy, option labels and sublabels, firmness behaviour, and
+the manual Back/Next journey. Prohibited and absent: pictograms,
+illustrations, badges, decorative checkmarks, shadows, gradients, ripples,
+stagger, bounce, and any new selection animation. Labels keep the serif
+treatment; sublabels were raised to 15px/1.45 for legibility.
+
+**Grid — owner-ruled 2026-08-16:** `quizColsClass` emits `cols-1` for 1–3
+options and `cols-2` for 4–8; the live Quiz **never** emits `cols-3`, and the
+existing sub-700px one-column behaviour is untouched. The two-column cap
+deliberately favours readable bilingual options over fitting the eight-option
+question inside a 748px landscape viewport — the screen already scrolls, and
+normal document scrolling is preserved (no nested option-grid scrolling, no
+clipped choices, no obscured navigation).
+
+**Authorized accessibility repairs (sighted-user criteria only — the
+2026-08-12 screen-reader ruling above is untouched, and none of this is
+question-transition announcement work):**
+
+1. `aria-pressed` on every option button, single- and multiple-select alike,
+   mirroring the stored answer exactly. The controls stay `<button>`s: no
+   radio/checkbox roles, no arrow-key group semantics.
+2. A non-colour selected cue. In normal rendering a 6px rail is reserved
+   transparently at rest and painted on selection while the remaining boundary
+   doubles to 2px, with padding compensation so no text moves. Under forced
+   colours the treatment is deliberately different, because a transparent
+   border is not guaranteed to stay transparent there and a reserved rail could
+   paint on every option: resting options take a **uniform 1px boundary on all
+   four sides, explicitly coloured `CanvasText`**, and the selected option a
+   **3px frame with a 6px left rail, also explicitly `CanvasText`**. Pinning the
+   colour on *both* rules is load-bearing rather than tidy: a uniform width
+   alone still left the left edge carrying the base rule's `solid transparent`,
+   whose visibility is the UA's choice; and a colour on the resting rule alone
+   could never reach a selected option, because that selector is (1,2,1) and
+   loses to the normal selected rule's author colour at (1,3,1). Both are
+   padding-compensated to the same per-side totals (21/23/21/23 wide,
+   18/19/18/19 at the narrow breakpoint, which carries its own forced-colours
+   geometry). The rule is scoped to the active quiz screen and qualified by
+   `.selected[aria-pressed="true"]` so it outranks the normal selected rule
+   (1,4,1 against 1,3,1); `forced-color-adjust: none` is not used. No answer
+   icon, no decorative checkmark.
+
+   *An earlier revision of this slice shipped this cue as
+   `.noct-quiz-option[aria-pressed="true"]` at specificity (0,2,0), which lost
+   the cascade to the normal selected rule's `border-width: 2px` at (1,3,1) and
+   therefore never applied — the paragraph above described behaviour that did
+   not occur. Found in review and repaired; the regression test now asserts the
+   cascade outcome and the per-side geometry rather than the presence of CSS
+   text. **The forced-colours result is verified by static cascade analysis
+   only — no forced-colours rendering environment was available, and it has not
+   been visually confirmed.***
+3. Visible focus. `.noct-quiz-option`, `.noct-quiz-back`, `.noct-quiz-next`,
+   `.noct-review-edit` and `.noct-slider-track` joined the existing shared
+   two-ring `:focus-visible` block and its CanvasText forced-colors fallback,
+   in place — the anchored block's position is unchanged, because current
+   suites depend on it. The firmness slider had removed its outline with no
+   replacement; that is repaired.
+4. 44×44 CSS-px interaction areas. Option rows (84/88/76px) and Next (~53px)
+   already cleared the floor and are now pinned; Back (33px) and Review Edit
+   (32px) did not and were raised. The slider gained a transparent 44px
+   interaction band via vertical padding with the paint clipped to the content
+   box — the ~20px painted thumb, the 1–10 values, stops, default, drag
+   semantics and touch handlers are all unchanged. The band also carries
+   `touch-action: manipulation`, as CLAUDE.md requires of every interactive
+   element; it was missing when the band was first enlarged (found in review).
+5. Keyboard-only focus restoration. `selectOption()` replaces the activated
+   button, which dropped keyboard focus to BODY. Options now carry stable ids
+   (`qopt-<questionId>-<optionId>`); focus is restored synchronously with
+   `focus({preventScroll: true})` **only** when the outgoing element was
+   `:focus-visible`, so touch (whose `ontouchend` preventDefault means the
+   button never took focus) and mouse (focused but not `:focus-visible`) never
+   enter the path. No timer, no `requestAnimationFrame`, and the shipped
+   `onclick` + `ontouchend` handler pair is untouched.
+
+Review rendering, layout, column count, content, order, copy and navigation
+are **unchanged**; the only Review-adjacent changes are the Edit control's
+44px floor and its focus/forced-colors styling.
+
+**1.2 is not closed by this slice.** The item stays ⬜ until the Slice 3 PR is
+merged AND the phase-wide device-matrix gate passes on confirmed hardware.
+Desktop screenshots are not a physical-iPad pass.
+
+**Both conditions are now met (recorded 2026-08-17).** Slice 3 merged as
+**PR #47**, merge commit `5436deaea432ec87eb6b4d9f06cd82a85fb1910c`, and its
+manual gates — the desktop keyboard/zoom/reduced-motion pass, the Windows
+forced-colors visual check, and the physical mounted iPad Pro 11-inch pass in
+both orientations and both languages — **passed**. 1.2's presentation work is
+therefore closed; the item's remaining ⬜ scope is the icon programme, which is
+content authoring rather than engineering. Native-Spanish linguistic approval
+remains deferred to the consolidated end-of-development pass (Invariant 12) and
+is **not** a Slice 3 gate.
+
+*(2026-08-21: two shipped defects inside this item's territory are repaired
+under the cross-cutting Trust integrity and transparency gate (block after 1.7):
+the question-change scroll position and keyboard-focus placement inside the
+quiz — after Next on a tall question the next headline rendered above the
+viewport and focus fell to the document body — and the truth of the
+per-question `helpText` against the engine. The scroll/focus repair is
+sighted-user work under the surviving clause above (visible focus, viewport):
+no announcement, no live region, no timer. It does not reopen the retired
+2026-08-12 question-transition-announcement item. The copy repair is
+copy-only through the canonical pipeline and moves no score tag.)*
 
 ### 1.3 — Results and mattress cards ◐
 
@@ -1286,6 +1603,11 @@ for the tier tab affordance. Shipping the unblocked portion does not close this
 item: the reason-led card is the point of the redesign. *(The tier-navigation
 clause is satisfied: Blake recorded that the tabs stand, 2026-08-14.)*
 
+*(2026-08-21: the D3 relativity line's legibility — 11px → body size — is
+repaired under the cross-cutting Trust integrity gate (block after 1.7; see
+the D3 clarification in the decision block). CSS only; it touches neither
+gated output and edits neither list above.)*
+
 ### 1.4 — Sleep System ⬜
 
 The largest reading load in the app.
@@ -1299,7 +1621,7 @@ The largest reading load in the app.
 - **Prices:** accessory prices are displayed today and stay as they are. Phase 1
   adds no new price surface, and this bullet does not license one — see Phase 2.
 
-### 1.5 — Financing footprint ⬜
+### 1.5 — Financing footprint ✅
 
 - **The Payment Choice model is the 2026-08-14 exploration/preference model
   (D4) — the agenda model is superseded.** An earlier revision of this bullet
@@ -1344,6 +1666,308 @@ The largest reading load in the app.
 - Keep financing orientation separate from sleep-fit scoring (Invariant 1).
 - Make financing concrete through eventual verified price grounding, not by
   repeating vague financing copy everywhere.
+
+**SLICE 4 MERGED AND DEPLOYED — item 1.5 closed 2026-08-20.** PR #51 merged as
+**`b2acd7e`** (a merge commit; parents `5436dea` + `ee6e402`, the fourteen-commit
+correction history deliberately preserved rather than squashed, and the source
+branch `claude/nocturne-slice4-payment-choice` kept). The condition this block
+previously stated has been met in both halves — the PR merged **and** all four
+manual gates passed. Neither half was waived.
+
+*Final reviewed head.* **`ee6e402`** — CI `Full suite (18 checks)` green at
+exactly that head (run 32381397192), and an external Codex review of exactly
+that commit returned no findings, with zero unresolved review threads.
+Post-merge CI on `main` (run 32388655153) is green at exactly `b2acd7e`.
+
+*The gates, and why they still apply to what merged.* All four passed on
+**2026-08-20**, owner-reported by Blake on real hardware — they are manual
+findings, not automated ones, and were not independently observed or reproduced
+by the implementation. They were performed against **`305fb41`**, one commit
+below the merged head. They carry forward because **C13 changed validator and
+test infrastructure only**: all **25 protected customer-facing artifacts are
+byte-identical** between `305fb41` and `ee6e402`, `index.html` included, so the
+bytes the gates ran against are the bytes that merged. That is a byte-identity
+proof, not an assumption that a test-only change must be harmless.
+
+*Deployment.* Pages built from **exactly `b2acd7e`** (run 32388653613; build
+record `status=built commit=b2acd7e`) and serves
+https://beford782.github.io/LacksFurniture/. Deployed smoke passed: 12 of 12
+served files byte-identical to the repository blobs at `b2acd7e`, with
+`index.html` at the same hash proven identical to `305fb41`; all 14 D4 required
+copy keys served and none of the 10 retired keys; promotions still the inert
+contract; the demo route reachable; and the white-label boundary intact in the
+served bytes.
+
+*What this does NOT close.* **Spanish remains PROVISIONAL** under
+`esReviewStatus: "pending-native-legal-review"` and may not be described as
+native-reviewed anywhere; per Invariant 12 that pass is consolidated to the end
+of development and was never a merge gate for this slice. **Kiosk hardening
+independently blocks showroom authorization** — see
+`docs/kiosk-device-hardening.md`. A verified preview deployment is not showroom
+readiness, and ✅ on this item does not assert that it is.
+
+**What shipped.** The agenda interaction is replaced by the D4 model in one
+atomic runtime change (commit C2), preceded by test hardening (C0) and an
+output-identical key rename (C1), and followed by the surface policy (C3) and
+this documentation (C4).
+
+*The model.* Two observable dimensions and nothing else — `payExplored`, an
+ordered de-duplicated history in first-deliberate-open order, and `payPref`,
+exactly one of null / a canonical path id / `not_now`. `payOpen` is a third
+variable but NOT a third dimension: ephemeral disclosure state, invisible to the
+handoff, the email, the diagnostics and the recorded position.
+
+*Canonical path identity.* Path ids are now `kind '-' <injective escape>` rather
+than a slug. This is a correctness fix, not a tidy-up: the retired slugifier
+collapsed `"Synchrony Bank"`/`"Synchrony-Bank"`, `"Synchrony"`/`"SYNCHRONY"`
+(two distinct provider groups), an accented provider against a punctuated one,
+and a provider literally named `"General"` against a promotional group with no
+provider — so two payment paths could share one preference row and one set of
+DOM ids, and a customer's Consider could land on a path they did not pick. The
+old ids also embedded a colon, which `getElementById` tolerates but
+`querySelector` parses as a pseudo-class. `tools/validation.py` mirrors the
+encoder and refuses a config whose derived path ids collide.
+
+*Interaction.* A native button plus a hidden panel per path (`aria-expanded`,
+`aria-controls`) — deliberately not `<details>`/`<summary>`, because the sheet's
+focus trap would exclude a `<summary>`. Consider is one-way and carries no
+`aria-pressed`; the considering marker is a non-interactive span; Clear is a
+separately named subordinate action; "Not right now" is the one genuinely
+reversible two-state control and is the only one with `aria-pressed`. A stale
+path stays fully reviewable — its disclosure reveals the governed `staleNotice`
+instead of rates and terms.
+
+*Isolation.* Payment state reaches no score, ranking, tier, match reason,
+priority, Sleep Signature, Sleep Brief, result order, email, GAS payload,
+`Code.gs`, diagnostic or session summary. `financingExplored` and the
+state-specific `emailBody` key are deleted; the email's financing row is the
+neutral `emailBodyAvailable` in every state. `financing_agenda_changed` and
+`financing_agenda_reviewed` are retired outright from both their call sites and
+`EVENT_FIELDS`, with no replacement — D4 adds no telemetry at all.
+
+*Surfaces.* `financing.surfaces` config-disables the drawer and Sleep System
+duplicates. The markup, renderers, call sites, CSS and the `placement` enum
+values all stay; only the flag decides whether they render, and a MISSING flag
+means enabled so a deployment predating the field is unaffected. This is the
+resolution of the "enum retirement is deferred" bullet above — the surfaces go
+dormant, the enum values do not move.
+
+**Owner rulings recorded (2026-08-17, all implemented as written).**
+
+1. The adopted copy "Payment preference" / "Preferencia de pago" is preserved
+   verbatim. The validator's payment-claim guard learned exactly that
+   collocation — the copy did not learn the guard. The addition is narrow:
+   `preference` neutralises a payment noun only in that two-word phrase, and
+   "Payment-preference", "Preferencia del pago", "Preference of payment" and
+   "Preferencia de pago mensual" all still fail, as does every
+   previously-rejected benign phrasing.
+2. Exactly two durable dimensions. No `payCleared`, no fourth durable variable,
+   no second cleared sentinel; clear announcements are transient action effects
+   in a dedicated live region. `payOpen` is permitted solely as ephemeral
+   disclosure UI state.
+3. D4 rows land on the EXISTING handoff only. The Sleep Plan screen and its
+   payment row remain Slice 5 (item 1.7) and appear nowhere in this change.
+4. Four governed keys renamed, values preserved character-for-character:
+   `agendaNotNow` → `preferenceNotNow`, `interestNotNowAnnounce` →
+   `preferenceNotNowAnnounce`, `interestClearedAnnounce` →
+   `preferenceClearedAnnounce`, `agendaDone` → `sheetDone`.
+5. Nine governed bilingual keys added: `paymentPreferenceLabel`,
+   `optionsExploredLabel`, `reviewOption`, `hideDetails`, `considerOption`,
+   `currentlyConsidering`, `clearPreference`, `exploreConsequence`,
+   `preferenceNone`. The governed no-submission sentence is pinned verbatim in
+   both languages by exact tests.
+6. Ten keys retired in the same atomic runtime change: `agendaMark`,
+   `agendaMarked`, `agendaPrompt`, `agendaConsequence`, `agendaEmpty`,
+   `agendaDismissed`, `agendaChange`, `resultsAsk`, `drawerMark` and the
+   state-specific `emailBody`. The hardcoded "Review agenda (N)" /
+   "Revisar agenda (N)" output is gone. Results retains ONE governed
+   "Explore payment options" CTA; the obsolete duplicate button is removed, as
+   are the drawer's and the handoff's duplicates. 34 → 33 copy keys.
+7. Not-right-now transitions: null → not_now; a selected path → not_now;
+   not_now pressed again → null; Consider from not_now → that path. History is
+   never erased by not_now or by clearing it, and Clear applies only to the
+   exact currently selected path.
+8. `payExplored` uses first-deliberate-open order and is de-duplicated.
+9. Not-right-now suppresses explored history **only** in the handoff
+   presentation. History is preserved internally; nothing is hidden or
+   suppressed on Results or in the sheet; undoing it restores the row exactly.
+   *(Wording corrected 2026-08-17 after review. An earlier draft said Results
+   and the sheet "are unchanged", which is over-broad: when a path WAS the
+   preference, pressing Not right now necessarily re-renders that card —
+   the considering marker and Clear revert to Consider — because ruling 7
+   makes not_now replace the selected path. That is the ruled behaviour, not
+   an exception to it. What ruling 9 forbids is SUPPRESSION outside the
+   handoff, and there is none.)*
+10. A stale promotional path remains reviewable, its disclosure revealing the
+    governed `staleNotice`. No visible stale-governance band was added and
+    `staleAnnouncement` was not reused for a new visible surface (D6 stands).
+11. The short shell/config cache-skew window is ACCEPTED. No compatibility
+    aliases were added; the manual device card below carries an explicit
+    hard-reload step because of it.
+12. `financing_agenda_changed` and `financing_agenda_reviewed` retired
+    atomically, call sites and `EVENT_FIELDS` together, with no preference,
+    path, Consider, Clear or Not-right-now telemetry added. The four neutral
+    events survive: module impression, whole-sheet open, official-link click,
+    Mexico detail open.
+13. Payment state is entirely excluded from email.
+14. The surface disable ships in this PR as its own commit, with the dormant
+    markup, renderers, call sites, CSS and enum values all preserved.
+
+**Four further owner rulings, 2026-08-17 — the open questions the independent
+reviews raised, put to Blake and answered.** None required a code change; the
+implementation stands as shipped. They are recorded because each closes a
+question a future reviewer would otherwise reopen, and because "we looked at it
+and decided" is worth exactly nothing if it is not written down.
+
+15. **Consider stays available without expanding the path's details.** The plan
+    detail and disclosure moved inside the collapsed panel in Slice 4; before
+    it they were always visible on the card. Ruling 10 authorised the
+    disclosure MECHANISM and did not address this, so it was put separately.
+    **Ruled: leave as-is.** Nothing is submitted, no application starts, no
+    exact terms are agreed, and the governed `disclosureFooter` renders in
+    every state at the bottom of the sheet. While `exactPromotionsEnabled` is
+    false the panel shows the generic `staleNotice` in any case. The two
+    alternatives were considered and declined: gating Consider on a prior
+    expand would make a salesperson-led choice impossible without a step that
+    means nothing to the customer, and auto-expanding on Consider would move
+    layout under the customer at the instant they act.
+
+16. **Ruling 8 is confirmed as written, not widened.** The governance review
+    read Consider's `payRecordExplored(id)` as widening "first-deliberate-open
+    order", because a path chosen on the salesperson's word and never opened is
+    recorded as explored and then surfaces under "Options explored" once Clear
+    is pressed. That behaviour is the STATE-MACHINE CONTRACT verbatim
+    ("Considering X ensures X is explored and sets payPref to X"); the reviewer
+    did not have that clause. **Ruled: keep as specified.** "Explored" means
+    "this path was on the table", which is the more useful record for a
+    salesperson resuming the conversation. The alternative — Consider setting
+    the preference without recording history — would leave a considered-then-
+    cleared path with no trace on the handoff at all.
+
+17. **The Consider announcement keeps reusing `currentlyConsidering`.** The nine
+    adopted strings contain no dedicated "considering" announcement, so the
+    runtime announces the marker's own copy ("Currently considering ✓" / "En
+    consideración ✓") into the sheet's action region. **Ruled: keep the reuse;
+    no tenth governed key.** No new copy enters the pipeline and no further
+    provisional-Spanish string joins the consolidated native pass. The ✓ glyph
+    reads oddly as speech, which is immaterial: screen-reader function is out of
+    scope by the permanent 2026-08-12 ruling, so nothing depends on how it
+    sounds.
+
+18. **The desktop mouse-focus question waits for the desktop gate.** The
+    accessibility review argued that a mouse click drops focus to `<body>`
+    outside the sheet's focus trap, because `payFocusOrigin` declines to restore
+    when `:focus-visible` is false; the implementation could not reproduce it
+    deterministically, and touch and keyboard are unaffected. **Ruled: do not
+    pre-emptively change it.** It stays an explicit item on the desktop manual
+    card with the exact reproduction to run. If it reproduces, the decision is
+    taken then with evidence — relaxing the ruled "keyboard-visible focus"
+    condition on a reviewer's inference plus a failed reproduction is the wrong
+    order.
+
+**Spanish is PROVISIONAL.** Every ES string added here is unreviewed by a native
+speaker and ships under `esReviewStatus: "pending-native-legal-review"`. Per
+Invariant 12 that is not a merge gate for this slice; the consolidated
+native-Spanish pass at the end of development is where it is settled. Nothing
+in this slice may be described as native-reviewed.
+
+**Verification (automated, all zero failures), as executed on the merged tree.**
+Every count below is the current total at the Slice 4 merge; where a figure is
+written `before → after`, the first is the count at base `5436dea` and the
+second is current. Payment Choice 420 (new suite,
+replacing the retired handoff-interest suite); financing renderer 97 → 319;
+financing copy policy 95 → 215; scoring isolation 71 → 247; session safety
+489 → 535; session async/privacy 216 → 283; email gating 19 → 96; phase 1
+output regression 65 → 72; `tools/validation.py --self-test` 757 → 951; smoke
+112 → 116; financing totality 3395; Daybreak contract 87; lineage 10; QR
+payload 188; contrast 90; financing taxonomy 102; financing URL 53;
+exact-promotions policy 45; claim retirement 53; integrity repairs 17; quiz
+presentation 176; results presentation 83; Sleep Brief presentation 134;
+compare modal 65 and entry 75; construction reveal 102; drawer lifecycle 44;
+motion 202; data-error recovery 331; consultation priorities 219 and summary
+94; email priorities 96; Daybreak demo runtime 54 and server 23; strict golden
+bundle PASS; converter 16; canonical 14; reverify 25; workbook validation OK
+with warnings-as-errors. **Mutation sweep 301/301 caught, 0 survived, 0 did not
+apply** (244 before; this figure read 294 when written at C4 and moved with
+C7–C13). The Phase 1 recommendation fixture and its pinned `BASELINE_SHA256` are
+byte-identical.
+
+The last of those entries is C13's, and it is the one worth remembering: it
+restores a bypass in `tools/validation.py` and is caught by the **validator's
+own self-test**, because no runtime suite can observe that class of defect at
+all. It lives in what the build *admits*, not in what the page does — which is
+exactly how it survived every green suite until an external review found it.
+
+**Manual gates — ALL FOUR PASSED 2026-08-20.** Run and reported by Blake on
+real hardware. They are manual findings: not automated, covered by no suite, and
+not independently observed or reproduced by the implementation. Each gate's
+description is preserved as written below, with its outcome recorded against it,
+so the scope of what was actually checked stays legible.
+
+1. Desktop keyboard / zoom / reduced-motion / manual modal lifecycle —
+   **PASSED.** The ruling-18 mouse-focus escape did **not** reproduce. The
+   finding therefore stays *recorded, not fixed*: one manual pass that fails to
+   reproduce a defect is not proof of its absence, and ruling 18 stands.
+   **Carry one specific unresolved item into this gate.** An independent
+   accessibility review argued that a MOUSE click on a Payment Choice control
+   focuses it without matching `:focus-visible`, so `payFocusOrigin` declines to
+   restore, the control is destroyed by the rerender, and focus falls to
+   `<body>` — outside the sheet, where the modal trap's listener cannot see Tab.
+   It was reasoned from documented UA behaviour, not observed, and an attempt to
+   reproduce it in Chrome was inconclusive: `:focus-visible` after a programmatic
+   `focus()` follows the page's current input modality, which the reproduction
+   could not isolate. Touch is unaffected either way (`ontouchend` preventDefaults,
+   so the control never takes focus and the identity gate declines for a
+   different reason), and keyboard is unaffected. So this is a DESKTOP-REVIEW
+   question, not a kiosk one. **Check it explicitly:** with a mouse, click
+   Consider, then press Tab, and confirm focus stays inside the dialog. If it
+   escapes, the fix is to let restoration turn on origin identity alone and
+   leave the ring to the browser — but that relaxes the ruled "keyboard-visible
+   focus" condition, so it is Blake's call and not the implementation's.
+2. Windows forced-colors visual check — **PASSED, rendered.** This closed the
+   gap the gate existed for: the automated coverage is STATIC CASCADE
+   ANALYSIS of the shipped stylesheet, not rendered verification, and until this
+   pass no forced-colors rendering environment had been available and nothing
+   claimed a cue was seen.
+3. Physical mounted iPad Pro 11-inch, portrait and landscape, EN and ES —
+   **PASSED.** Run against the card
+   below.
+4. Owner live review — **PASSED.**
+
+Screen-reader / VoiceOver verification remains OUT OF SCOPE by the permanent
+2026-08-12 owner ruling. The automated semantic checks still apply.
+
+**Manual iPad card — Slice 4.** Run on the confirmed mounted device (the matrix
+recorded under 1.2's device section), in both orientations and both languages.
+
+0. **Hard-reload before testing.** The app shell and `data/store-config.json`
+   are fetched separately, so a warm cache can pair a NEW shell with an OLD
+   config for a short window — new code reading retired copy keys, or old code
+   reading keys that no longer exist. That window is accepted rather than
+   papered over with compatibility aliases, which is exactly why this step is
+   first: a stale-cache reading is not a defect finding.
+1. Single tap on Review, Hide, Consider, Clear and Not right now — each fires
+   once, no double fire, no sticky hover state left behind.
+2. No stale focus ring under hybrid keyboard + touch: activate one control with
+   a keyboard, then TAP a different one, and confirm the ring does not jump
+   back to the first.
+3. State survives rotation and an EN/ES switch: the same paths stay explored, in
+   the same order; the same preference stays selected; open panels stay open.
+4. Spanish wrapping: "Considerar esta opción", "Quitar preferencia",
+   "Preferencia de pago" and "En consideración ✓" wrap without horizontal
+   overflow, including at 200% zoom.
+5. The sheet footer and the card actions remain reachable — nothing is pushed
+   out of the scroll area.
+6. Not-right-now suppression and recovery: with paths explored, press Not right
+   now and confirm the explored row disappears from the handoff; press it again
+   and confirm the row returns unchanged.
+7. Idle Continue preserves the payment state.
+8. Timeout and "Start new customer" clear it completely — reopen the sheet and
+   confirm nothing is explored, nothing is preferred and no panel is open.
+
+If a gesture test exposes a defect that would require changing the established
+touch-handler architecture, STOP: that is Invariant 10 and D6 territory and
+needs its own authorization.
 
 ### 1.6 — Consultation Summary, Compare, and the remaining screens ⬜
 
@@ -1430,6 +2054,18 @@ salesperson confirms answers, a couple catches a misunderstanding, and a second
 participant corrects the first. It stays as it is; compression or removal is a
 separate locked decision.
 
+*(2026-08-21: three integrity repairs inside this item's territory ship under
+the cross-cutting Trust integrity and transparency gate (block after 1.7),
+ahead of 1.6's own presentation work and without deciding any of it: the
+Welcome screen gains one deployment-mode-aware data-use sentence; the email
+screen's template-hardcoded "never sold / unsubscribe anytime" promise is
+retired and the privacy line reads retailer config in both languages; and the
+Review screen's help line becomes the audience statement that a specialist
+summary is produced from the answers. 1.6's exit clauses — Consultation
+Summary, Welcome, drawer and email presentation, and 0.5's provisional
+presentation — all stand open; the broader Review/Consultation Summary
+composition remains 1.6's.)*
+
 **Mattress drawer.** Genuine product detail — firmness, match reasons, features.
 Duplicate financing reduced per 1.5. Eventually it may show a verified price and
 one concise path to Payment Choice. It must never become a per-product wall of
@@ -1437,8 +2073,13 @@ speculative payment claims.
 
 **Email.** The only artifact the customer leaves with. A concise brief, ranked
 priorities, matches, practical testing guidance, and approved next steps. **Never**
-financing-interest or agenda state, medical-style labels, unapproved rates or
-terms, or customer data beyond the reviewed payload contract. Keep four things
+payment state of any kind — no preference, no explored history, no path
+identifier — nor medical-style labels, unapproved rates or terms, or customer
+data beyond the reviewed payload contract. *(Slice 4 made this executable: the
+email's financing row is the neutral `emailBodyAvailable` in **every** D4 state,
+proven byte-identical across the whole state matrix in both languages by
+`tests/email_gating_check.mjs`, and the `financingExplored` flag that used to
+split "explored" from "available" wording is deleted.)* Keep four things
 distinct: UI implementation, payload capability, GAS activation, and verified
 delivery — `gasUrl` is blank today, so no email change is "live" merely because the
 template exists.
@@ -1449,6 +2090,14 @@ template exists.
 did not exist in earlier revisions).** A new screen between comparison and the
 Consultation Summary: the customer's plan for the in-store trial, presented
 by the salesperson.
+
+*(2026-08-21: in the approved order the cross-cutting Trust integrity gate
+(the block after this item) precedes this item and merges first (owner
+ruling 2026-08-21). Slice 5 began on `claude/nocturne-slice5-sleep-plan`
+(draft PR #53) before the gate was inserted and continues; after the gate
+merges it integrates the resulting `main` and proves the combined behaviour;
+the gate adds nothing to this item's scope or exit. The `⬜` above is stale — Slice 5 is `🔨` — and is Slice 5's branch to
+move, per the 1.1 precedent.)*
 
 What it carries, per the approved direction: an explicit finalist block —
 either the customer-chosen **Finalist**, or the engine's top pick honestly
@@ -1478,6 +2127,155 @@ surface may substitute one state for another.
 **Exit:** the Sleep Plan ships on `main` with the finalist-state semantics,
 wipe coverage proven by the session suites, EN and ES, verified on the
 confirmed hardware per the phase-wide merge gate.
+
+### Phase 1 cross-cutting gate — Trust integrity and transparency 🔨
+
+**Inserted 2026-08-21 on Blake Ford's instruction (given in conversation, not
+in a committed document)**, following the 2026-08-21 quiz
+trust investigation (`docs/quiz-trust-investigation-2026-08-21.md`; verbatim
+agent and red-team reports in
+`docs/quiz-trust-investigation-2026-08-21-agent-reports.md`). The
+investigation asked whether the quiz should show company history, process
+explanations or privacy notes to build justified customer trust, and found
+instead that the shipped app already made several claims its code did not
+keep. **This is Phase 1 work — an integrity repair and a prerequisite for the
+later customer-facing screens, not a new visual feature.** Phase 0 is closed
+and is not reopened by it.
+
+**Placement.** In the approved 2026-08-14 slice order it sits **after (4)
+Slice 4 Payment Choice and before (5) Slice 5 Sleep Plan**; Slice 5 had already
+begun on its own branch (draft PR #53) when the gate was inserted; its
+development continues, and by owner ruling (2026-08-21) it merges after this
+gate and integrates the resulting `main` (see the decision block). **This block's position after item 1.7 is topical,
+not temporal** — the 1.x items are numbered by subject and have never encoded
+schedule (Slice 1 shipped as 1.3, Slice 2 as 1.1, Slice 3 as 1.2, Slice 4 as
+1.5); the gate's place in the schedule is the approved slice order and the
+sequence of record. It has no number of its own because it is
+**cross-cutting**: it repairs shipped defects that fall inside three existing
+items' ownership and closes none of them —
+
+- **1.2 (Quiz)** — question-change scroll position and keyboard-focus placement;
+  the truth of every `helpText` line against the engine.
+- **1.3 (Results)** — the legibility of the ruled relativity line "Match
+  strength is relative within each tier" / "La afinidad es relativa dentro de
+  cada nivel" (D3), which shipped at 11px.
+- **1.6 (Welcome / Review / email)** — one deployment-mode-aware data-use
+  sentence on Welcome; retirement of the template-hardcoded "Your info is never
+  sold to third parties. Unsubscribe anytime." promise (EN+ES) on the email
+  screen; the Review screen's help line becoming an honest statement of the
+  specialist audience.
+
+Each of those items keeps its own mark, gates and exit; this gate lifts
+nothing on any of them. The approved D1–D6 direction is unchanged.
+
+**Defects it fixes, all found by code audit and mounted-device measurement
+(1194×748 and 834×1108, the recorded device matrix), not by preference:**
+
+1. `renderQuestion()` never reset scroll, so after Next on a tall question the
+   next question's eyebrow, progress row and headline rendered above the
+   viewport and keyboard focus fell to the document body (measured on `main`
+   at `4a76503`: headline top −6 px at 1194×748, −216 px at 390×844, −308 px
+   at 200% zoom; `activeElement` = BODY on every Next and Back).
+2. Help lines overstated the engine: "So every mattress we show actually fits
+   your space" (size never filters the lineup); "the biggest clue to the
+   support you need" (a ≤5-point tag against a 50-point firmness term); "an
+   easy fix with the right materials"; "one of the first upgrades you'll feel";
+   and several Spanish lines that said something different from their English.
+3. `index.html` hardcoded a retailer privacy promise in both languages — a
+   white-label breach, an absolute claim, and an "unsubscribe" for a
+   subscription that does not exist — and ignored the configured Spanish
+   email-privacy text.
+4. Nothing told the customer that a specialist summary is produced from their
+   answers, although the Consultation Summary renders implications derived
+   from the sleep-issue and health answers.
+5. The one honest tier statement was 11px.
+
+**What it does not do.** It does not alter scoring, ranking, tier membership,
+the Gold-first default tab, thresholds, caps, back-fill, firmness, the
+qualification rule, touch handling (Invariant 10), persistence (Invariant 6),
+financing influence (Invariant 1), or the engine's computed output
+(Invariant 2 — the Phase 1 output-regression fixture and its pinned sha256
+are byte-identical across it). It adds no auto-advance (3.4 🔒), no consent
+flow, no live region or announcement, no analytics field, no email content.
+**The in-quiz heritage rail ("From the Lacks story") is not approved for
+production and is not built**: no `quiz.trustStories`, no validator contract
+for it, no renderer, no CLAUDE.md paragraph. Heritage stays on the Welcome
+screen once. A restrained heritage treatment remains available only as a
+separately testable research condition in moderated sessions; no
+company-history content belongs beside `sleep_issues` or `health_conditions`,
+and no automatic rotation, background watermark, answer-aware anecdote,
+testimonial, QR or external navigation is authorized. The superseded
+prototype worktree is preserved as research evidence and is not merged.
+
+**Tier architecture — a cross-tier marker, a global maximum, any cross-tier
+ranking — remains Phase 3.3 🔒. The Gold-first initial-tier presentation is a
+separate, presentation-only owner decision (register: "Tier presentation
+(trust)" — ruled 2026-08-21: the shipped Gold-first presentation is retained
+this cycle; a neutral initial tier and a cross-tier marker stay deferred); it
+is not 3.3 and does not wait on it.** This gate may improve the existing relativity
+note's legibility; it may not change tier behaviour, and it adds no
+confessional line and no cross-tier marker.
+
+**Privacy language is conditional on verified deployment behaviour.** The
+data-use sentence is dictionary copy in two variants — a preview-mode
+sentence shown only while `gasUrl` is blank (nothing is sent; this is the
+shipped state) and a live-mode sentence for retailers with email enabled —
+selected at runtime by the same `gasUrl` truth the email screen uses, and
+gated at build by `tools/validation.py`, which rejects preview-mode wording
+in retailer privacy prose under a non-blank `gasUrl`. The network-sink set
+that makes the sentence true (exactly two `fetch` call sites: the same-origin
+data loader and the `gasUrl`-gated results POST; no beacon, socket, form
+action, storage of answers or query serialization) is pinned by
+`tests/trust_integrity_check.mjs` — a tripwire on the named sink forms, not a
+proof against every possible sink, so every diff touching `index.html` is
+still reviewed against the sentence. No privacy policy is claimed approved:
+`text.privacyDraftNotice` stays until the approver of record resolves it.
+
+**Native-Spanish review (Invariant 12) still applies to every ES string this
+gate ships, and the privacy/data-use sentences (and, since R5, the idle-dialog
+body `safety.timeout_body`) are the recorded exception that goes first** — a wrong translation there changes the promise, so they are
+owed native review before showroom use rather than at the consolidated pass.
+The copy inventory is in `docs/trust-integrity-implementation-2026-08-21.md`.
+
+**This gate grants no showroom-use authorization.** `docs/kiosk-device-hardening.md`
+remains BLOCKING; the phase-wide device-matrix merge gate, the Windows
+forced-colors visual check and Blake's live review apply to it exactly as to
+every slice. **A one-time VoiceOver sanity pass on the mounted iPad is
+required before PR #54 leaves draft (owner ruling R7, 2026-08-21)** — a check
+of the new headline focus and of the Welcome and Review lines in reading
+order, with no accepted-risk alternative; screen-reader functionality itself
+stays out of scope by the 2026-08-12 permanent ruling, which this does not
+reopen.
+
+**Exit:**
+
+1. A question change no longer inherits an off-screen scroll position.
+2. A question change scrolls the new question into view and moves keyboard
+   focus to its headline, without touching the answer-tap focus restoration
+   (Slice 3) or the language-switch focus policy.
+3. Every quiz help line corresponds to real engine or handoff behaviour, as
+   recorded in `docs/quiz-copy-engine-correspondence.md`.
+4. The copy distinguishes scoring inputs from consultation-only inputs.
+5. No template-hardcoded retailer privacy promise remains in `index.html`.
+6. The customer-facing data-use sentence is true for the active deployment
+   mode, and the build rejects a preview-only statement under a live endpoint.
+7. Customers are told, on the Review screen, that a specialist summary is
+   produced from their answers.
+8. The tier-relativity statement is readable at body size (≥15px, ≥4.5:1).
+9. Scoring outputs and the Phase 1 output fixture are unchanged.
+10. The full suite passes.
+11. No trust-story rail exists on production question screens.
+12. The remaining tier-presentation questions are recorded in the register,
+    not implemented.
+13. Recorded before PR #54 may leave draft (owner ruling 2026-08-21): Blake's
+    sign-off on the nine rewritten help lines as governed quiz copy; approval
+    of the Welcome and Review sentences; the privacy-policy decision; the
+    priority native-Spanish review of `privacy.data_use_preview`,
+    `privacy.data_use_live`, `review.help` and `safety.timeout_body` (the
+    Invariant 12 exception); the physical mounted-iPad pass in both
+    orientations and languages; the VoiceOver sanity pass; a real Windows
+    forced-colors pass; and Blake's live review. None of these is satisfied by
+    browser emulation or by the strings being implemented.
 
 ---
 
@@ -1746,13 +2544,21 @@ approval; its presence is a bar on proceeding.
 | Phase 2.2 price/payment activation | 🔒 | Blake + business/legal | Written approval |
 | Scoring case-fold (3.1) | 🔒 | Blake | Approval + enumerated impact |
 | Quiz-tag vocabulary gap (3.2) | 🔒 | Blake | Populate-or-retire decision |
-| Global maxScore / cross-tier ranking / tier merge or removal / threshold, cap, back-fill (3.3) | 🔒 | Blake | Evidence. **Does not gate a preserving Phase 1 tier-navigation change** |
+| Global maxScore / cross-tier ranking / tier merge or removal / threshold, cap, back-fill (3.3) | 🔒 | Blake | Evidence. **Does not gate a preserving Phase 1 tier-navigation change.** *(2026-08-21: a cross-tier "highest-fit" marker — raised as a trust question — is this row, because it changes what the customer is told about fit; see "Tier presentation (trust)" for the presentation-only half.)* |
 | Firmness stops (3.5) | 🔒 | Blake | Evidence |
 | Persistent identity bar (3.6) | ❓ | Blake | A case for it |
 | Dormant nickname-code cleanup | ❓ | Blake | Analytics review — see below |
 | Visible stale-financing status band (production) | ❓ | Blake | A case for it plus review sign-off. Prototype-only today (D6); if pursued, production gets its own dedicated governed key — not a reuse of `staleAnnouncement` |
 | Customer-recorded trial reactions | ❓ | Blake | A case for it. The Nocturne prototype's own candidate next revision; deliberately not built (D6) |
 | Presenter mode — shipping mechanism | ❓ | Blake + kiosk hardening review | The hardening review decides the mechanism; the prototype's query parameter is rehearsal tooling, not a shipped design (D6) |
+| **Tier presentation (trust)** — a neutral initial tier choice or another presentation control, versus the shipped Gold-first initial tier with the within-tier model | ❓ | Blake | *(Ruled for this cycle, 2026-08-21: the shipped Gold-first / within-tier presentation is retained with the 15px relativity note; a neutral initial tier (B) and any other control (D) are DEFERRED to a later owner/research decision; this is not a permanent endorsement of Gold-first.)* Any future change is presentation only — it must preserve tier identity and membership, within-tier order, the threshold, cap and back-fill. A cross-tier highest-fit marker or any global best-match computation is the 3.3 row above (NOT AUTHORIZED), not this one. The legible within-tier relativity note is NOT this decision |
+| **Heritage content** — Welcome only (current), an optional moderated-research condition, or no additional heritage | ❓ | Blake | *(Ruled for this cycle, 2026-08-21: the restrained Welcome treatment stays; no per-question rail, no anniversary count, no store counts, awards, testimonials, QR codes, community claims or anecdotes in the quiz; the research prototype is preserved separately; historical content may be tested later as an optional research condition — that later test is what stays open here.)* Any future fact beyond the Welcome line needs governance modelled on financing (freshness, allowlisted source, approval, ES review) |
+| **Founding-year discrepancy** — lacks.com "1935" vs the BBB record "Business Started 1/1/1924" | ❓ | Blake | *(Ruled for this branch, 2026-08-21: the "since 1935" line is not altered and is treated as provisional; the BBB entry is an unresolved discrepancy, not proof; no second founding-year exposure and no anniversary arithmetic are added; the ruling is not historical verification.)* Resolve through corporate or archival records. 1935 is corroborated by two independent sources (the ISJL encyclopedia; the HFA's 2025 "90th year"); the BBB entry may describe a predecessor entity, an earlier registration, or be inaccurate — it is not evidence that 1935 is false, and the corroboration is not proof either. Affects `text.heritage` / `voice.eyebrow` (and the dead `text.trustSignal`); the shipped line stays as it is meanwhile. No anniversary arithmetic is to be added either way |
+| **Privacy approval** — approver of record; final showroom wording; `text.privacyDraftNotice` resolution — **the overlay shows "Draft policy — pending Lacks Furniture approval before live use." to customers today, EN and ES, until this is resolved**; the native-Spanish reviewer for the data-use sentences; the live-mode (email-enabled) wording, which must disclose what `Code.gs` does with a submitted address | ❓ | Blake + business/legal | Written approval recorded in config or this document. Until then the preview-mode sentence ships only while `gasUrl` is blank, and the overlay keeps its draft notice |
+| **Specialist-summary scope** — exactly what the Consultation Summary shows from the answers (today: finalists, what to test, and implications derived from sleep-issue and health answers), whether the customer may control what appears, whether health-derived implications remain | ❓ | Blake | A ruling; 1.6 owns the presentation. The trust gate's Review line describes today's behaviour and must be re-verified if the scope changes |
+| **Idle-dialog wording** — the Gate 1B body "Your session is paused to protect your privacy." described intent, not behaviour (a grace countdown runs; the answers persist until it ends or Start new customer) | ❓ | Blake | *(Ruled 2026-08-21, R5: replaced on the trust branch with dictionary copy that names the dialog's real controls — EN "Session paused. Continue this session where you left off, or start a new customer to clear it."; ES provisional. Product direction only.)* Still open here: the final EN wording's copy sign-off and the native review of the Spanish |
+| **Trust measurement** — moderated current-vs-process-transparency sessions; whether a restrained heritage condition is retained as a third research condition; any aggregate local measurement store (which must record no answers and no identity, or the data-use sentence becomes false) | ❓ | Blake | Approval of the study design; the store is designed before anything is promised |
+| **VoiceOver sanity pass on the trust copy** — the owner's 2026-08-21 ruling (R7) requires a one-time sanity pass on the mounted iPad (new headline focus, the Welcome and Review lines in reading order, no duplicate announcement) before PR #54 leaves draft | ❓ | Blake | Run it and record the result in `docs/trust-integrity-physical-gate-2026-08-21.md`; there is no accepted-risk alternative. Screen-reader functionality itself stays out of scope by the 2026-08-12 permanent ruling, which this row does not reopen |
 
 *(Resolved and removed from the table: "Phase 1 scoring-fixture exit gate" —
 approved by owner directive 2026-08-12 and built the same day; see the Phase 1
@@ -1860,7 +2666,22 @@ document, not here.
    then the inert promotions contract + isolated Black Friday demo (PR #43,
    merge `83d4646`). Promotions governance, not Phase 2 pricing — see the
    note at the top of Phase 2.
-7. 🔨 **The visible redesign** — Phase 1. *(Implementation explicitly
+7. ✅ **Nocturne presentation slices** (2026-08-15/16) — the D1–D6 slate
+   recorded as the plan of record (PR #44, merge `aee0410`), then Slice 1, the
+   Results tier-tab restyle and hero-plus-support card hierarchy per D3
+   (PR #45, merge `69d5d36`), then Slice 2, the Sleep Brief recomposition and
+   Sleep Signature per D1+D2 (PR #46, merge `b05d47f`), then Slice 3, the Quiz
+   visual pass per 1.2 (PR #47, merge `5436dea`), whose manual desktop,
+   forced-colors and physical-iPad gates passed. Then Slice 4, Payment Choice per
+   D4 (1.5), merged 2026-08-20 as `b2acd7e`, with all four of its manual gates
+   passed and its Pages deployment verified at exactly that commit.
+8. 🔨 **Trust integrity and transparency** — the Phase 1 cross-cutting gate,
+   inserted 2026-08-21 by owner instruction after Slice 4 and before Slice 5
+   (block after item 1.7; branch `claude/phase1-trust-integrity` from
+   `4a76503`). Slice 5 is concurrently in development on its own branch
+   (draft PR #53, head `6decbef`) and, by owner ruling 2026-08-21, merges
+   after this gate and integrates the resulting `main`.
+9. 🔨 **The visible redesign** — Phase 1. *(Implementation explicitly
    authorized by Blake 2026-08-12 — see the authorization block at the top of
    Phase 1. Direction set by the 2026-08-14 Nocturne owner review, D1–D6,
    with its approved slice order; 1.3's reason gate and the Phase 2/3 gates
@@ -1870,9 +2691,9 @@ document, not here.
    redesign itself, which proceeds against today's reason content (the generic
    default on 14 of 26 models only; none on the other 12) per
    1.3's Proceeds list.
-8. ⬜ **Dark pricing/payment foundation** — 2.1.
-9. 🔒 **Activate prices and payments** — 2.2, after business and legal approval.
-10. 🔒 **Structural scoring and tier changes last** — Phase 3.
+10. ⬜ **Dark pricing/payment foundation** — 2.1.
+11. 🔒 **Activate prices and payments** — 2.2, after business and legal approval.
+12. 🔒 **Structural scoring and tier changes last** — Phase 3.
 
 ---
 

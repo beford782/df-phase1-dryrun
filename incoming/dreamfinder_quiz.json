@@ -17,8 +17,8 @@
           "es": "¿En qué te podemos ayudar hoy?"
         },
         "helpText": {
-          "en": "No pressure — this just helps your specialist focus on what matters to you.",
-          "es": "Sin presión — esto ayuda a tu especialista a enfocarse en lo que te importa."
+          "en": "This doesn't change your sleep-fit ranking. It helps your specialist focus on what matters to you.",
+          "es": "Esto no cambia el orden de tus opciones. Ayuda a tu especialista a enfocarse en lo que te importa."
         },
         "type": "single",
         "options": [
@@ -100,8 +100,8 @@
           "es": "¿Qué tamaño de colchón buscas?"
         },
         "helpText": {
-          "en": "So every mattress we show actually fits your space.",
-          "es": "Nos aseguraremos de que las recomendaciones se ajusten a tu espacio"
+          "en": "We carry your selected size into the consultation. Your sleep-fit ranking is based on your comfort and support answers.",
+          "es": "Tomamos en cuenta el tamaño que elijas en la consulta. El orden de tus opciones se basa en tus respuestas sobre comodidad y soporte."
         },
         "type": "single",
         "options": [
@@ -196,8 +196,8 @@
           "es": "¿Quién comparte la cama contigo?"
         },
         "helpText": {
-          "en": "Who shares your bed shapes which features matter most.",
-          "es": "Esto determina qué características importan más"
+          "en": "This shapes the questions that follow and what we suggest testing together.",
+          "es": "Esto define las preguntas que siguen y lo que sugerimos probar juntos."
         },
         "type": "single",
         "options": [
@@ -258,8 +258,8 @@
           "es": "¿El movimiento de tu pareja te despierta?"
         },
         "helpText": {
-          "en": "Motion isolation is one of the first upgrades you'll feel.",
-          "es": "El aislamiento de movimiento es una de las mayores mejoras en un colchón nuevo"
+          "en": "The more movement wakes you, the more it shapes your matches and what we suggest testing.",
+          "es": "Cuanto más te despierte el movimiento, más influye en tus opciones y en lo que sugerimos probar."
         },
         "type": "single",
         "skipIf": {
@@ -341,8 +341,8 @@
           "es": "¿Cómo duermes normalmente?"
         },
         "helpText": {
-          "en": "Your sleep position is the biggest clue to the support you need.",
-          "es": "Piensa en cómo terminas naturalmente"
+          "en": "This helps us favor pressure relief, support, or a responsive feel.",
+          "es": "Esto nos ayuda a priorizar alivio de presión, soporte o una sensación con más respuesta."
         },
         "type": "single",
         "options": [
@@ -565,8 +565,8 @@
           "es": "¿Cómo duermes en cuanto a temperatura?"
         },
         "helpText": {
-          "en": "Sleeping hot or cold is an easy fix with the right materials.",
-          "es": "La regulación de temperatura es clave para un sueño profundo"
+          "en": "If you sleep hot, we favor cooling features in your matches.",
+          "es": "Si duermes con calor, priorizamos materiales refrescantes en tus opciones."
         },
         "type": "single",
         "options": [
@@ -648,7 +648,7 @@
           "es": "¿Qué nivel de firmeza prefieres?"
         },
         "helpText": {
-          "en": "No wrong answer here, just slide to what feels best.",
+          "en": "No wrong answer here, just slide to the feel you prefer.",
           "es": "Desliza a tu comodidad ideal"
         },
         "type": "slider",
@@ -681,8 +681,8 @@
           "es": "¿Algún problema con tu colchón actual?"
         },
         "helpText": {
-          "en": "Tap anything you've noticed. Each one points us toward a fix.",
-          "es": "Toca las que apliquen"
+          "en": "Tap anything you've noticed. These shape which features we favor and what we suggest testing.",
+          "es": "Toca lo que hayas notado. Esto define qué características priorizamos y qué sugerimos probar."
         },
         "type": "multiple",
         "options": [
@@ -829,8 +829,8 @@
           "es": "¿Algo más que afecte tu sueño?"
         },
         "helpText": {
-          "en": "Tap any that apply. A few of these change what we'd suggest.",
-          "es": "Toca las que apliquen"
+          "en": "Tap any that apply. Some shape your matches; some change what we suggest trying, like an adjustable base or a mattress protector.",
+          "es": "Toca lo que aplique. Algunas influyen en tus opciones; otras cambian lo que sugerimos probar, como una base ajustable o un protector de colchón."
         },
         "type": "multiple",
         "options": [

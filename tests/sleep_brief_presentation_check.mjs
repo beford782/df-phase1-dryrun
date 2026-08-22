@@ -625,7 +625,11 @@ section('focus, touch targets and forced colors on the recomposed screen');
   const headingCss = (norm.match(/\.noct-profile-name \{([^}]*)\}/) || [null, ''])[1];
   ok('the focus destination no longer suppresses its own indicator',
     !/outline:\s*none/.test(headingCss));
-  const focusGroup = norm.match(/\.fin-btn:focus-visible,[\s\S]{0,700}?\}/);
+  // Brace-anchored, not a fixed character window: the consolidated block grows
+  // whenever a surface joins it (the trust gate added the quiz headline), and
+  // a window that overflows falls through to the forced-colors twin — a
+  // vacuous pass here and a red suite on the next merge (found in review).
+  const focusGroup = norm.match(/\.fin-btn:focus-visible,[^{}]*\{[^}]*\}/);
   ok('heading, disclosure toggles and both buttons joined the consolidated focus ring',
     !!focusGroup
     && ['.noct-profile-name:focus-visible', '.noct-profile-priority-toggle:focus-visible',

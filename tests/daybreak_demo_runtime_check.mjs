@@ -220,8 +220,15 @@ check("production root retains its legacy historical-demo terminology unchanged"
 const sendGate = extract(
   /const _submitScenario = getActivePromotionScenario\(\);[\s\S]*?const isEmailPreview = [^\n]+/,
   "sendResults() email gate");
+// Trust gate (2026-08-21): renderEmailChrome() derives preview mode from the
+// shared emailDeliveryLive() helper — the same two conditions (gasUrl
+// configured AND the scenario does not block submission) sendResults() gates
+// its POST on — so the REAL helper is extracted and executed with the gate.
+const liveHelper = extract(
+  /function emailDeliveryLive\(\) \{[\s\S]*?\n    \}/,
+  "emailDeliveryLive() shared mode helper");
 const chromeGate = extract(
-  /var _emailScenario = getActivePromotionScenario\(\);[\s\S]*?\|\| !!\(_emailScenario && _emailScenario\.disableEmailSubmission\);/,
+  /var isDemoMode = !emailDeliveryLive\(\);/,
   "renderEmailChrome() demo-mode gate");
 check("analytics event is chosen by the preview flag",
   /analytics\.log\(isEmailPreview \? 'email_previewed' : 'email_submitted'/.test(html));
@@ -231,7 +238,8 @@ const gateResult = new Function("STORE_CONFIG", `"use strict";
   const gasUrl = 'https://script.google.com/macros/s/PRODUCTION-LIKE/exec';
   ${sendGate}
   var _eventName = isEmailPreview ? 'email_previewed' : 'email_submitted';
-  ${chromeGate.replace("var _emailScenario", "var _emailScenario2").replace("_emailScenario &&", "_emailScenario2 &&").replace("var isDemoMode", "var isDemoMode")}
+  ${liveHelper}
+  ${chromeGate}
   return { isEmailPreview: isEmailPreview, eventName: _eventName, isDemoMode: isDemoMode };
 `)(DEMO_CFG);
 check("nonblank gasUrl + demo scenario -> email stays preview-only",

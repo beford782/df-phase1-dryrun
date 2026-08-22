@@ -235,8 +235,13 @@ jobs:
       - name: scoring isolation
         run: node tests/scoring_isolation_check.mjs
 
-      - name: handoff interest
-        run: node tests/handoff_interest_check.mjs
+      # Replaces the retired "handoff interest" suite, which tested the
+      # salesperson-marked discussion agenda that Slice 4 (decision D4) removed.
+      # This one owns the Payment Choice state machine: the transitions, the
+      # canonical path identity, the disclosures, focus restoration, the two
+      # live regions, the forced-colors cue, and the email/telemetry exclusion.
+      - name: payment choice (D4 state model)
+        run: node tests/payment_choice_check.mjs
 
       - name: financing copy policy
         run: node tests/financing_copy_policy_check.mjs
@@ -429,6 +434,18 @@ jobs:
       # cross-surface geometry identity, dict-driven copy, focus/touch/wipe).
       - name: sleep brief presentation (constellation, D1 composition)
         run: node tests/sleep_brief_presentation_check.mjs
+
+      - name: quiz presentation (zero icons, grid cap, a11y repairs)
+        run: node tests/quiz_presentation_check.mjs
+
+      # Trust integrity and transparency gate (Phase 1 cross-cutting,
+      # 2026-08-21): the copy <-> engine correspondence document and its
+      # pinned inert-tag set, banned claims in quiz help copy, the absence of
+      # the heritage rail, the privacy voice (dictionary mode variants, the
+      # retired template promise, the network-sink set that makes the
+      # data-use sentence true), and the tier-relativity line's legibility.
+      - name: trust integrity (copy truth, privacy voice, sinks, legibility)
+        run: node tests/trust_integrity_check.mjs
 
       # Daybreak PR 2 — production/demo separation. The committed production
       # promotions block must stay the inert contract (a temporary pre-runtime

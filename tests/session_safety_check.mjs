@@ -155,8 +155,26 @@ check("required English restart title is exact", dictEn["safety.restart_title"] 
 check("required English restart body is exact",
   dictEn["safety.restart_body"] === "This clears the current answers, mattress selections, and Sleep Plan.");
 check("required English timeout title is exact", dictEn["safety.timeout_title"] === "Still comparing?");
+// Trust gate (owner ruling R5, 2026-08-21): the body is behaviourally exact
+// and names the dialog's REAL controls. The earlier "paused to protect your
+// privacy" reassurance described intent, not behaviour (a grace countdown runs
+// and the answers persist until it ends or Start new customer is pressed).
 check("required English timeout body is exact",
-  dictEn["safety.timeout_body"] === "Your session is paused to protect your privacy.");
+  dictEn["safety.timeout_body"] === "Session paused. Continue this session where you left off, or start a new customer to clear it.");
+check("required Spanish timeout body is exact (provisional, native review owed)",
+  dictEs["safety.timeout_body"] === "Sesión en pausa. Sigue en esta sesión donde la dejaste o empieza con otro cliente para borrarla.");
+// The sentence must use the same terminology as the two controls it refers to,
+// in each language: the cancel label verbatim and the confirm label's words.
+check("EN timeout body names the Continue control verbatim and the Start-new-customer control's terminology",
+  dictEn["safety.timeout_body"].toLowerCase().includes(dictEn["safety.timeout_continue"].toLowerCase())
+  && /start (a )?new customer/i.test(dictEn["safety.timeout_body"]) && dictEn["safety.timeout_confirm"] === "Start new customer");
+check("ES timeout body uses the controls' terminology (en esta sesión / con otro cliente)",
+  /en esta sesi[oó]n/i.test(dictEs["safety.timeout_body"]) && /con otro cliente/i.test(dictEs["safety.timeout_body"])
+  && /en esta sesi[oó]n/i.test(dictEs["safety.timeout_continue"]) && /con otro cliente/i.test(dictEs["safety.timeout_confirm"]));
+check("the timeout body claims nothing about privacy, protection, hiding, encryption, anonymity or transmission, and names no number",
+  ["en", "es"].every((l) => !/privac|protect|proteg|hidden|oculta|encrypt|cifra|anonym|anónim|\bsent\b|envia|envía|\d/i.test(l === "en" ? dictEn["safety.timeout_body"] : dictEs["safety.timeout_body"])));
+check("the timeout body is not a literal in index.html (dictionary-driven only)",
+  !html.includes("Session paused.") && !html.includes("Sesión en pausa."));
 // Spanish expansion must not blow the 320px bar apart. The bar wraps rather
 // than truncating, but a runaway label would still push the panel wide.
 for (const k of ["session.restart", "session.lang_en", "session.lang_es"]) {
@@ -388,9 +406,16 @@ const harness = new Function(
   var editingFromReview = false;
   var _resultsState = null;
   var currentLang = 'en';
-  var financingAgenda = {};
-  var financingAgendaDismissed = false;
-  var financingExplored = false;
+  // Slice 4 (D4) replaced the discussion agenda with Payment Choice. The block
+  // comment above the GATE1B markers in index.html lists the enclosing-scope
+  // bindings the extracted module reads; these four are the payment half of
+  // that list, and they are declared WITHOUT initial values matching the wipe's
+  // targets on purpose — a dirty session is seeded through outer.seed() below,
+  // so a wipe that does nothing cannot pass by starting from a clean slate.
+  var payExplored = [];
+  var payPref = null;
+  var payOpen = {};
+  var _finSheetStale = false;
   var _finModuleImpressionLogged = false;
   var _financeReturnFocus = null;
   var _langFocusHintId = null;
@@ -417,8 +442,11 @@ const harness = new Function(
       .forEach(function(s) { document.getElementById(s).classList.remove('active'); });
     document.getElementById(id).classList.add('active');
   }
-  function cancelFinInterestPending() { record('cancelFinInterestPending')(); }
-  function clearFinInterestAnnouncement() { record('clearFinInterestAnnouncement')(); }
+  // The two Payment Choice announcement helpers the wipe calls by name. Both
+  // live OUTSIDE the Gate 1B markers, so they are recorded stubs here and the
+  // wipe's use of them is asserted by call count, not by reimplementation.
+  function cancelPayAnnouncePending() { record('cancelPayAnnouncePending')(); }
+  function clearPayAnnouncements() { record('clearPayAnnouncements')(); }
 
   ${SOURCE}
 
@@ -427,9 +455,9 @@ const harness = new Function(
     return {
       currentQuestion: currentQuestion, answers: answers,
       editingFromReview: editingFromReview, resultsState: _resultsState,
-      currentLang: currentLang, financingAgenda: financingAgenda,
-      financingAgendaDismissed: financingAgendaDismissed,
-      financingExplored: financingExplored,
+      currentLang: currentLang,
+      payExplored: payExplored, payPref: payPref, payOpen: payOpen,
+      finSheetStale: _finSheetStale,
       finImpression: _finModuleImpressionLogged,
       financeReturnFocus: _financeReturnFocus,
       analytics: analytics
@@ -441,9 +469,10 @@ const harness = new Function(
     if ('editingFromReview' in state) editingFromReview = state.editingFromReview;
     if ('resultsState' in state) _resultsState = state.resultsState;
     if ('currentLang' in state) currentLang = state.currentLang;
-    if ('financingAgenda' in state) financingAgenda = state.financingAgenda;
-    if ('financingAgendaDismissed' in state) financingAgendaDismissed = state.financingAgendaDismissed;
-    if ('financingExplored' in state) financingExplored = state.financingExplored;
+    if ('payExplored' in state) payExplored = state.payExplored;
+    if ('payPref' in state) payPref = state.payPref;
+    if ('payOpen' in state) payOpen = state.payOpen;
+    if ('finSheetStale' in state) _finSheetStale = state.finSheetStale;
     if ('finImpression' in state) _finModuleImpressionLogged = state.finImpression;
     if ('financeReturnFocus' in state) _financeReturnFocus = state.financeReturnFocus;
   };
@@ -539,8 +568,23 @@ check("backdrop is shown", !el("sessionSafetyBackdrop").hidden);
 check("focus entered the dialog title", doc.activeElement === el("sessionSafetyTitle"));
 check("dialog is in timeout mode", el("sessionSafetyDialog").getAttribute("data-mode") === "timeout");
 check("timeout title is the required copy", el("sessionSafetyTitle").textContent === "Still comparing?");
-check("timeout body is the required copy",
-  el("sessionSafetyBody").textContent === "Your session is paused to protect your privacy.");
+check("timeout body is the required copy (rendered through the real path)",
+  el("sessionSafetyBody").textContent === "Session paused. Continue this session where you left off, or start a new customer to clear it.");
+check("the rendered body equals the governed dictionary value (no drift between dict and render)",
+  el("sessionSafetyBody").textContent === dictEn["safety.timeout_body"]);
+// Same open dialog, relocalised through the real renderer with the Spanish
+// dictionary installed: the ES body renders, then English is restored.
+DICT = dictEs;
+S.renderSafety();
+check("open timeout dialog relocalises its body to the governed Spanish sentence",
+  el("sessionSafetyBody").textContent === dictEs["safety.timeout_body"]
+  && el("sessionSafetyTitle").textContent === dictEs["safety.timeout_title"]
+  && el("sessionSafetyCancel").textContent === dictEs["safety.timeout_continue"]
+  && el("sessionSafetyConfirm").textContent === dictEs["safety.timeout_confirm"]);
+DICT = dictEn;
+S.renderSafety();
+check("switching back restores the English timeout body",
+  el("sessionSafetyBody").textContent === dictEn["safety.timeout_body"]);
 check("remaining-time meter is shown in timeout mode", el("sessionSafetyMeter").hidden === false);
 check("meter reports a real remaining time", /\d+ seconds left/.test(el("sessionSafetyMeterText").textContent));
 
@@ -957,18 +1001,38 @@ section("wipe matrix: seeding");
 const SENTINEL = "PRIOR-CUSTOMER-DATA-a9f3";
 
 // module state
+//
+// The Payment Choice half is a REALISTIC dirty D4 session rather than three
+// truthy placeholders: a customer who opened three payment paths in order,
+// settled on the second of them, left two disclosure panels expanded, and was
+// last shown the generic notice because one path's exact terms were stale.
+// Path ids are in the shipped canonical KIND-ENCODED form (finPathId), and the
+// preference is one of the explored ids — a preference pointing at a path that
+// was never explored is not a state the app can reach, and seeding one would
+// let a wipe that only clears history look like it cleared everything.
+//
+// Identity is captured, not just contents: the wipe must REBIND payExplored
+// and payOpen, not empty the previous customer's array/object in place.
+const PAY_SEED_EXPLORED = ["promo-Synchrony", "plan-lacks-in-house", "scenario-mexico-delivery"];
+const PAY_SEED_OPEN = { "plan-lacks-in-house": true, "scenario-mexico-delivery": true };
 outer.seed({
   currentQuestion: 7,
   answers: { firmness: SENTINEL, position: SENTINEL },
   editingFromReview: true,
   resultsState: { activeTier: "silver", matches: [SENTINEL] },
   currentLang: "es",
-  financingAgenda: { "plan:lacks-in-house": true },
-  financingAgendaDismissed: true,
-  financingExplored: true,
+  payExplored: PAY_SEED_EXPLORED,
+  payPref: "plan-lacks-in-house",
+  payOpen: PAY_SEED_OPEN,
+  finSheetStale: true,
   finImpression: true,
   financeReturnFocus: el("someResultCard"),
 });
+check("seeded: a dirty Payment Choice session (3 explored, 1 preferred, 2 open)",
+  probe().payExplored.length === 3 && probe().payPref === "plan-lacks-in-house"
+  && Object.keys(probe().payOpen).length === 2 && probe().finSheetStale === true);
+check("seeded: the preference is one of the explored paths, as the app enforces",
+  probe().payExplored.indexOf(probe().payPref) !== -1);
 
 // window state
 win._savedPicks = [{ id: "g1", name: SENTINEL }];
@@ -1044,11 +1108,28 @@ const REQUIRED_CONTENT_IDS = [
   "compareCols", "compareTraySlots",
   "hf2PicksList", "hf2AccessoriesList", "hf2BriefWho", "hf2BriefContext",
   "hf2BriefProfile", "hf2SleepSystemSection", "hf2Priorities",
+  // Slice 4 (D4): the three containers built from Payment Choice state. The
+  // sheet cards carry the disclosure panels and the Consider/Clear controls;
+  // the handoff block names the considered path and lists the explored ones.
+  // Left behind, they are the previous customer's payment position rendered as
+  // text over the next customer's session.
+  "financingSheetCards", "hf2FinancingInterest", "hf2FinancingPrograms",
   "emailPreview", "emailRecap", "accessoriesGrid",
+  // Trust gate (2026-08-21): the four Sleep System containers hold
+  // answer-derived prose; "Restart clears them" must be true of the DOM, not
+  // only of the visible surfaces.
+  "sleepSystemMain", "sleepSystemGuidance", "sleepSystemRail", "sleepSystemPlanList",
 ];
 const REQUIRED_TEXT_IDS = [
   "dreamCodeValue", "dreamCodePct", "emailError", "drawerNavLabel", "accStatus",
-  "hf2FinancingStatus", "financingSheetStatus", "sessionSafetyLive",
+  // Trust gate (2026-08-21): the drawer's answer-derived text targets.
+  "drawerShortlistFit", "drawerSystemPromptTitle", "drawerSystemPromptReason",
+  // Three separate financing regions on purpose: freshness, the sheet's
+  // Consider/Clear announcement (new in Slice 4), and the handoff's
+  // Not-right-now announcement. Each keeps its last utterance until something
+  // overwrites it, so each must be emptied by the wipe.
+  "hf2FinancingStatus", "financingSheetStatus", "financingSheetAction",
+  "sessionSafetyLive",
   "resultsRevealTitle", "resultsRevealSubtitle",
   "revealCertCode", "revealCertPctNum", "revealCertScope", "revealCertExpiry",
   "revealCertTerms",
@@ -1120,18 +1201,39 @@ check("financing sheet closed", appCalls.some(c => c.fn === "closeFinancingSheet
 check("compare modal closed", appCalls.some(c => c.fn === "closeCompareModal"));
 check("financing sheet's stored opener was nulled BEFORE closing it",
   probe().financeReturnFocus === null);
-check("queued financing focus/announcement work cancelled",
-  callsTo("cancelFinInterestPending") === 1 && callsTo("clearFinInterestAnnouncement") === 1);
+// Both halves, and EXACTLY once each. Cancelling the queued announcement
+// without emptying the regions leaves the departing customer's last spoken
+// sentence sitting in a live region over the next Welcome screen; emptying the
+// regions without cancelling lets a queued utterance repopulate one right
+// after the wipe. Two calls each would mean the wipe runs a payment teardown
+// twice, which is how a partially-rebuilt next session gets clobbered.
+check("queued Payment Choice announcement work cancelled exactly once",
+  callsTo("cancelPayAnnouncePending") === 1);
+check("both preference-action regions dropped exactly once",
+  callsTo("clearPayAnnouncements") === 1);
 
 section("wipe matrix: module state");
 check("currentQuestion reset", probe().currentQuestion === 0);
 check("answers cleared", Object.keys(probe().answers).length === 0);
 check("editingFromReview cleared", probe().editingFromReview === false);
 check("results cache cleared", probe().resultsState === null);
-check("financing agenda cleared", Object.keys(probe().financingAgenda).length === 0);
-check("financing agenda dismissal cleared", probe().financingAgendaDismissed === false);
-check("financing explored flag cleared", probe().financingExplored === false);
 check("financing impression flag cleared", probe().finImpression === false);
+
+section("wipe matrix: Payment Choice (D4)");
+// The customer's payment position is the most sensitive non-contact state the
+// session holds: it is what someone would read off an unattended showroom
+// tablet to learn that the previous customer was considering a credit-building
+// plan. All three dimensions plus the sheet's freshness flag are cleared here,
+// and the emptiness is checked separately from the REBINDING.
+check("explored history cleared", probe().payExplored.length === 0);
+check("...and it is a FRESH array — the previous customer's is not reused",
+  Array.isArray(probe().payExplored) && probe().payExplored !== PAY_SEED_EXPLORED);
+check("...so a reference the departing session still holds cannot repopulate it",
+  PAY_SEED_EXPLORED.length === 3 && probe().payExplored.length === 0);
+check("the preference is cleared, not merely replaced", probe().payPref === null);
+check("no disclosure panel survives", Object.keys(probe().payOpen).length === 0);
+check("...and payOpen is a FRESH object", probe().payOpen !== PAY_SEED_OPEN);
+check("the sheet's stale-terms flag cleared", probe().finSheetStale === false);
 
 section("wipe matrix: window state");
 check("saved picks cleared", win._savedPicks.length === 0);
@@ -1346,7 +1448,11 @@ const langHarness = new Function(
   function t(k) { return DICT[k] || k; }
   function applyTranslations() { rec('applyTranslations'); }
   function applyStoreConfig() { rec('applyStoreConfig'); }
-  function clearFinInterestAnnouncement() {}
+  // Slice 4: switchLanguage() drops both preference-action regions before
+  // re-rendering the financing surfaces. Recorded so the assertion below can
+  // prove the language switch is a COPY SWAP — it clears announcements and
+  // nothing else.
+  function clearPayAnnouncements() { rec('clearPayAnnouncements'); }
   function renderAllFinancingSurfaces() { rec('renderAllFinancingSurfaces'); }
   function renderSleepSystem() { rec('renderSleepSystem'); }
   function renderHf2() { rec('renderHf2'); }
@@ -1423,6 +1529,13 @@ check("an open drawer is relocalised too", lcalls.includes("rerenderOpenMattress
 }
 check("an open safety dialog is relocalised too", lcalls.includes("renderSafetyDialog"));
 check("scores were NOT recomputed by a language switch", !lcalls.includes("calculateScores"));
+// A stale EN sentence sitting in a live region inside an ES interface is the
+// defect this drops. It is a copy swap, so it clears the ANNOUNCEMENTS only —
+// the payment position itself must survive EN/ES, which is asserted
+// structurally below (the language harness never binds the three dimensions,
+// so an assignment to any of them would throw here rather than pass quietly).
+check("a language switch drops both preference-action announcements",
+  lcalls.includes("clearPayAnnouncements"));
 
 section("language transaction: unsupported and forced-English");
 pendingFetches = [];
@@ -1478,10 +1591,6 @@ check("the session block never touches scoring",
   !/calculateScores|firmnessScore|locallyMade|scoreMattress/.test(SOURCE));
 check("the session block never reorders or re-tiers results",
   !/\.sort\(/.test(SOURCE) && !/activeTier\s*=/.test(SOURCE));
-check("financing agenda is only reset inside the session module",
-  /financingAgenda = \{\};/.test(SOURCE)
-  && /financingAgendaDismissed = false;/.test(SOURCE)
-  && !/if \(financingAgenda/.test(SOURCE));
 check("no external analytics transport was introduced",
   !/fetch\(|XMLHttpRequest|navigator\.sendBeacon/.test(SOURCE));
 const switchSrc = (html.match(/async function switchLanguage[\s\S]*?\n    \}/) || [""])[0];
@@ -1491,6 +1600,207 @@ check("switchLanguage does not replay the reveal animations",
   !/startResultsReveal|startProfileReveal|playSavingsPassReveal/.test(switchSrc));
 check("switchLanguage preserves in-progress contact values across the rerender",
   /var emailValues = \{[\s\S]{0,900}?getElementById\('emailNameInput'\)\.value = emailValues\.name/.test(html));
+check("switchLanguage clears the preference-action announcements, not the state",
+  /clearPayAnnouncements\(\)/.test(switchSrc)
+  && !/(^|[^.\w$])payExplored\s*=(?!=)/.test(switchSrc)
+  && !/(^|[^.\w$])payPref\s*=(?!=)/.test(switchSrc)
+  && !/(^|[^.\w$])payOpen\s*=(?!=)/.test(switchSrc));
+
+// ===========================================================================
+// 7b. PAYMENT CHOICE (D4): THE WIPE OWNS ALL THREE DIMENSIONS
+// ===========================================================================
+// This replaces the retired "financing agenda is only reset inside the session
+// module" assertion. The agenda's two variables are gone; Slice 4's model is
+// payExplored / payPref / payOpen, and the contract here is deliberately
+// stricter than the one it replaces.
+//
+// TWO separate rules, because they fail in different ways:
+//
+//  (1) The wipe must clear each dimension BY NAME and WITHOUT a typeof guard.
+//      index.html legitimately typeof-guards two OTHER wipe lines
+//      (_briefOpenPriority, _dfmGen) so extracted-module sandboxes stay
+//      runnable. Copying that idiom onto payment state would be silent
+//      failure: a renamed or deleted binding would skip its clear and the wipe
+//      would still "pass", leaving the previous customer's payment position in
+//      place for the next one. The repo rule is that a missing binding must
+//      fail LOUDLY here.
+//
+//  (2) Nothing outside the D4 action functions and the wipe may assign any of
+//      the three. A write anywhere else — a renderer, a language path, a
+//      handoff builder — is either an undeclared state transition or a second
+//      reset implementation, and the wipe cannot be the single authority over
+//      state that other code also rewrites.
+//
+// Both rules are pure functions of a source string, so the mutation battery
+// below runs them over deliberately broken copies and requires a rejection.
+section("Payment Choice (D4): wipe ownership");
+
+const PAY_DIMS = ["payExplored", "payPref", "payOpen"];
+const PAY_CLEAR_LITERAL = {
+  payExplored: "payExplored = [];",
+  payPref: "payPref = null;",
+  payOpen: "payOpen = {};",
+};
+// Whole-binding assignment only. `payPref === id`, `payPref !== PAY_NOT_NOW`
+// and `payOpen[id] = true` are reads or member writes, not rebindings, and
+// none of them may be counted as a clear or as a rogue assignment.
+function payAssignRe(name) { return new RegExp(`(^|[^.\\w$])${name}\\s*=(?!=)`); }
+
+// RULE 1 — the wipe body, read out of whatever source string is passed.
+function payWipeAudit(sessionSource) {
+  const body = (sessionSource.match(/function resetSessionState\(opts\) \{[\s\S]*?\n    \}/) || [""])[0];
+  const clears = {
+    payExplored: /(^|[^.\w$])payExplored\s*=\s*\[\s*\]\s*;/,
+    payPref: /(^|[^.\w$])payPref\s*=\s*null\s*;/,
+    payOpen: /(^|[^.\w$])payOpen\s*=\s*\{\s*\}\s*;/,
+  };
+  return {
+    found: body.length > 0,
+    missing: PAY_DIMS.filter((d) => !clears[d].test(body)),
+    guarded: PAY_DIMS.filter((d) => new RegExp(`typeof\\s+${d}\\b`).test(body)),
+  };
+}
+
+{
+  const real = payWipeAudit(SOURCE);
+  check("the wipe body was located inside the session module", real.found);
+  check(`the wipe clears all three Payment Choice dimensions by name${real.missing.length ? " — MISSING: " + real.missing.join(", ") : ""}`,
+    real.missing.length === 0);
+  check(`no Payment Choice clear is wrapped in a typeof guard${real.guarded.length ? " — GUARDED: " + real.guarded.join(", ") : ""}`,
+    real.guarded.length === 0);
+
+  for (const d of PAY_DIMS) {
+    const lit = PAY_CLEAR_LITERAL[d];
+    // Non-vacuity for the mutations themselves: if the literal is not in the
+    // source, `replace` is a no-op and every mutation below would "pass" by
+    // testing the unmodified source.
+    check(`[non-vacuity] the session module really contains "${lit}" to mutate`,
+      SOURCE.includes(lit));
+    const removed = payWipeAudit(SOURCE.replace(lit, ""));
+    check(`MUTATION: deleting the ${d} clear is caught`, removed.missing.includes(d));
+    const wrapped = payWipeAudit(
+      SOURCE.replace(lit, `if (typeof ${d} !== 'undefined') ${lit}`));
+    check(`MUTATION: typeof-guarding the ${d} clear is caught`, wrapped.guarded.includes(d));
+    // ...and it is caught by the GUARD rule specifically. A guarded clear still
+    // reads as a clear, so a suite that only looked for the assignment text
+    // would report the mutant as healthy.
+    check(`  ...the guarded ${d} clear still looks like a clear, so only rule 1b rejects it`,
+      !wrapped.missing.includes(d));
+  }
+}
+
+// RULE 2 — every whole-binding assignment in index.html, attributed to an owner.
+//
+// Owners are located by their real function headers and converted to line
+// ranges, so this survives edits elsewhere in an 21k-line file. Per-owner
+// COUNTS are asserted as well as membership: without them, moving the wipe's
+// three clears into considerPaymentPath would still be "owned" and would still
+// pass.
+//
+// Scope: `//` tails are dropped before scanning, because index.html's D4
+// commentary discusses these bindings at length and prose is not executable.
+// Block comments are deliberately NOT stripped here (the literal-aware
+// stripper lives in tests/session_async_check.mjs, which owns that job) — that
+// direction fails CLOSED: a `/* payPref = ... */` block would be reported
+// rather than ignored.
+const PAY_OWNERS = [
+  { name: "declaration", expect: 3,
+    re: /    var payExplored = \[\];\r?\n    var payPref = null;\r?\n    var payOpen = \{\};/ },
+  // The only D4 action that writes no whole binding: it toggles payOpen by KEY
+  // and appends to payExplored through payRecordExplored(). Listed with an
+  // expectation of 0 so the inventory is the complete action set, and so a new
+  // rebinding here reads as a change rather than as an unowned site.
+  { name: "reviewPaymentPath", expect: 0,
+    re: /window\.reviewPaymentPath = function\(id\) \{[\s\S]*?\n    \};/ },
+  { name: "considerPaymentPath", expect: 1,
+    re: /window\.considerPaymentPath = function\(id\) \{[\s\S]*?\n    \};/ },
+  { name: "clearPaymentPreference", expect: 1,
+    re: /window\.clearPaymentPreference = function\(id\) \{[\s\S]*?\n    \};/ },
+  { name: "setPaymentNotNow", expect: 1,
+    re: /window\.setPaymentNotNow = function\(\) \{[\s\S]*?\n    \};/ },
+  { name: "resetSessionState", expect: 3,
+    re: /function resetSessionState\(opts\) \{[\s\S]*?\n    \}/ },
+];
+
+function payAssignmentAudit(source) {
+  const owners = PAY_OWNERS.map((o) => {
+    const m = source.match(o.re);
+    if (!m) return { name: o.name, expect: o.expect, missing: true, count: 0 };
+    const start = source.slice(0, m.index).split(/\r?\n/).length;
+    return { name: o.name, expect: o.expect, missing: false, count: 0,
+             start, end: start + m[0].split(/\r?\n/).length - 1 };
+  });
+  const lines = source.split(/\r?\n/);
+  const unowned = [];
+  let sites = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const code = lines[i].split("//")[0];
+    const hit = PAY_DIMS.filter((d) => payAssignRe(d).test(code));
+    if (!hit.length) continue;
+    sites += hit.length;
+    const owner = owners.find((o) => !o.missing && i + 1 >= o.start && i + 1 <= o.end);
+    if (!owner) unowned.push(`line ${i + 1}: ${lines[i].trim().slice(0, 70)}`);
+    else owner.count += hit.length;
+  }
+  return { owners, unowned, sites,
+           wrongCount: owners.filter((o) => o.missing || o.count !== o.expect) };
+}
+
+{
+  const audit = payAssignmentAudit(html);
+  for (const o of audit.owners) {
+    check(`[D4] ${o.name} located in index.html`, !o.missing);
+  }
+  check(`every Payment Choice assignment site is inside a D4 action or the wipe (${audit.sites} sites)${audit.unowned.length ? " — UNOWNED: " + audit.unowned.join(" | ") : ""}`,
+    audit.unowned.length === 0);
+  for (const o of audit.owners) {
+    check(`[D4] ${o.name} makes exactly ${o.expect} whole-binding assignment${o.expect === 1 ? "" : "s"} (found ${o.count})`,
+      !o.missing && o.count === o.expect);
+  }
+
+  // -- non-vacuity: the audit must reject each way rule 2 can break ----------
+  // A rogue write outside every owner. Planted in finLayoutClass(), which sits
+  // between the declarations and the first action function.
+  const ROGUE_HOST = "function finLayoutClass() {";
+  check("[non-vacuity] the rogue-assignment host exists to plant into",
+    html.includes(ROGUE_HOST));
+  for (const d of PAY_DIMS) {
+    const rogue = payAssignmentAudit(
+      html.replace(ROGUE_HOST, `${ROGUE_HOST}\n      ${PAY_CLEAR_LITERAL[d]}`));
+    check(`MUTATION: a rogue ${d} assignment outside every owner is caught`,
+      rogue.unowned.length === 1 && rogue.unowned[0].includes(d));
+  }
+  // A clear that MOVED into an owner it does not belong to: owned, so the
+  // membership rule passes, and only the per-owner counts reject it.
+  {
+    const moved = payAssignmentAudit(
+      html.replace("      if (payPref === id) return;",
+        "      payExplored = [];\n      if (payPref === id) return;"));
+    check("MUTATION: relocating a clear into another D4 action is caught by the counts",
+      moved.unowned.length === 0
+      && moved.wrongCount.some((o) => o.name === "considerPaymentPath"));
+  }
+  // A clear silently dropped from the wipe: the count falls short. The
+  // statement is blanked rather than the line deleted (index.html is CRLF, so
+  // a "\n"-terminated needle matches nothing), which also keeps every other
+  // owner's line range intact.
+  {
+    const WIPE_CLEAR = "        payOpen = {};";
+    check("[non-vacuity] the wipe's payOpen clear is present to delete",
+      html.includes(WIPE_CLEAR));
+    const dropped = payAssignmentAudit(html.replace(WIPE_CLEAR, ""));
+    check("MUTATION: dropping a clear from the wipe is caught by the counts",
+      dropped.wrongCount.some((o) => o.name === "resetSessionState" && o.count === 2));
+  }
+  // ...and the counter-example that must NOT fire: commentary about these
+  // bindings is prose, and index.html carries a lot of it.
+  {
+    const commented = payAssignmentAudit(
+      html.replace(ROGUE_HOST, `${ROGUE_HOST}\n      // payPref = 'promo-Synchrony';`));
+    check("a commented-out assignment is NOT reported (prose is not executable)",
+      commented.unowned.length === 0 && commented.sites === audit.sites);
+  }
+}
 
 // ===========================================================================
 // 8. GATE 2A :: SCREEN-TRANSITION FOCUS AND ANNOUNCEMENT
@@ -1836,9 +2146,30 @@ check("[Gate 2A] showScreen keeps the signature the extraction regexes pin",
 check("[Gate 2A] the transition path adds no raw timer",
   !/setTimeout|requestAnimationFrame|sessionTimeout|sessionFrame/
     .test((html.match(/function focusScreenDestination\(id\) \{[\s\S]*?\n    \}/) || [""])[0]));
-check("[Gate 2A] no Payment Choice control reaches the transition focus path",
-  !/focusScreenDestination\(/.test((html.match(/window\.toggleFinancingAgenda = function[\s\S]*?\n    \};/) || [""])[0])
-  && !/focusScreenDestination\(/.test((html.match(/function setFinancingInterestChoice[\s\S]*?\n    \}/) || [""])[0]));
+// Slice 4 repointed this at the D4 controls. It used to name
+// toggleFinancingAgenda / setFinancingInterestChoice, both retired — and since
+// a regex that matches nothing yields "", testing "" for an absent call passes
+// for every possible tree. The extracted sources are therefore asserted
+// NON-EMPTY first: an assertion about code that could not be found is not an
+// assertion at all.
+{
+  const D4_CONTROLS = [
+    ["reviewPaymentPath", /window\.reviewPaymentPath = function\(id\) \{[\s\S]*?\n    \};/],
+    ["considerPaymentPath", /window\.considerPaymentPath = function\(id\) \{[\s\S]*?\n    \};/],
+    ["clearPaymentPreference", /window\.clearPaymentPreference = function\(id\) \{[\s\S]*?\n    \};/],
+    ["setPaymentNotNow", /window\.setPaymentNotNow = function\(\) \{[\s\S]*?\n    \};/],
+  ].map(([name, re]) => ({ name, src: (html.match(re) || [""])[0] }));
+  check("[Gate 2A] all four Payment Choice controls were extracted, not silently empty",
+    D4_CONTROLS.every((c) => c.src.length > 0));
+  const reaching = D4_CONTROLS.filter((c) => /focusScreenDestination\(/.test(c.src));
+  check(`[Gate 2A] no Payment Choice control reaches the transition focus path${reaching.length ? " — " + reaching.map((c) => c.name).join(", ") : ""}`,
+    reaching.length === 0);
+  // Each control restores focus through its OWN identity-checked helper
+  // instead, which is what keeps a payment action off the screen-transition
+  // path in the first place.
+  check("[Gate 2A] they restore focus through payRestoreFocus() instead",
+    D4_CONTROLS.filter((c) => /payRestoreFocus\(/.test(c.src)).length === 4);
+}
 check("[Gate 2A] the transition path never writes the handoff region",
   !/hf2FinancingStatus/.test((html.match(/function focusScreenDestination[\s\S]*?\n    \}/) || [""])[0]));
 for (const k of ['screen.welcome', 'screen.question', 'screen.review', 'screen.profile',

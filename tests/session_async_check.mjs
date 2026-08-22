@@ -157,8 +157,12 @@ section("owned inventory: every raw setTimeout / setInterval / rAF is classified
 //
 // Keyed on line TEXT rather than line number so it survives edits elsewhere.
 const RAW_ALLOWLIST = [
-  { cls: "A", count: 1, match: "_finInterestAnnounceTimer = setTimeout(",
-    why: "cancelled by name in cancelFinInterestPending() + clearFinInterestAnnouncement(), both called by the wipe" },
+  // Slice 4 (D4) replaced the retired _finInterestAnnounceTimer with this one.
+  // Same class, same reason, one addition: the callback re-checks that its
+  // region is still live before writing, so a queued utterance whose sheet or
+  // handoff went away in the meantime lands nowhere.
+  { cls: "A", count: 1, match: "_payAnnounceTimer = setTimeout(",
+    why: "the Payment Choice preference-action announcement; superseded by name on the next announcement and cancelled by name in cancelPayAnnouncePending(), which clearPayAnnouncements(), closeFinancingSheet() and the wipe all call" },
   { cls: "A", count: 1, match: "_drawerCloseTimer = setTimeout(",
     why: "cleared by name in closeMattressDrawer(), which the wipe calls first with {immediate:true}" },
   { cls: "B", count: 1, match: "__STARFIELD_RAF__",
@@ -638,6 +642,282 @@ section("cancellation does not break the drawer");
 }
 
 // ===========================================================================
+// 2b. THE PAYMENT CHOICE ANNOUNCEMENT TIMER (the new class-A raw timer)
+// ===========================================================================
+// _payAnnounceTimer is the only raw session-bearing timer Slice 4 added, and
+// the inventory above classifies it. Classification is a claim about
+// behaviour, so the behaviour is executed here rather than asserted from the
+// allowlist's `why` string.
+//
+// Four properties, each a way a live region can misbehave on a shared tablet:
+//   supersession   — a second action must cancel the first, not queue beside it
+//   cancellation   — cancelPayAnnouncePending() must reach an armed timer
+//   region hygiene — clearPayAnnouncements() empties BOTH regions and cancels
+//   visibility     — a queued utterance whose surface went away writes nothing
+//
+// And one boundary: clearing announcements is NOT a reset. The language switch
+// calls clearPayAnnouncements() on every EN/ES change, so if it touched
+// payExplored / payPref / payOpen, switching language would silently discard
+// the customer's payment position — the copy-swap rule broken in the one place
+// that would look like an accessibility fix.
+//
+// The state machine those announcements describe is NOT tested here; it
+// belongs to tests/payment_choice_check.mjs. This suite owns the timer.
+section("Payment Choice announcements: supersession, cancellation, hygiene");
+{
+  const payFnsSrc = [
+    grab(/    function payRegionLive\(regionId\) \{[\s\S]*?\n    \}/, "payRegionLive()"),
+    grab(/    function announcePayAction\(regionId, key\) \{[\s\S]*?\n    \}/, "announcePayAction()"),
+    grab(/    function finHandoffVisible\(\) \{[\s\S]*?\n    \}/, "finHandoffVisible()"),
+    grab(/    function clearPayAnnouncements\(\) \{[\s\S]*?\n    \}/, "clearPayAnnouncements()"),
+    grab(/    function cancelPayAnnouncePending\(\) \{[\s\S]*?\n    \}/, "cancelPayAnnouncePending()"),
+  ].join("\n");
+
+  // A clock of its own. The shared one above has been advanced by the send
+  // tests and may still hold their timers, so `pending()` on it could not be
+  // read as "this announcement is armed".
+  let payNow = 0, paySeq = 1;
+  const payTimers = new Map();
+  const payClock = {
+    setTimeout(fn, ms) { const id = paySeq++; payTimers.set(id, { fn, at: payNow + (ms || 0) }); return id; },
+    clearTimeout(id) { payTimers.delete(id); },
+    advance(ms) {
+      payNow += ms;
+      for (const [id, t] of [...payTimers]) if (t.at <= payNow) { payTimers.delete(id); t.fn(); }
+    },
+    pending: () => payTimers.size,
+  };
+
+  const COPY = {
+    en: { currentlyConsidering: "EN considering", preferenceClearedAnnounce: "EN cleared",
+          preferenceNotNowAnnounce: "EN not now" },
+    es: { currentlyConsidering: "ES considerando", preferenceClearedAnnounce: "ES borrado",
+          preferenceNotNowAnnounce: "ES ahora no" },
+  };
+
+  function payHarness() {
+    const els = {};
+    for (const id of ["financingSheet", "hf2Screen", "hf2Financing",
+                      "hf2FinancingStatus", "financingSheetAction"]) {
+      const cls = new Set();
+      const e = {
+        id, textContent: "", hidden: false,
+        classList: { add: (c) => cls.add(c), remove: (c) => cls.delete(c), contains: (c) => cls.has(c) },
+        // finHandoffVisible() checks a hidden ANCESTOR; the module under test
+        // only ever calls it on #hf2Financing itself, so the shim answers for
+        // that element and nothing wider.
+        closest: (sel) => (sel === "[hidden]" && e.hidden ? e : null),
+      };
+      els[id] = e;
+    }
+    els.financingSheet.hidden = true;      // sheet closed until a test opens it
+    els.hf2Financing.hidden = false;
+    const state = { lang: "en" };
+    const out = {};
+    new Function("document", "setTimeout", "clearTimeout", "FCimpl", "out", `
+      "use strict";
+      var _payAnnounceTimer = null;
+      // Seeded dirty, so "clearPayAnnouncements() does not reset the model" is
+      // a real observation rather than two empty values compared to each other.
+      var payExplored = ['promo-Synchrony', 'plan-lacks-in-house'];
+      var payPref = 'plan-lacks-in-house';
+      var payOpen = { 'plan-lacks-in-house': true };
+      function FC(key) { return FCimpl(key); }
+      ${payFnsSrc}
+      out.announce = announcePayAction;
+      out.clearAll = clearPayAnnouncements;
+      out.cancel = cancelPayAnnouncePending;
+      out.regionLive = payRegionLive;
+      out.armed = function() { return _payAnnounceTimer !== null; };
+      out.probe = function() {
+        return { payExplored: payExplored, payPref: payPref, payOpen: payOpen };
+      };
+    `)({ getElementById: (id) => els[id] || null },
+       payClock.setTimeout, payClock.clearTimeout,
+       (k) => COPY[state.lang][k] || "", out);
+    return { out, els, state };
+  }
+  const openSheet = (h) => { h.els.financingSheet.hidden = false; };
+  const showHandoff = (h) => { h.els.hf2Screen.classList.add("active"); h.els.hf2Financing.hidden = false; };
+
+  // -- supersession ---------------------------------------------------------
+  {
+    const h = payHarness();
+    openSheet(h);
+    h.out.announce("financingSheetAction", "currentlyConsidering");
+    check("an announcement arms exactly one timer",
+      payClock.pending() === 1 && h.out.armed());
+    check("the region is emptied SYNCHRONOUSLY, so a repeat of identical text is still a mutation",
+      h.els.financingSheetAction.textContent === "");
+    h.out.announce("financingSheetAction", "preferenceClearedAnnounce");
+    check("REGRESSION: a second announcement supersedes the first — one timer, not two",
+      payClock.pending() === 1);
+    payClock.advance(60);
+    check("only the NEWEST announcement lands",
+      h.els.financingSheetAction.textContent === COPY.en.preferenceClearedAnnounce);
+    check("the timer handle is released once it fires", !h.out.armed());
+    check("nothing is left queued behind it", payClock.pending() === 0);
+    // Non-vacuity: the same harness really can hold two live timers, so
+    // "pending() === 1" above is a property of the code, not of the clock.
+    payClock.setTimeout(() => {}, 10);
+    payClock.setTimeout(() => {}, 10);
+    check("[non-vacuity] the fake clock does count concurrent timers",
+      payClock.pending() === 2);
+    payClock.advance(20);
+  }
+
+  // -- cancellation ---------------------------------------------------------
+  {
+    const h = payHarness();
+    openSheet(h);
+    h.out.announce("financingSheetAction", "currentlyConsidering");
+    check("[cancel] there is an armed announcement to cancel",
+      payClock.pending() === 1 && h.out.armed());
+    h.out.cancel();
+    check("cancelPayAnnouncePending() really clears the timer, not just the handle",
+      payClock.pending() === 0);
+    check("...and forgets the handle too, so a later cancel is inert", !h.out.armed());
+    payClock.advance(60);
+    check("REGRESSION: the cancelled announcement never lands",
+      h.els.financingSheetAction.textContent === "");
+    h.out.cancel();
+    check("a second cancel with nothing armed is harmless", payClock.pending() === 0);
+  }
+
+  // -- region hygiene: clearPayAnnouncements() ------------------------------
+  {
+    const h = payHarness();
+    openSheet(h);
+    showHandoff(h);
+    h.out.announce("financingSheetAction", "currentlyConsidering");
+    // Both regions holding a landed sentence, the state a language switch finds.
+    h.els.financingSheetAction.textContent = "EN: currently considering";
+    h.els.hf2FinancingStatus.textContent = "EN: not right now";
+    check("[hygiene] both regions hold text and an announcement is queued",
+      h.els.financingSheetAction.textContent !== "" && h.els.hf2FinancingStatus.textContent !== ""
+      && payClock.pending() === 1);
+    h.out.clearAll();
+    check("clearPayAnnouncements() empties the sheet's action region",
+      h.els.financingSheetAction.textContent === "");
+    check("clearPayAnnouncements() empties the handoff region too",
+      h.els.hf2FinancingStatus.textContent === "");
+    check("clearPayAnnouncements() cancels the queued announcement", payClock.pending() === 0);
+    payClock.advance(60);
+    check("REGRESSION: no old-language utterance repopulates a region afterwards",
+      h.els.financingSheetAction.textContent === "" && h.els.hf2FinancingStatus.textContent === "");
+  }
+
+  // -- clearing announcements is NOT a reset --------------------------------
+  {
+    const h = payHarness();
+    openSheet(h);
+    showHandoff(h);
+    const before = h.out.probe();
+    check("[copy swap] the harness starts from a non-empty payment position",
+      before.payExplored.length === 2 && before.payPref === "plan-lacks-in-house"
+      && Object.keys(before.payOpen).length === 1);
+    h.out.clearAll();
+    const after = h.out.probe();
+    check("a language switch does not discard the explored history",
+      after.payExplored === before.payExplored && after.payExplored.length === 2);
+    check("a language switch does not discard the preference",
+      after.payPref === "plan-lacks-in-house");
+    check("a language switch does not close the open disclosure panels",
+      after.payOpen === before.payOpen && Object.keys(after.payOpen).length === 1);
+    // Structural, so the boundary holds even for a future rewrite that stops
+    // going through this harness.
+    const clearSrc = (html.match(/    function clearPayAnnouncements\(\) \{[\s\S]*?\n    \}/) || [""])[0];
+    check("[copy swap] clearPayAnnouncements() was extracted, not silently empty",
+      clearSrc.length > 0);
+    check("clearPayAnnouncements() assigns none of the three dimensions",
+      !/(^|[^.\w$])payExplored\s*=(?!=)/.test(clearSrc)
+      && !/(^|[^.\w$])payPref\s*=(?!=)/.test(clearSrc)
+      && !/(^|[^.\w$])payOpen\s*=(?!=)/.test(clearSrc));
+    check("[non-vacuity] that pattern DOES match a real reset line",
+      /(^|[^.\w$])payExplored\s*=(?!=)/.test("        payExplored = [];"));
+  }
+
+  // -- visibility: an announcement whose surface is gone writes nothing -----
+  {
+    const h = payHarness();                          // sheet closed
+    h.els.financingSheetAction.textContent = "left over";
+    h.out.announce("financingSheetAction", "currentlyConsidering");
+    check("a sheet-region announcement is refused while the sheet is closed",
+      payClock.pending() === 0 && !h.out.armed());
+    check("...and the refusal does not even clear the region it declined to write",
+      h.els.financingSheetAction.textContent === "left over");
+    check("a handoff-region announcement is refused while the handoff is hidden",
+      (h.out.announce("hf2FinancingStatus", "preferenceNotNowAnnounce"),
+       payClock.pending() === 0));
+    // The handoff module hidden underneath an ACTIVE handoff screen is the
+    // other half of the same rule.
+    h.els.hf2Screen.classList.add("active");
+    h.els.hf2Financing.hidden = true;
+    h.out.announce("hf2FinancingStatus", "preferenceNotNowAnnounce");
+    check("...including when the screen is active but the module itself is hidden",
+      payClock.pending() === 0 && h.els.hf2FinancingStatus.textContent === "");
+    h.els.hf2Financing.hidden = false;
+    h.out.announce("hf2FinancingStatus", "preferenceNotNowAnnounce");
+    payClock.advance(60);
+    check("[non-vacuity] the same announcement DOES land once the handoff is visible",
+      h.els.hf2FinancingStatus.textContent === COPY.en.preferenceNotNowAnnounce);
+  }
+  {
+    // The race that matters: queued while visible, surface gone before it fires.
+    // A wipe closes the financing sheet, so without the callback-time recheck
+    // the departing customer's payment sentence would be written into a region
+    // belonging to the next session.
+    const h = payHarness();
+    openSheet(h);
+    h.out.announce("financingSheetAction", "currentlyConsidering");
+    check("[race] the announcement was accepted while the sheet was open",
+      payClock.pending() === 1);
+    h.els.financingSheetAction.textContent = "";
+    h.els.financingSheet.hidden = true;              // the sheet closes / wipe runs
+    payClock.advance(60);
+    check("REGRESSION: a queued announcement re-checks visibility and writes nothing",
+      h.els.financingSheetAction.textContent === "");
+  }
+  {
+    // Copy is resolved INSIDE the callback, so a language switch landing
+    // between the action and the utterance speaks the new language.
+    const h = payHarness();
+    openSheet(h);
+    h.out.announce("financingSheetAction", "currentlyConsidering");
+    h.state.lang = "es";
+    payClock.advance(60);
+    check("a language switch mid-defer announces the CURRENT language",
+      h.els.financingSheetAction.textContent === COPY.es.currentlyConsidering);
+  }
+
+  // -- the regions themselves ----------------------------------------------
+  // The behaviour above is only meaningful if these are real polite regions.
+  {
+    const tag = (html.match(/<div[^>]*id="financingSheetAction"[^>]*>/) || [""])[0];
+    check("#financingSheetAction ships as an element", tag.length > 0);
+    check("#financingSheetAction is a polite, atomic status region",
+      /role="status"/.test(tag) && /aria-live="polite"/.test(tag) && /aria-atomic="true"/.test(tag));
+    check("#financingSheetAction is visually hidden, not a visible duplicate",
+      /class="sr-only"/.test(tag));
+    check("the freshness region is a separate element that ships alongside it",
+      (html.match(/id="financingSheetStatus"/g) || []).length === 1
+      && (html.match(/id="financingSheetAction"/g) || []).length === 1);
+    // The regions must stay separate in USE, not just in markup: an
+    // announcement sharing the freshness region would erase a stale-terms
+    // notice (or be erased by one) purely on timing. Enumerated from the call
+    // sites rather than asserted as an absence, so a third region added later
+    // is a visible change here.
+    const regionArgs = [...stripComments(html).matchAll(/announcePayAction\(\s*'([^']+)'/g)]
+      .map((m) => m[1]);
+    check(`every announcePayAction() call names a preference-action region (${regionArgs.length} calls)`,
+      regionArgs.length === 3
+      && [...new Set(regionArgs)].sort().join(",") === "financingSheetAction,hf2FinancingStatus");
+    check("the freshness region is never written by a preference announcement",
+      !regionArgs.includes("financingSheetStatus"));
+  }
+}
+
+// ===========================================================================
 // 3. DIAGNOSTIC PRIVACY — execute the real analytics object
 // ===========================================================================
 section("diagnostic privacy: the real analytics.log() redaction");
@@ -914,9 +1194,9 @@ section("diagnostic privacy: static sweep of the shipped source");
 
 section("diagnostic contract: the logged event set and EVENT_FIELDS agree");
 {
-  // The drift this pins, present on 94eab0d and reproducible by reverting the
-  // EVENT_FIELDS half: building the specialist agenda (2b34e7a) renamed the two
-  // financing events at their CALL SITES —
+  // The drift this pins was real and is worth keeping on the record even though
+  // the events involved no longer exist. On 94eab0d, building the specialist
+  // agenda (2b34e7a) renamed two financing events at their CALL SITES —
   //     financing_interest_changed    -> financing_agenda_changed
   //     financing_followup_requested  -> financing_agenda_reviewed
   // — but left EVENT_FIELDS declaring the old pair. Neither half is wrong when
@@ -925,6 +1205,14 @@ section("diagnostic contract: the logged event set and EVENT_FIELDS agree");
   //     A.log('financing_agenda_changed', finEventBase('sheet'))  ->  {_dropped: 4}
   // Both agenda events were emitting a drop-count and nothing else. Placement,
   // language and layout — the whole reason the events exist — never survived.
+  //
+  // HISTORICAL, NOT LIVE. Slice 4 (D4) retired the agenda model outright and
+  // took both of those events with it, with no replacement: Consider, Clear,
+  // Review and Not right now emit NOTHING. The set-equality guard below is what
+  // survives the retirement, and it is the part that mattered — it is
+  // name-independent, so it covers the events that exist today and any future
+  // rename of them. The retirement itself is pinned separately, at the end of
+  // this section.
   //
   // Name-by-name assertions cannot prevent that recurring; a rename simply
   // moves to a name nobody has written an assertion about yet. Only the SET
@@ -1223,16 +1511,107 @@ section("diagnostic contract: the logged event set and EVENT_FIELDS agree");
       shipped.unparsed.length === 0 && shipped.unlisted.length === 0
       && shipped.unlogged.length === 0);
   }
-  // The specific pair, so the regression reads by name in the log too.
-  for (const ev of ["financing_agenda_changed", "financing_agenda_reviewed"]) {
+  // ---- the two agenda events are RETIRED, with no replacement -------------
+  // This block used to assert that both events retained their placement/lang/
+  // layout diagnostics. They no longer exist. Deleting the assertions would
+  // leave nothing standing where a payment telemetry event could quietly
+  // reappear, so they are replaced by the stronger statement: the financing
+  // event set is CLOSED at four, and D4 added none of its own.
+  //
+  // Why that matters more than the old pair did. Under D4 the customer's
+  // payment position — which paths they opened, which one they are considering,
+  // whether they paused — is state the diagnostics must never see. An event
+  // fired on Consider would put a payment signal into analytics.events and the
+  // console even with a redacted payload, because the EVENT NAME is itself the
+  // disclosure. The four survivors are all "a financing surface was shown or a
+  // link was followed", and each carries placement/lang/layout only.
+  const RETIRED_EVENTS = ["financing_agenda_changed", "financing_agenda_reviewed"];
+  {
+    // Scoped to EXECUTABLE code. index.html still discusses the retired model
+    // in comments on purpose (the D4 block explains what it replaced and why),
+    // and prose must not keep a retired event alive. Proven non-vacuous just
+    // below, where retired IDENTIFIERS that DO survive in comments are shown to
+    // be absent from code — the same scoping, on a name the file really carries.
+    const codeOnly = stripComments(html);
+    for (const ev of RETIRED_EVENTS) {
+      check(`${ev} is gone from executable code`, !codeOnly.includes(ev));
+      check(`${ev} is gone from EVENT_FIELDS`,
+        !Object.prototype.hasOwnProperty.call(A.EVENT_FIELDS, ev));
+      check(`${ev} would still be caught if it came back`,
+        auditEventContract(`analytics.log('${ev}', p);`, []).unlisted.join(",") === ev);
+    }
+    // Non-vacuity for the comment scoping itself: these identifiers are retired
+    // from code but deliberately still named in index.html's explanatory
+    // comments. An unscoped sweep would report them as live.
+    for (const ident of ["financingExplored", "finAgendaKey"]) {
+      check(`[scoping] ${ident} survives only in commentary, never in code`,
+        html.includes(ident) && !stripComments(html).includes(ident));
+    }
+  }
+  {
+    // The closed financing event set, asserted from BOTH halves independently:
+    // what the source logs, and what the contract declares. Anything payment-,
+    // preference- or path-shaped appearing in either half is the failure.
+    const FINANCING_EVENTS = ["finance_details_open", "finance_module_impression",
+      "mexico_financing_details_open", "official_financing_link_click"].sort();
+    const FIN_RE = /financ|payment|pay_|_pay\b|prefer|path|consider|clear|not_now|notnow/i;
+    const loggedFin = [...logged].filter((e) => FIN_RE.test(e)).sort();
+    const listedFin = Object.keys(A.EVENT_FIELDS).filter((e) => FIN_RE.test(e)).sort();
+    check(`the logged financing event set is exactly the four survivors${loggedFin.join(",") === FINANCING_EVENTS.join(",") ? "" : " — FOUND: " + loggedFin.join(", ")}`,
+      loggedFin.join(",") === FINANCING_EVENTS.join(","));
+    check(`EVENT_FIELDS declares exactly the same four${listedFin.join(",") === FINANCING_EVENTS.join(",") ? "" : " — FOUND: " + listedFin.join(", ")}`,
+      listedFin.join(",") === FINANCING_EVENTS.join(","));
+    // Non-vacuity: the matcher must actually recognise a new payment event.
+    for (const invented of ["payment_preference_changed", "financing_path_considered",
+                            "payment_cleared", "financing_not_now_selected"]) {
+      check(`[non-vacuity] a new "${invented}" event would be picked up by this sweep`,
+        FIN_RE.test(invented));
+    }
+    check("[non-vacuity] the sweep does not match unrelated events",
+      !FIN_RE.test("quiz_started") && !FIN_RE.test("tier_view")
+      && !FIN_RE.test("save_pick_toggle") && !FIN_RE.test("session_ended"));
+    // MUTATION: a D4 telemetry event added to BOTH halves — a call site AND an
+    // EVENT_FIELDS entry, which is how someone would add one properly. Both
+    // directions of the set equality PASS for it, because it is logged and it
+    // is listed. Only the closed-set rule above rejects it, and that is exactly
+    // why the set is pinned rather than the two directions alone.
+    {
+      const HOST = "      analytics.log('finance_details_open', finEventBase(placement));";
+      check("[non-vacuity] the telemetry host line exists to plant into", html.includes(HOST));
+      const mutatedSrc = html.replace(HOST,
+        HOST + "\n      analytics.log('payment_preference_changed', finEventBase('sheet'));");
+      const mutatedAudit = auditEventContract(mutatedSrc,
+        Object.keys(A.EVENT_FIELDS).concat("payment_preference_changed"));
+      check("[non-vacuity] a properly-added Consider event satisfies BOTH set-equality directions",
+        mutatedAudit.unparsed.length === 0 && mutatedAudit.unlisted.length === 0
+        && mutatedAudit.unlogged.length === 0);
+      const mutatedFin = [...mutatedAudit.names].filter((e) => FIN_RE.test(e)).sort();
+      check("MUTATION: ...and the closed financing set is what rejects it",
+        mutatedFin.join(",") !== FINANCING_EVENTS.join(",")
+        && mutatedFin.includes("payment_preference_changed"));
+    }
+  }
+  // The four survivors still carry their diagnostics, and still redact
+  // offerVersion — being a declared event is not a licence to widen the field
+  // set. This is what the retired pair's assertion was really protecting.
+  for (const ev of ["finance_details_open", "finance_module_impression",
+                    "official_financing_link_click", "mexico_financing_details_open"]) {
     const printed = runLogged(() => A.log(ev, {
       placement: "sheet", lang: "en", layout: "tablet", offerVersion: "2026-07",
     }));
     check(`${ev} retains its placement/lang/layout diagnostics`,
       printed.includes("sheet") && printed.includes("tablet") && printed.includes('"en"'));
-    // offerVersion stays redacted here for the same reason it is everywhere
-    // else — being a declared event is not a licence to widen the field set.
     check(`${ev} still redacts offerVersion`, !printed.includes("2026-07"));
+  }
+  // ...and a retired event logged today would carry nothing at all, which is
+  // the shape the drift above produced by accident and D4 now intends.
+  for (const ev of RETIRED_EVENTS) {
+    const printed = runLogged(() => A.log(ev, {
+      placement: "sheet", lang: "en", layout: "tablet", offerVersion: "2026-07",
+    }));
+    check(`${ev} is unknown to redact(): no placement, lang, layout or offerVersion`,
+      !printed.includes("sheet") && !printed.includes("tablet")
+      && !printed.includes('"en"') && !printed.includes("2026-07"));
   }
 }
 

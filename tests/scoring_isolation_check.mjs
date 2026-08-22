@@ -41,19 +41,45 @@ const m = html.match(/function calculateScores\(\)\s*\{[\s\S]*?\n    \}/);
 if (!check("extracted calculateScores()", !!m)) process.exit(1);
 
 // The engine reads MATTRESSES, QUESTIONS, answers and currentLang from module
-// scope. Financing state (financingAgenda / financingExplored) is deliberately
-// declared here too: if the engine ever starts reading it, this harness will
-// happily supply it — and the equality assertions below will catch it.
+// scope. Payment/financing state is deliberately declared here too: if the
+// engine ever starts reading it, this harness will happily supply it — and the
+// equality assertions below will catch it.
+//
+// The declared set is BOTH generations of the model, so this harness keeps
+// working across the Payment Choice change and pins the isolation of each:
+//   * the discussion-agenda generation (financingAgenda / financingExplored);
+//   * the D4 Payment Choice model (payExplored / payPref / payOpen).
 const engine = new Function("MATTRESSES", "QUESTIONS", `
   var answers = {}, currentLang = 'en';
   var financingAgenda = {}, financingAgendaDismissed = false, financingExplored = false;
+  var payExplored = [], payPref = null, payOpen = {};
   ${m[0]}
-  return function (a, lang, finAgenda, finExplored) {
+  return function (a, lang, st) {
     answers = a; currentLang = lang;
-    financingAgenda = finAgenda; financingAgendaDismissed = finAgenda === null;
-    financingExplored = finExplored;
+    financingAgenda = st.agenda; financingAgendaDismissed = st.agenda === null;
+    financingExplored = st.explored;
+    payExplored = st.payExplored; payPref = st.payPref; payOpen = st.payOpen;
     return calculateScores();
   };`)(MATTRESSES, QUIZ.questions);
+
+// The SAME engine source with NO payment binding in scope at all, and no
+// `window` either. Supplying state and comparing proves the engine does not
+// USE it; this proves the engine does not READ it. A direct `payPref`,
+// `payExplored`, `payOpen`, `financingAgenda` or `window._payPref` reference
+// raises a ReferenceError here instead of quietly resolving to a harness
+// value, so an indirect read through a payment helper — the helper is not in
+// scope either — fails just as loudly. Reading is the leak; equal output only
+// means the leak has not yet been wired to an outcome.
+const bareEngine = new Function("MATTRESSES", "QUESTIONS", `
+  var answers = {}, currentLang = 'en';
+  ${m[0]}
+  return function (a, lang) {
+    answers = a; currentLang = lang;
+    return calculateScores();
+  };`)(MATTRESSES, QUIZ.questions);
+
+// Convenience for the sections below that only care about answers + language.
+const scoresOf = (a, lang) => engine(a, lang, CLEAN_STATE);
 
 const ANSWER_SETS = {
   "side sleeper, hot, back pain": {
@@ -79,37 +105,100 @@ const ANSWER_SETS = {
   }
 };
 
-// Every financing state the app can be in.
-const FIN_STATES = [
-  [{}, false], [{}, true],
-  [{ "promotional:synchrony": true }, false],
-  [{ "plan:lacks-in-house": true, "plan:lease-to-own": true }, true],
-  [null, false], [null, true]
+// ---------------------------------------------------------------------------
+// THE COMPLETE PAYMENT-STATE MATRIX.
+//
+// Every state the app can hold, in both generations of the model. The D4 rows
+// walk the whole Payment Choice contract — empty session, exploration without
+// preference, an open disclosure, a preference, a replaced preference, the
+// not_now pause with and without preserved history, a cleared preference that
+// keeps its history, and a stale/unknown path id — because "financing does not
+// affect scoring" has to hold in every one of them, not just the two the old
+// pair of booleans could express.
+// ---------------------------------------------------------------------------
+const P1 = "promo-Synchrony";
+const P2 = "plan-lacks-in-house";
+const CLEAN_STATE = { agenda: {}, explored: false, payExplored: [], payPref: null, payOpen: {} };
+const st = (over) => Object.assign({}, CLEAN_STATE, over);
+const PAY_STATES = [
+  ["new session", CLEAN_STATE],
+  ["sheet opened, nothing recorded", st({ explored: true })],
+  ["one path explored, no preference", st({ payExplored: [P1] })],
+  ["explored with its disclosure open", st({ payExplored: [P1], payOpen: { [P1]: true } })],
+  ["two paths explored, no preference", st({ payExplored: [P1, P2] })],
+  ["preference set", st({ payExplored: [P1], payPref: P1 })],
+  ["preference replaced by the second path", st({ payExplored: [P1, P2], payPref: P2 })],
+  ["not right now with preserved history", st({ payExplored: [P1, P2], payPref: "not_now" })],
+  ["not right now with no history", st({ payPref: "not_now" })],
+  ["preference cleared, history preserved", st({ payExplored: [P1, P2], payPref: null })],
+  ["stale/unknown path id held in state", st({ payExplored: ["plan-gone"], payPref: "plan-gone" })],
+  // Legacy discussion-agenda generation, kept so the isolation proof does not
+  // lapse for the shapes that shipped before D4.
+  ["legacy agenda: one item marked", st({ agenda: { "promotional:synchrony": true } })],
+  ["legacy agenda: two items marked, explored",
+    st({ agenda: { "plan:lacks-in-house": true, "plan:lease-to-own": true }, explored: true })],
+  ["legacy agenda: dismissed", st({ agenda: null })],
+  ["legacy agenda: dismissed after exploring", st({ agenda: null, explored: true })]
 ];
 
-// --- 1. Financing state cannot move a single point --------------------------
-console.log("Financing state does not affect scoring:");
+// --- 1. Payment state cannot move a single point ----------------------------
+console.log("Payment/financing state does not affect scoring:");
 for (const [name, answers] of Object.entries(ANSWER_SETS)) {
   for (const lang of ["en", "es"]) {
-    const base = engine(answers, lang, {}, false);
+    const base = engine(answers, lang, CLEAN_STATE);
     const baseJson = JSON.stringify(base.scores);
-    for (const [agenda, explored] of FIN_STATES) {
-      const got = engine(answers, lang, agenda, explored);
-      check(`[${lang}] ${name} - scores identical across agenda state/explored=${explored}`,
-        JSON.stringify(got.scores) === baseJson);
-    }
-    // Match reasons are the Sleep Brief's raw material; they must not move either.
     const reasonsJson = JSON.stringify(base.matchReasons);
-    const withInterest = engine(answers, lang, { "scenario:mexico-delivery": true }, true);
-    check(`[${lang}] ${name} - match reasons identical too`,
-      JSON.stringify(withInterest.matchReasons) === reasonsJson);
+    for (const [label, state] of PAY_STATES) {
+      const got = engine(answers, lang, state);
+      check(`[${lang}] ${name} — scores identical under: ${label}`,
+        JSON.stringify(got.scores) === baseJson);
+      // Match reasons are the Sleep Brief's raw material; they must not move
+      // either, in ANY payment state — not only the one state the previous
+      // version happened to sample.
+      check(`[${lang}] ${name} — match reasons identical under: ${label}`,
+        JSON.stringify(got.matchReasons) === reasonsJson);
+    }
+    // ...and the engine must produce that same answer with NO payment binding
+    // in scope at all, which is the read (not merely the use) being ruled out.
+    let bareErr = null, bare = null;
+    try { bare = bareEngine(answers, lang); } catch (e) { bareErr = e; }
+    check(`[${lang}] ${name} — engine runs with no payment binding declared`,
+      bareErr === null, bareErr && bareErr.message);
+    check(`[${lang}] ${name} — bare-scope scores and reasons are identical`,
+      !!bare && JSON.stringify(bare.scores) === baseJson
+      && JSON.stringify(bare.matchReasons) === reasonsJson);
   }
+}
+
+// The bare-scope proof must be able to FAIL. A harness whose "no binding in
+// scope" instance would survive a real read proves nothing, so an engine that
+// does read payment state is compiled here and required to throw.
+{
+  const leaked = m[0].replace("function calculateScores() {",
+    "function calculateScores() { if (payPref) { /* leak */ }");
+  let threw = false;
+  try {
+    new Function("MATTRESSES", "QUESTIONS", `
+      var answers = {}, currentLang = 'en';
+      ${leaked}
+      return calculateScores();`)(MATTRESSES, QUIZ.questions);
+  } catch (e) { threw = e instanceof ReferenceError; }
+  check("a planted payPref read makes the bare-scope engine throw (proof is non-vacuous)",
+    leaked !== m[0] && threw);
 }
 
 // --- 2. The scoring engine never mentions financing at all ------------------
 console.log("The engine's source contains no financing identifier:");
 for (const id of ["financingAgenda", "financingAgendaDismissed", "financingExplored", "getFinancingConfig",
                   "financingTermsFresh", "exactPromotionsEnabled", "FC(",
+                  // Slice 4 (D4): the Payment Choice model. Sleep fit first,
+                  // payment choice second — the engine may not name the
+                  // durable model, its ephemeral disclosure store, or any of
+                  // the helpers that read them on its behalf.
+                  "payPref", "payExplored", "payOpen",
+                  "finPaymentPaths", "finPaymentPath", "finPathId", "finPathLabel",
+                  "considerPaymentPath", "clearPaymentPreference", "reviewPaymentPath",
+                  "setPaymentNotNow", "payPrefPathId", "payHistoryLabels",
                   // 0.5: consultation-priority state must never feed scoring —
                   // the priorities shape consultation copy only, and the
                   // engine may not so much as name their store.
@@ -119,6 +208,36 @@ for (const id of ["financingAgenda", "financingAgendaDismissed", "financingExplo
                   // may not read the flag — a reintroduction fails here.
                   "locallyMade", "Made locally", "Hecho localmente"]) {
   check(`calculateScores() does not reference ${id}`, !m[0].includes(id));
+}
+
+// --- 2b. The two escapes a plain identifier ban does not close --------------
+// `typeof payPref` on an UNDECLARED binding does not throw — it evaluates to
+// "undefined" — so the bare-scope proof above cannot see it. And a read routed
+// through the global object (`window._payPref`) reaches the same state by a
+// different name. Both are banned lexically, in the engine and in every
+// function the engine's extraction window covers.
+console.log("The engine carries no typeof/global escape hatch:");
+for (const [label, rx] of [
+  ["a typeof guard on payment state", /typeof\s+pay(?:Pref|Explored|Open)\b/],
+  ["a typeof guard on financing state", /typeof\s+financing[A-Za-z]*\b/],
+  ["a payment read through the global object", /window\s*\.\s*_?pay[A-Z]/],
+  ["a financing read through the global object", /window\s*\.\s*_?financing/i],
+  ["an optional-chaining payment read", /\?\.\s*pay(?:Pref|Explored|Open)\b/],
+  ["a bracketed payment read", /\[\s*['"]pay(?:Pref|Explored|Open)['"]\s*\]/]
+]) {
+  check(`calculateScores() contains no ${label}`, !rx.test(m[0]));
+}
+// The bans must be able to fire: each pattern is proven against a planted
+// example, so a typo'd regex cannot pass by matching nothing forever.
+for (const [label, rx, sample] of [
+  ["typeof payment guard", /typeof\s+pay(?:Pref|Explored|Open)\b/, "if (typeof payPref !== 'undefined') {}"],
+  ["typeof financing guard", /typeof\s+financing[A-Za-z]*\b/, "if (typeof financingAgenda === 'object') {}"],
+  ["global payment read", /window\s*\.\s*_?pay[A-Z]/, "var x = window._payExplored;"],
+  ["global financing read", /window\s*\.\s*_?financing/i, "var x = window._financingAgenda;"],
+  ["optional-chaining payment read", /\?\.\s*pay(?:Pref|Explored|Open)\b/, "var x = state?.payPref;"],
+  ["bracketed payment read", /\[\s*['"]pay(?:Pref|Explored|Open)['"]\s*\]/, "var x = g['payPref'];"]
+]) {
+  check(`the ${label} pattern actually matches a planted example`, rx.test(sample));
 }
 
 // --- 3. Documented weights still hold ---------------------------------------
@@ -131,7 +250,7 @@ console.log("Documented scoring weights hold:");
 const all = Object.values(MATTRESSES).flat();
 {
   // Isolate firmness by supplying ONLY the firmness answer.
-  const at = (v) => engine({ firmness: v }, "en", {}, false).scores;
+  const at = (v) => scoresOf({ firmness: v }, "en").scores;
   for (const target of [1, 5, 10]) {
     const s = at(target);
     for (const mm of all) {
@@ -172,8 +291,8 @@ console.log("The per-feature cap caps:");
   check("catalogue has models carrying cooling", carriers.length > 0, `${carriers.length}`);
   const CAP = 5;
   const ANS = { firmness: FIRM, temperature: "hot", sleep_issues: ["hot"] };
-  const base = engine({ firmness: FIRM }, "en", {}, false).scores;
-  const both = engine(ANS, "en", {}, false).scores;
+  const base = scoresOf({ firmness: FIRM }, "en").scores;
+  const both = scoresOf(ANS, "en").scores;
 
   // Expected feature contribution, computed analytically from the quiz data:
   // per feature, sum the awards from the supplied answers, then apply the cap.
@@ -240,7 +359,7 @@ const GOLDEN = {
 };
 console.log("Golden pins on the shipped catalogue:");
 for (const [name, answers] of Object.entries(ANSWER_SETS)) {
-  const { scores } = engine(answers, "en", {}, false);
+  const { scores } = scoresOf(answers, "en");
   // Ranking is id-tiebroken so the pin is deterministic across engines.
   const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
   const want = GOLDEN[name];
@@ -253,7 +372,7 @@ for (const [name, answers] of Object.entries(ANSWER_SETS)) {
   check(`${name}: qualified set (>=60% of top) is exactly ${want.qualified}`,
     qualified.length === want.qualified, `got ${qualified.length}`);
   // EN and ES must rank identically — language must not reorder results.
-  const es = engine(answers, "es", {}, false).scores;
+  const es = scoresOf(answers, "es").scores;
   check(`${name}: EN and ES produce identical scores`,
     JSON.stringify(scores) === JSON.stringify(es));
 }
