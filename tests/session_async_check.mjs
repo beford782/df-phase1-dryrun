@@ -907,11 +907,20 @@ section("Payment Choice announcements: supersession, cancellation, hygiene");
     // notice (or be erased by one) purely on timing. Enumerated from the call
     // sites rather than asserted as an absence, so a third region added later
     // is a visible change here.
-    const regionArgs = [...stripComments(html).matchAll(/announcePayAction\(\s*'([^']+)'/g)]
+    // Slice 5 C5: the "Not right now" call passes `ids.region`, resolved from
+    // PAY_NOT_NOW_SURFACES (the handoff's region or the Sleep Plan's). The
+    // surface table is read from the shipped source and its regions join the
+    // enumeration, so the set is still derived from call sites, never
+    // restated — and a region that is NOT in that table is still a failure.
+    const literalArgs = [...stripComments(html).matchAll(/announcePayAction\(\s*'([^']+)'/g)]
       .map((m) => m[1]);
-    check(`every announcePayAction() call names a preference-action region (${regionArgs.length} calls)`,
-      regionArgs.length === 3
-      && [...new Set(regionArgs)].sort().join(",") === "financingSheetAction,hf2FinancingStatus");
+    const tableSrc = (stripComments(html).match(/var PAY_NOT_NOW_SURFACES = \{[\s\S]*?\n    \};/) || [""])[0];
+    const tableRegions = [...tableSrc.matchAll(/region:\s*'([^']+)'/g)].map((m) => m[1]);
+    const viaTable = (stripComments(html).match(/announcePayAction\(\s*ids\.region/g) || []).length;
+    const regionArgs = literalArgs.concat(viaTable ? tableRegions : []);
+    check(`every announcePayAction() call names a preference-action region (${literalArgs.length} literal + ${viaTable} via the surface table -> ${regionArgs.length} regions)`,
+      literalArgs.length === 2 && viaTable === 1 && tableRegions.length === 2
+      && [...new Set(regionArgs)].sort().join(",") === "financingSheetAction,hf2FinancingStatus,sleepPlanFinancingStatus");
     check("the freshness region is never written by a preference announcement",
       !regionArgs.includes("financingSheetStatus"));
   }

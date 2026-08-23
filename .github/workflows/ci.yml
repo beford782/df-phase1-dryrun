@@ -306,6 +306,13 @@ jobs:
       - name: consultation priorities
         run: node tests/consultation_priorities_check.mjs
 
+      # Slice 5 (D5 / roadmap 1.7): the Sleep Plan — finalist provenance (the
+      # resolver and its pass-1 characterization of the retired silent
+      # promotion), the side-effect-free accessory accessor, and the screen's
+      # renderer executed against a DOM stub with a throwing scorer.
+      - name: sleep plan (D5 finalist provenance + screen)
+        run: node tests/sleep_plan_check.mjs
+
       # Phase 0.5, server side. The first suite to EXECUTE Code.gs (whole-file
       # load, four recorder stubs): safeData projection, HTML email order and
       # escaping, the full plain-text body on BOTH sends (the normal email's

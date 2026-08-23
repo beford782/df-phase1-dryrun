@@ -134,6 +134,21 @@ def _type_name(v) -> str:
 _finite_number = fin_headline.finite_number
 
 
+def _runtime_truthy(v) -> bool:
+    """JavaScript truthiness of a config value as index.html reads it RAW
+    (`(STORE_CONFIG && STORE_CONFIG.gasUrl) || ''` then `!!gasUrl` /
+    `if (gasUrl && ...)`): a whitespace-only string is TRUE there. Mirrors JS
+    for the JSON-representable types (strings, numbers, booleans, null,
+    objects, arrays); used for admission decisions that must match the kiosk."""
+    if v is None or v is False:
+        return False
+    if isinstance(v, str):
+        return v != ""
+    if isinstance(v, (int, float)):
+        return v != 0 and v == v  # 0 and NaN are falsy in JS
+    return True  # objects/arrays are truthy in JS even when empty
+
+
 def _blank(v) -> bool:
     return v is None or _safe_str(v).strip() == ""
 
@@ -273,7 +288,8 @@ def validate_structure(raw_tabs: Dict[str, Tuple[List[str], List[dict]]]) -> Val
 PRIVACY_PROSE_KEYS = ("emailPrivacy", "privacyBody", "privacyDraftNotice",
                       "privacyPolicyContact", "disclaimerBody")
 # Preview-mode signal phrases: wording that is only true while nothing leaves
-# the tablet. Lower-cased substring match in either language.
+# the tablet. Lower-cased substring match in either language. These fire
+# unconditionally: each one is a claim about the kiosk's own behaviour.
 PREVIEW_MODE_SIGNALS = (
     "preview mode", "preview deployment", "in this preview",
     "modo de vista previa", "en esta vista previa",
@@ -283,15 +299,395 @@ PREVIEW_MODE_SIGNALS = (
     "nothing is sent", "nothing leaves", "never leaves", "not sent anywhere",
     "never sent anywhere", "aren't sent anywhere", "are not sent anywhere",
     "is not sent anywhere", "isn't sent anywhere", "not sent or stored",
-    "no email is sent", "no email was sent", "not transmitted", "never transmitted",
-    "not saved", "aren't saved", "never saved", "not stored", "never stored",
-    "don't store", "do not store", "doesn't store", "does not store",
+    "no email is sent", "no email was sent",
     "does not send or store", "doesn't send or store",
     "no se envía nada", "no se envia nada", "nada sale", "no se envía a ning",
-    "no se envia a ning", "no se envía ning", "no se envia ning", "no se guarda",
-    "no se guardan", "no se almacena", "no se almacenan", "no se transmite",
-    "no se transmiten", "no se envían", "no se envian",
+    "no se envia a ning", "no se envía ning", "no se envia ning",
 )
+# Transmission negations ("not transmitted", "no se envían") are NOT in the
+# unconditional list: "Your answers are not transmitted to lenders" is true
+# under a live endpoint. They live in the grammatical family below and are
+# rejected only when ABSOLUTE (no destination or a universal one such as
+# "anywhere" / "to anyone") and bound to governed data.
+# Storage negations. Bare, these are not preview signals: a retailer may
+# truthfully write "Payment card details are not stored by this application"
+# under a live endpoint. They become a false promise only when bound to
+# governed data — the customer's answers, contact values, session or results,
+# which a live gasUrl does send and Code.gs does store. Matched as a
+# GRAMMATICAL FAMILY (external review threads 2, 7, 8, 2026-08-22), not an
+# enumerated phrase list, after apostrophes and quotes are normalized — so
+# "aren't", "weren’t" (typographic), "won't be", "cannot be", past tenses and
+# the keep/retain verbs are all one rule. Each match is then bound to the
+# noun phrase it is about (_storage_claim_is_governed).
+_NEG = r"(?:n't|\bnot\b|\bnever\b|\bcannot\b|\bno longer\b)"
+# Up to three MODIFIERS may sit between the negation and the verb: auxiliaries
+# ("won't BE stored", "not GOING TO BE stored"), adverbs ("not PERMANENTLY
+# stored", "do not EVER store") — external review thread 9 (2026-08-22).
+# Restricted to those token classes (thread 12): an unrestricted gap turned
+# "we do not ASK LENDERS TO store your answers" — a claim about lenders, not
+# about the kiosk — into a storage negation.
+_GAP_TOKEN = (r"(?:be|being|been|get|gets|got|gotten|going\s+to|ever|even|also|still|yet|just|"
+              r"simply|again|anywhere|elsewhere|at\s+all|in\s+any\s+way|in\s+any\s+form|"
+              r"[a-z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\u00fc]+ly|[a-z\u00e1\u00e9\u00ed\u00f3\u00fa\u00f1\u00fc]+mente)")
+_GAP = r"\s+(?:" + _GAP_TOKEN + r"\s+){0,3}?"
+_ES_NEG = r"\b(?:no|nunca|jam[a\u00e1]s)\s+"
+_ES_OBJ = r"(?:(?:lo|la|los|las|le|les|te|nos)\s+)?"
+STORAGE_NEGATION_PATTERNS = (
+    # passive: "X is/are/was/were/won't be/cannot be ... not|never [adv] stored|saved|kept|retained"
+    ("passive", re.compile(_NEG + _GAP + r"(?:stored|saved|kept|retained)\b")),
+    # active: "we do not|don't|never|won't|cannot [adv] store|save|keep|retain X"
+    ("active", re.compile(_NEG + _GAP + r"(?:store|save|keep|retain)\b")),
+    # transmission, passive: "X is not [adv] transmitted|sent|shared|uploaded|forwarded|submitted"
+    ("passive_transmit", re.compile(_NEG + _GAP + r"(?:transmitted|sent|shared|uploaded|forwarded|submitted)\b")),
+    # transmission, active: "we do not [adv] transmit|send|share|upload|forward|submit X"
+    ("active_transmit", re.compile(_NEG + _GAP + r"(?:transmit|send|share|upload|forward|submit)\b")),
+    # Spanish reflexive: "X no|nunca se guarda(n)..." / "no se guardan X"
+    ("es_reflexive", re.compile(_ES_NEG + r"se\s+" + _ES_OBJ + r"(?:guarda|guardan|guardar[a\u00e1]n?|almacena|almacenan|"
+                                r"almacenar[a\u00e1]n?|conserva|conservan|conservar[a\u00e1]n?|retiene|retienen|retendr[a\u00e1]n?)\b")),
+    # Spanish active: "no|nunca [las] guardamos X"
+    ("es_active", re.compile(_ES_NEG + _ES_OBJ + r"(?:guardamos|guardaremos|almacenamos|almacenaremos|"
+                             r"conservamos|conservaremos|retenemos|retendremos)\b")),
+    # Spanish transmission, reflexive: "X no se transmite(n)|env\u00eda(n)|comparte(n)"
+    ("es_reflexive_transmit", re.compile(_ES_NEG + r"se\s+" + _ES_OBJ + r"(?:transmite|transmiten|transmitir[a\u00e1]n?|env[i\u00ed]a|env[i\u00ed]an|"
+                                         r"enviar[a\u00e1]n?|comparte|comparten|compartir[a\u00e1]n?)\b")),
+    # Spanish transmission, active: "no [las] transmitimos|enviamos|compartimos"
+    ("es_active_transmit", re.compile(_ES_NEG + _ES_OBJ + r"(?:transmitimos|transmitiremos|enviamos|enviaremos|"
+                                      r"compartimos|compartiremos)\b")),
+)
+_TRANSMIT_KINDS = ("passive_transmit", "active_transmit", "es_reflexive_transmit", "es_active_transmit")
+# A transmission negation is a PREVIEW claim only when absolute. A
+# destination qualifier after the verb ("to lenders", "a prestamistas") or a
+# condition ("unless you choose to email") makes it a qualified claim the
+# business owns, not a statement that nothing leaves the tablet — external
+# review thread 10 (2026-08-22). Universal destinations keep it absolute.
+# The destination runs from the preposition to the END of the clause, so a
+# coordinated destination ("with our service providers OR ANYONE ELSE") is
+# scanned whole — external review thread 13 (2026-08-22).
+_DESTINATION_RE = re.compile(r"\b(?:to|with|a|al|hacia|con|para)\s+(.+)$")
+_CONDITION_RE = re.compile(r"\b(?:unless|until|except|only if|only when|a menos que|hasta que|salvo|solo si|s\u00f3lo si|excepto)\b")
+# Universal-destination words. Checked on EVERY word of the captured
+# destination, not only the first, so an intensifier ("to ABSOLUTELY anyone",
+# "with literally anybody else") does not turn an absolute promise into a
+# qualified one \u2014 external review thread 11 (2026-08-22). Universal means
+# a PRONOUN ("anyone", "nadie") or a universal phrase ("any other party",
+# "ning\u00fan sitio"); the bare determiner "any" / "ning\u00fan" before a noun ("any
+# lender", "ning\u00fan prestamista") is SCOPED \u2014 the quantified form of "to
+# lenders" \u2014 and stays a qualified claim (thread 14).
+_UNIVERSAL_DESTINATIONS = ("anyone", "anybody", "anything", "anywhere", "elsewhere", "outside",
+                           "beyond", "nobody", "none", "nothing", "nadie", "fuera")
+_UNIVERSAL_PHRASES = ("any other", "anyone else", "anybody else", "other place", "otro sitio",
+                      "otro lugar", "otra parte", "ning\u00fan sitio", "ningun sitio", "ning\u00fan lugar",
+                      "ningun lugar", "ning\u00fan lado", "ningun lado", "ninguna parte", "ning\u00fan otro",
+                      "ningun otro", "ninguna otra")
+
+
+def _is_universal(text: str) -> bool:
+    return (any(w.startswith(_UNIVERSAL_DESTINATIONS) for w in text.split())
+            or any(p in text for p in _UNIVERSAL_PHRASES))
+
+
+# Tokens that mark a comma segment as a NEW CLAUSE rather than a coordinated
+# continuation of the destination list ("..., but anyone can ask us
+# questions" is not part of "with lenders"). A segment with one of these is
+# where the destination scan stops — external review thread 15 (2026-08-22).
+_CLAUSE_STARTERS = frozenset((
+    "but", "while", "whereas", "although", "though", "yet", "so", "because", "since",
+    "if", "when", "unless", "then", "which", "who", "that", "pero", "aunque",
+    "mientras", "porque", "si", "cuando", "que", "sino", "entonces",
+))
+_VERB_LIKE = frozenset((
+    "is", "are", "was", "were", "be", "been", "being", "can", "could", "will", "would",
+    "may", "might", "must", "shall", "should", "do", "does", "did", "has", "have", "had",
+    "es", "son", "está", "están", "puede", "pueden", "hay", "será", "serán",
+))
+
+
+_COORDINATORS = frozenset(("and", "or", "nor", "y", "e", "o", "u", "ni"))
+_RELATIVE_PRONOUNS = frozenset(("who", "whom", "whose", "which", "that", "quien", "quienes", "que", "cual", "cuales"))
+_LIST_ITEM_MAX_WORDS = 4
+
+
+def _destination_continuation(clause_after: str, rest_after: str) -> str:
+    """The destination text plus the COMMA-joined segments that continue it
+    as a coordinated list ("with lenders, partners, advertisers or anybody
+    else"). A segment continues only on structural evidence of coordination
+    (threads 15–17): it is joined by a comma (a dash, colon, parenthesis or
+    quote ends the destination), it opens with no clause starter and carries
+    no verb-like token, and it either contains a coordinator ("… and cloud
+    infrastructure service providers or anyone else", any length) or is a
+    short list item of at most four words ("partners"). A comma-spliced
+    clause with a lexical verb ("…, anyone needing help receives support")
+    is longer than a list item and has no coordinator, so it stops the scan."""
+    out = [clause_after]
+    tail = rest_after[len(clause_after):]
+    for sep, segment in _split_clauses_with_separators(tail):
+        tokens = segment.split()
+        if sep != ",":
+            # an emphatic dash may continue the list ("— or anyone else");
+            # a colon, parenthesis, quote or a dash opening a new clause ends it
+            if not (sep in ("—", "–") and tokens and tokens[0] in _COORDINATORS):
+                break
+        if not tokens:
+            continue
+        if tokens[0] in _CLAUSE_STARTERS or any(t in _VERB_LIKE for t in tokens):
+            break
+        if any(t in _RELATIVE_PRONOUNS for t in tokens):
+            break  # "anyone WHO asks receives support" is a clause, not an item
+        if tokens[0] in _COORDINATORS:
+            # ", and X": a clause-level coordinator unless X is itself a short
+            # list item ("and to anyone else") — thread 18
+            if len(tokens) - 1 > _LIST_ITEM_MAX_WORDS:
+                break
+        elif not (any(t in _COORDINATORS for t in tokens) or len(tokens) <= _LIST_ITEM_MAX_WORDS):
+            break
+        out.append(segment)
+    return " ".join(out)
+
+
+def _split_clauses_with_separators(text: str):
+    """(separator, segment) pairs for the text after a clause; the first
+    separator is the break that ended the previous clause."""
+    pairs, cur, sep = [], [], ""
+    for ch in text:
+        if ch in _CLAUSE_BREAKS:
+            pairs.append((sep, "".join(cur)))
+            cur, sep = [], ch
+        else:
+            cur.append(ch)
+    pairs.append((sep, "".join(cur)))
+    return pairs[1:] if pairs and pairs[0][0] == "" and not pairs[0][1].strip() else pairs
+
+
+def _transmission_is_absolute(clause_after: str, rest_after: str = None) -> bool:
+    """True when nothing after the verb qualifies the negation.
+
+    `clause_after` is the in-clause text after the verb (qualifying
+    destinations and conditions live there); `rest_after` is everything after
+    the verb to the end of the SENTENCE, from which only the coordinated
+    continuation of the destination is scanned for a universal — so a list
+    that ends in "… or anybody else" is seen even though commas are clause
+    breaks (thread 13), while an unrelated following clause ("…, but anyone
+    can ask us questions") is not (thread 15)."""
+    if rest_after is None:
+        rest_after = clause_after
+    if _CONDITION_RE.search(clause_after):
+        return False
+    destination_text = _destination_continuation(clause_after, rest_after)
+    if _is_universal(destination_text):
+        return True
+    m = _DESTINATION_RE.search(clause_after)
+    if not m:
+        return True
+    return _is_universal(m.group(1).strip())
+# Typographic apostrophes and quotes fold to ASCII before any matching, so a
+# retailer's "weren’t stored" is the same claim as "weren't stored".
+_PROSE_FOLD = str.maketrans({"\u2019": "'", "\u2018": "'", "\u02bc": "'", "`": "'",
+                             "\u201c": '"', "\u201d": '"'})
+
+
+def _normalize_prose(text: str) -> str:
+    return text.lower().translate(_PROSE_FOLD)
+
+
+def _storage_matches(sentence: str):
+    """Every storage-negation match in a normalized sentence as
+    (kind, start, end, display) — start/end span the negation + verb;
+    display adds the preceding word so an error reads "aren't stored"."""
+    out = []
+    for kind, pat in STORAGE_NEGATION_PATTERNS:
+        for m in pat.finditer(sentence):
+            start, end = m.start(), m.end()
+            disp_start = start
+            if m.group(0).startswith("n't"):
+                disp_start = sentence.rfind(" ", 0, start) + 1
+            out.append((kind, start, end, sentence[disp_start:end]))
+    out.sort(key=lambda t: t[1])
+    return out
+
+
+# Governed-data context terms (lower-cased substrings). Deliberately the
+# customer-facing nouns for what the kiosk collects — answers, results,
+# session, contact values, "your/personal/customer information|data" — and
+# NOT generic nouns such as "details", "information" or "data" on their own,
+# so that a truthful sentence about unrelated data is not rejected.
+GOVERNED_DATA_TERMS = (
+    "answer", "response", "quiz", "result", "sleep brief", "sleep profile",
+    "session", "email", "e-mail", "phone", "contact", "your name",
+    "your information", "your info", "personal information", "customer information",
+    "contact information", "your data", "personal data", "customer data",
+    "respuesta", "cuestionario", "resultado", "sesión", "sesion", "correo",
+    "teléfono", "telefono", "contacto", "tu nombre", "tu información",
+    "tu informacion", "tus datos", "información personal", "informacion personal",
+    "datos personales", "datos del cliente", "información del cliente",
+    "informacion del cliente",
+)
+_SENTENCE_BREAKS = (".", "!", "?", ";", "\n", "\r")
+
+
+def _sentences(text: str):
+    """Split lower-cased prose into sentences on . ! ? ; and line breaks."""
+    out, cur = [], []
+    for ch in text:
+        if ch in _SENTENCE_BREAKS:
+            if cur:
+                out.append("".join(cur))
+            cur = []
+        else:
+            cur.append(ch)
+    if cur:
+        out.append("".join(cur))
+    return out
+
+
+# Clause boundaries inside a sentence: commas, dashes, colons, parentheses,
+# quotes. The storage negation binds to the noun phrase in ITS clause.
+_CLAUSE_BREAKS = (",", "(", ")", "\u2014", "\u2013", ":", "\"", "\u201c", "\u201d", "\u00ab", "\u00bb")
+# Active-voice storage negations take their object AFTER the verb ("we do not
+# store X"); passive ones take their subject BEFORE ("X is not stored"); the
+# Spanish reflexive ("X no se guarda") takes the subject before but also
+# allows the object after ("no se almacenan X"). The kind comes from the
+# pattern that matched.
+# Conjunctions that open a new CLAUSE ("your answers are emailed but card
+# details are not stored") and so delimit the noun phrase a negation binds
+# to. Deliberately NOT "and" / "or" / "y" / "o": those also coordinate subject
+# noun phrases ("your email and card numbers are not stored"), and splitting
+# there would bind the negation to the last conjunct only and admit a false
+# promise about the first. Fail closed: a coordinated clause on "and" is
+# rejected and can be rephrased with "but" or a comma.
+_CLAUSE_CONJUNCTIONS = (" but ", " while ", " whereas ", " although ", " though ", " yet ",
+                        " pero ", " sino ", " aunque ", " mientras ")
+# After a Spanish reflexive negation, text that opens with a preposition or
+# adverb is an adverbial ("en este quiosco", "después de la sesión"), not the
+# object; the object, when it follows, opens with a noun phrase.
+_ES_ADVERBIAL_OPENERS = ("en ", "de ", "del ", "por ", "para ", "con ", "sin ", "desde ",
+                         "hasta ", "durante ", "después", "despues", "antes ", "aquí", "aqui",
+                         "ahí", "ahi", "nunca", "jamás", "jamas", "ni ", "tampoco", "más ", "mas ")
+# English adverbials that can follow an active verb in place of its object
+# ("we do not keep it ON any server", "we never store ANYWHERE").
+_EN_ADVERBIAL_OPENERS = ("on ", "in ", "at ", "by ", "for ", "after ", "before ", "beyond ",
+                         "outside ", "anywhere", "elsewhere", "here", "there", "once ", "when ",
+                         "unless ", "until ", "again", "permanently", "ever ", "to ", "with ")
+_ADVERBIAL_OPENERS = _ES_ADVERBIAL_OPENERS + _EN_ADVERBIAL_OPENERS
+# Tokens that do not name anything on their own; a fragment made only of
+# these has no noun to bind to, so the search widens (fail closed).
+_NON_CONTENT_TOKENS = frozenset((
+    "it", "its", "they", "them", "this", "that", "these", "those", "which", "who",
+    "what", "and", "but", "or", "nor", "also", "so", "then", "there", "here",
+    "we", "you", "i", "he", "she", "is", "are", "was", "were", "be", "been",
+    "will", "would", "can", "may", "a", "an", "the", "of", "to", "in", "on",
+    "by", "for", "at", "from", "with", "ever", "never", "not", "only",
+    "do", "does", "did", "don't", "doesn't", "didn't", "won't", "wouldn't",
+    "can't", "cannot", "couldn't", "shouldn't", "isn't", "aren't", "wasn't",
+    "weren't", "have", "has", "had", "haven't", "hasn't", "hadn't", "get", "gets",
+    "got", "shall", "should", "could", "might", "must", "being",
+    "esto", "eso", "esta", "este", "estos", "estas", "ese", "esa", "esos",
+    "esas", "ellos", "ellas", "que", "y", "o", "pero", "tampoco", "también",
+    "tambien", "se", "no", "nunca", "jamás", "jamas", "ni", "el", "la", "los",
+    "las", "le", "les", "lo", "te", "nos", "me", "os", "un", "una", "de", "del",
+    "en", "por", "para", "con", "a", "al", "es", "son", "está", "están", "esta",
+))
+# Object pronouns that may stand where a noun object would ("keep IT on any
+# server", the clitics "lo / las"); skipped before the adverbial test.
+_OBJECT_PRONOUNS = frozenset(("it", "them", "this", "that", "these", "those",
+                              "lo", "la", "los", "las", "le", "les", "te", "nos", "me", "os"))
+
+
+def _has_content(fragment: str) -> bool:
+    tok = []
+    for ch in fragment:
+        if ch.isalpha() or ch == "'":
+            tok.append(ch)
+        else:
+            if tok:
+                if "".join(tok) not in _NON_CONTENT_TOKENS:
+                    return True
+                tok = []
+    return bool(tok) and "".join(tok) not in _NON_CONTENT_TOKENS
+
+
+def _governed_in(fragment: str) -> bool:
+    return any(term in fragment for term in GOVERNED_DATA_TERMS)
+
+
+def _storage_claim_is_governed(sentence: str, prev_sentence: str, kind: str, pos: int, end_pos: int) -> bool:
+    """Bind a storage-negation phrase to the noun phrase it is about and say
+    whether that phrase names governed data.
+
+    Passive / reflexive ("X is not stored", "X no se guarda"): the subject is
+    the in-clause text BEFORE the phrase. Active ("we do not store X"): the
+    object is the in-clause text AFTER it; the Spanish reflexive ("no se
+    guardan X") takes the object after the verb when that text opens with a
+    noun phrase rather than a preposition. When the bound fragment has no
+    noun of its own (a bare pronoun, an interjected aside, a Spanish
+    object-after construction), the search widens in the fail-closed
+    direction: the rest of the sentence, then the previous sentence — so
+    "Your answers, like everything else, are not stored" and
+    "We use your email to send results. It is not stored." are still caught,
+    while "During your showroom session, payment card details are not stored
+    by this application" binds to "payment card details" and passes.
+
+    `pos`/`end_pos` span the occurrence to bind; every occurrence in a
+    sentence is inspected by the caller, so "card details are not stored, but
+    your answers are not stored" is caught on its second clause. `kind` is
+    the matching pattern's: passive, active, es_reflexive or es_active."""
+    if pos < 0 or end_pos <= pos or end_pos > len(sentence):
+        return False
+    starts = [sentence.rfind(b, 0, pos) + 1 for b in _CLAUSE_BREAKS]
+    starts += [i + len(c) for i, c in ((sentence.rfind(c, 0, pos), c) for c in _CLAUSE_CONJUNCTIONS) if i >= 0]
+    start = max(starts + [0])
+    ends = [i for i in (sentence.find(b, end_pos) for b in _CLAUSE_BREAKS + _CLAUSE_CONJUNCTIONS) if i >= 0]
+    end = min(ends) if ends else len(sentence)
+    clause_before = sentence[start:pos]
+    clause_after = sentence[end_pos:end]
+    if kind in _TRANSMIT_KINDS and not _transmission_is_absolute(clause_after, sentence[end_pos:]):
+        return False
+    # No fallback fragment includes the matched negation+verb itself: the verb
+    # is a content word, and counting it would stop the search before the
+    # previous sentence ("We use your answers ... . No las guardamos.").
+    if kind in ("active", "es_active", "active_transmit", "es_active_transmit"):
+        # The object follows the verb unless what follows opens with an
+        # adverbial ("we do not keep it ON any server", "nunca lo almacenamos
+        # EN ningún servidor" — the clitic object is inside the match); then
+        # the object is a pronoun or absent and the search widens.
+        tokens = clause_after.split()
+        while tokens and tokens[0] in _OBJECT_PRONOUNS:
+            tokens.pop(0)  # a pronoun object ("keep IT on any server") is not a noun
+        remainder = " ".join(tokens)
+        object_after = clause_after if (remainder and not remainder.startswith(_ADVERBIAL_OPENERS)
+                                        and _has_content(remainder)) else ""
+        # trailing adverbial text is consulted last, only as a fail-closed net
+        order = (object_after, sentence[:pos], prev_sentence, clause_after)
+    elif kind in ("es_reflexive", "es_reflexive_transmit"):
+        after = clause_after.strip()
+        object_after = clause_after if (after and not after.startswith(_ES_ADVERBIAL_OPENERS)) else ""
+        order = (clause_before, object_after, sentence[:pos], clause_after, prev_sentence)
+    else:
+        order = (clause_before, sentence[:pos], clause_after, prev_sentence)
+    for fragment in order:
+        if _has_content(fragment):
+            return _governed_in(fragment)
+    return False
+
+
+def _preview_signal_hit(low: str):
+    """Return the offending phrase when lower-cased prose carries a
+    preview-mode claim under a live endpoint, else None.
+
+    Unconditional signals match anywhere. Storage-negation phrases match only
+    when bound to governed data (_storage_claim_is_governed), so "Payment
+    card details are not stored by this application" passes while "Your
+    answers are not stored" and "We do not store your information" fail."""
+    low = _normalize_prose(low)
+    hit = next((sig for sig in PREVIEW_MODE_SIGNALS if sig in low), None)
+    if hit:
+        return hit
+    sentences = _sentences(low)
+    for idx, sentence in enumerate(sentences):
+        prev_sentence = sentences[idx - 1] if idx else ""
+        for kind, start, end, display in _storage_matches(sentence):
+            if _storage_claim_is_governed(sentence, prev_sentence, kind, start, end):
+                return display
+    return None
 
 
 def _check_privacy_prose_present(r: ValidationReport, config: dict) -> None:
@@ -320,8 +716,7 @@ def _check_privacy_prose_mode(r: ValidationReport, config: dict) -> None:
             value = prose.get(key)
             if not isinstance(value, str) or not value.strip():
                 continue
-            low = value.lower()
-            hit = next((sig for sig in PREVIEW_MODE_SIGNALS if sig in low), None)
+            hit = _preview_signal_hit(value)
             if hit:
                 r.add_error(f"{block}.{key} carries preview-mode wording ({hit!r}) but "
                             "gasUrl is live - a statement that nothing leaves the tablet "
@@ -386,19 +781,31 @@ def validate_store_config(config: dict, manifest: Optional[dict] = None, *,
     if isinstance(cd, bool) or not isinstance(cd, int) or not (CODE_DIGITS_MIN <= cd <= CODE_DIGITS_MAX):
         r.add_error(f"discount.codeDigits must be an integer {CODE_DIGITS_MIN}-{CODE_DIGITS_MAX}, got {cd!r}")
 
-    gas = str(config.get("gasUrl") or "").strip()
+    raw_gas = config.get("gasUrl")
+    gas = str(raw_gas or "").strip()
     is_placeholder = _blank(gas) or "example" in gas.lower() or gas.upper() in ("TODO", "PLACEHOLDER")
-    # The RUNTIME'S notion of live: index.html (emailDeliveryLive() and the
-    # sendResults() gate) treats ANY non-blank gasUrl as a live endpoint — it
-    # speaks the live-mode data-use copy and POSTs the customer's contact
-    # values and derived summary to it. A non-blank placeholder is therefore
-    # not "not yet configured"; it is a live endpoint pointing at a sentinel,
-    # and it is refused here regardless of --require-gas-url (trust gate).
-    live_at_runtime = not _blank(gas)
+    # Build admission treats ANY non-blank gasUrl as LIVE-CAPABLE. The runtime
+    # (index.html emailDeliveryLive() and the sendResults() gate) speaks the
+    # live-mode data-use copy and POSTs the customer's contact values and
+    # derived summary whenever gasUrl is non-blank AND no active promotion
+    # scenario sets disableEmailSubmission. That scenario clause is a
+    # date-windowed runtime state: the moment the scenario expires, the same
+    # configured bytes go live without another build. The validator therefore
+    # deliberately does NOT follow the runtime's momentary scenario state —
+    # a config must be true in every state it can reach, so a non-blank gasUrl
+    # is judged live here even while a temporary scenario suppresses delivery
+    # (external review P2, 2026-08-22: preserved as intentional). A non-blank
+    # placeholder is likewise not "not yet configured"; it is a live-capable
+    # endpoint pointing at a sentinel, refused regardless of --require-gas-url.
+    # Keyed on the RAW value's JavaScript truthiness, never on the stripped
+    # string: the kiosk reads STORE_CONFIG.gasUrl raw, so a whitespace-only
+    # gasUrl is live there (live-mode copy, a real fetch to "   ") and must be
+    # refused here (external review P2 at `aa08e7e`, 2026-08-22).
+    live_at_runtime = _runtime_truthy(raw_gas)
     if live_at_runtime and is_placeholder:
-        r.add_error(f"gasUrl {gas!r} is a non-blank placeholder: the kiosk treats any "
-                    "non-blank gasUrl as live (live-mode copy, real POST) - blank it "
-                    "for preview or set the deployed endpoint")
+        r.add_error(f"gasUrl {raw_gas!r} is a non-blank placeholder: the kiosk treats any "
+                    "non-empty gasUrl as live (live-mode copy, real POST) - whitespace "
+                    "counts - blank it for preview or set the deployed endpoint")
     if is_placeholder:
         msg = "gasUrl is blank/placeholder (set it after the Google Apps Script deploy)"
         if require_gas_url:
@@ -421,12 +828,14 @@ def validate_store_config(config: dict, manifest: Optional[dict] = None, *,
     # privacy text (text / text_es) is free prose, and a preview-only promise
     # left in it while a live GAS endpoint is configured would be a false
     # representation the moment the first email goes out. The build refuses
-    # that combination: with a live gasUrl, no retailer privacy key may carry
-    # a preview-mode signal phrase. With gasUrl blank the same prose is true
-    # and passes. Phrases, not semantics — the validator cannot judge intent;
-    # it catches the sentences this repo has shipped or proposed so far. Keyed
-    # on the runtime's own notion of live (any non-blank gasUrl), never on the
-    # placeholder heuristic, so the gate and the kiosk cannot disagree.
+    # that combination: with a live-capable gasUrl, no retailer privacy key
+    # may carry a preview-mode signal phrase. With gasUrl blank the same prose
+    # is true and passes. Phrases, not semantics — the validator cannot judge
+    # intent; it catches the sentences this repo has shipped or proposed so
+    # far, and storage-negation phrases only when the sentence is about
+    # governed data (_preview_signal_hit). Keyed on live-CAPABLE (any
+    # non-blank gasUrl), never on the placeholder heuristic and never on a
+    # temporary scenario, so the gate can only be stricter than the kiosk.
     if live_at_runtime:
         _check_privacy_prose_mode(r, config)
     _check_privacy_prose_present(r, config)
@@ -3646,9 +4055,31 @@ def _self_test() -> int:
     c = _good_config(); c["gasUrl"] = "TODO"
     check("a non-blank placeholder gasUrl is an error even with nothing else wrong",
           any("non-blank placeholder" in e for e in validate_store_config(c).errors))
+    # External review P2 at `aa08e7e` (2026-08-22): the kiosk reads gasUrl RAW
+    # (`!!gasUrl`, `if (gasUrl && ...)` before fetch), so a whitespace-only
+    # value is LIVE there. Admission keys on that same raw truthiness: the
+    # value is refused as a non-blank placeholder, and preview prose under it
+    # is refused too — never admitted as "blank".
     c = _good_config(); c["gasUrl"] = "   "
-    check("a whitespace-only gasUrl is blank (preview), not a placeholder error",
-          validate_store_config(c).ok)
+    r = validate_store_config(c)
+    check("a whitespace-only gasUrl is live at runtime -> non-blank placeholder error (whitespace counts)",
+          not r.ok and any("non-blank placeholder" in e and "whitespace counts" in e for e in r.errors))
+    c = _good_config(); c["gasUrl"] = "  \t "; c["text"] = {"privacyBody": "Nothing leaves this tablet."}
+    r = validate_store_config(c)
+    check("whitespace-only gasUrl + preview prose -> BOTH the placeholder error and the preview-wording error",
+          any("non-blank placeholder" in e for e in r.errors)
+          and any("preview-mode wording" in e for e in r.errors))
+    for blank_like in ("", None):
+        c = _good_config(); c["gasUrl"] = blank_like; c["text"] = {"privacyBody": "Nothing leaves this tablet."}
+        check(f"gasUrl {blank_like!r} is falsy at runtime -> preview prose accepted",
+              validate_store_config(c).ok)
+    c = _good_config(); c["gasUrl"] = "  https://script.google.com/macros/s/AKxyz/exec  "
+    c["text"] = {"privacyBody": "Nothing leaves this tablet."}
+    check("a padded real endpoint is live-capable -> preview prose rejected (strip never hides a live value)",
+          any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    check("_runtime_truthy mirrors JS: '' None False 0 -> False; '   ' 'x' True 1 {} [] -> True",
+          not any(_runtime_truthy(v) for v in ("", None, False, 0))
+          and all(_runtime_truthy(v) for v in ("   ", "x", True, 1, {}, [])))
     # The proposed preview sentences from the investigation and the audits are
     # all caught; live-appropriate wording is not.
     for phrase in ("Your answers aren't saved or sent anywhere.",
@@ -3671,6 +4102,348 @@ def _self_test() -> int:
     c = _good_config(); c["text"] = {"privacyBody": "Your answers are not sent anywhere."}
     check("'are not sent anywhere' under a live gasUrl -> error",
           any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    # External review (2026-08-22) thread 1, preserved as intentional: a
+    # non-blank gasUrl is LIVE-CAPABLE for admission even while an active,
+    # date-windowed scenario disables email at runtime — the scenario expires
+    # without another build, and the preview promise would turn false on its
+    # own. A temporary scenario must not relax the rule.
+    def _blocking_scenario_config():
+        c = _good_config()
+        c["promotions"] = {"activeScenario": "demo",
+                           "scenarios": {"demo": {"kind": "historical-demo",
+                                                  "disableEmailSubmission": True}}}
+        return c
+    c = _blocking_scenario_config(); c["text"] = {"privacyBody": "Your answers stay on this tablet."}
+    r = validate_store_config(c)
+    check("live gasUrl + active scenario with disableEmailSubmission=true: preview wording is STILL rejected",
+          any("preview-mode wording" in e for e in r.errors))
+    c = _blocking_scenario_config(); c["text_es"] = {"emailPrivacy": "No se envía nada desde esta tableta."}
+    check("the same under the ES block: a temporary scenario does not relax admission",
+          any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    c = _blocking_scenario_config(); c["gasUrl"] = "TODO"; c["text"] = {"privacyBody": "Nothing leaves this tablet."}
+    check("a placeholder gasUrl under a blocking scenario is still a non-blank placeholder error",
+          any("non-blank placeholder" in e for e in validate_store_config(c).errors))
+    c = _blocking_scenario_config(); c["gasUrl"] = ""; c["text"] = {"privacyBody": "Your answers stay on this tablet."}
+    check("blank gasUrl under a blocking scenario: preview wording accepted (blank is the only preview-true state)",
+          validate_store_config(c).ok)
+    # External review (2026-08-22) thread 2, fixed: storage-negation phrases
+    # are rejected only when the sentence is about governed data. Harmful
+    # answer/contact storage claims still fail; an unrelated truthful storage
+    # statement is not rejected.
+    for phrase in ("Your answers are not stored.",
+                   "We do not store your information.",
+                   "We don't store your answers or your email.",
+                   "Your contact information is never saved.",
+                   "Quiz responses aren't saved by this kiosk.",
+                   "Session data is not stored after you finish.",
+                   "Tus respuestas no se guardan.",
+                   "Tu información no se almacena en ningún servidor.",
+                   "Tus datos no se guardan después de la sesión."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}
+        check(f"governed-data storage claim under a live gasUrl -> error: {phrase[:44]!r}",
+              any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    for phrase in ("Payment card details are not stored by this application.",
+                   "Card numbers are never stored here; financing is handled on lacks.com.",
+                   "This kiosk does not store cookies.",
+                   "Los datos de la tarjeta de pago no se guardan en esta aplicación.",
+                   "No se almacenan números de tarjeta en este quiosco."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}
+        c["text_es"] = {"privacyBody": phrase}
+        check(f"unrelated truthful storage statement under a live gasUrl -> accepted: {phrase[:44]!r}",
+              validate_store_config(c).ok)
+    c = _good_config(); c["text"] = {"privacyBody": "Payment card details are not stored by this application. "
+                                                    "Your answers are not stored either."}
+    check("sentence-scoped: an unrelated storage sentence does not launder a governed one in the same key",
+          any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    c = _good_config(); c["text"] = {"privacyBody": "Payment card details are not stored. "
+                                                    "Nothing leaves this tablet."}
+    check("unconditional signals still fire regardless of sentence context",
+          any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    c = _good_config(); c["text"] = {"disclaimerBody": "Your email is not stored; we do not keep a copy."}
+    check("the storage rule reads every privacy prose key, not only privacyBody",
+          any("text.disclaimerBody" in e for e in validate_store_config(c).errors))
+    c = _good_config(); c["gasUrl"] = ""; c["text"] = {"privacyBody": "Your answers are not stored."}
+    check("a governed-data storage claim under a BLANK gasUrl is accepted (true in preview)",
+          validate_store_config(c).ok)
+    check("_preview_signal_hit: unconditional phrase wins even without governed context",
+          _preview_signal_hit("nothing is sent from here") == "nothing is sent")
+    check("_preview_signal_hit: bare storage phrase without governed context -> None",
+          _preview_signal_hit("card details are not stored") is None)
+    check("_preview_signal_hit: storage phrase with governed context -> the phrase",
+          _preview_signal_hit("your answers are not stored") == "not stored")
+    # External review thread 4 (2026-08-22): the negation binds to the noun
+    # phrase in ITS clause, not to any governed word elsewhere in the sentence.
+    for phrase in ("During your showroom session, payment card details are not stored by this application.",
+                   "To keep your session quick, card numbers are never stored here.",
+                   "After your quiz, financing details are not saved on this kiosk.",
+                   "Durante tu sesión en la tienda, los datos de la tarjeta no se guardan en esta aplicación.",
+                   "Para agilizar tu sesión, no se almacenan números de tarjeta en este quiosco.",
+                   "We do not store card numbers, even during your session."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}; c["text_es"] = {"privacyBody": phrase}
+        check(f"clause-bound: governed word elsewhere in the sentence does not reject an unrelated claim: {phrase[:44]!r}",
+              validate_store_config(c).ok)
+    for phrase in ("During your showroom session, your answers are not stored by this application.",
+                   "Your answers, like everything else, are not stored.",
+                   "Your answers (and your email) are not stored.",
+                   "We use your email to send results. It is not stored.",
+                   "We do not store anything about your session.",
+                   "No se guardan tus respuestas en este quiosco.",
+                   "Usamos tu correo para enviarte resultados. No se guarda."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}
+        check(f"clause-bound, fail closed: a governed subject/object still rejects: {phrase[:44]!r}",
+              any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    for phrase in ("Tus respuestas, como todo lo demás, no se guardan en este quiosco.",
+                   "Durante tu sesión, tus respuestas no se almacenan en ningún servidor."):
+        c = _good_config(); c["text_es"] = {"privacyBody": phrase}
+        check(f"ES reflexive: an adverbial after the verb is not the object, so the subject still binds: {phrase[:40]!r}",
+              any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    c = _good_config(); c["text"] = {"privacyBody": "Card numbers go to lacks.com. They are not stored here."}
+    check("a pronoun subject binds to the previous sentence: unrelated antecedent -> accepted",
+          validate_store_config(c).ok)
+    # External review threads 5 and 6 (2026-08-22): every occurrence of a
+    # signal is inspected, and clause conjunctions delimit the bound phrase.
+    for phrase in ("Payment card details are not stored, but your answers are not stored.",
+                   "Card numbers are never stored; your email is never stored either.",
+                   "Los números de tarjeta no se guardan, pero tus respuestas no se guardan tampoco."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}
+        check(f"every occurrence is inspected: a later governed clause still rejects: {phrase[:44]!r}",
+              any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    for phrase in ("Your answers are emailed but payment card details are not stored.",
+                   "Your answers build your matches while card numbers are never stored here.",
+                   "Although your answers are used for your matches, card details are not saved.",
+                   "Tus respuestas se envían por correo pero los números de tarjeta no se guardan.",
+                   "Aunque tus respuestas crean tus resultados, los datos de la tarjeta no se almacenan."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}; c["text_es"] = {"privacyBody": phrase}
+        check(f"conjunction-delimited clause: the unrelated claim binds to its own clause -> accepted: {phrase[:44]!r}",
+              validate_store_config(c).ok)
+    for phrase in ("Your email and card numbers are not stored.",
+                   "Your answers are emailed and payment card details are not stored."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}
+        check(f"deliberately fail closed: 'and' coordinates noun phrases, so it does not delimit -> rejected: {phrase[:44]!r}",
+              any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    # External review thread 7 (2026-08-22): contractions, "won't be", the
+    # keep/retain verbs and the Spanish active forms are in the family.
+    for phrase in ("Your answers aren't stored.", "Your email isn't saved.",
+                   "Your answers won't be stored after this session.",
+                   "We won't keep your answers.", "We do not keep your information.",
+                   "We never retain your contact information.", "Your responses aren't kept.",
+                   "No guardamos tus respuestas.", "No conservamos tu correo.",
+                   "Nunca se guardan tus respuestas.", "Tus datos no se conservan.",
+                   "No retenemos tu información."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}
+        check(f"storage family covers contractions/keep/retain/ES active forms -> rejected: {phrase[:44]!r}",
+              any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    for phrase in ("Card numbers aren't stored here.", "We won't keep card numbers.",
+                   "Cookies are never kept by this kiosk.", "No guardamos números de tarjeta.",
+                   "No se conservan los datos de la tarjeta."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}; c["text_es"] = {"privacyBody": phrase}
+        check(f"the wider family is still clause-bound: unrelated claim accepted: {phrase[:44]!r}",
+              validate_store_config(c).ok)
+    # External review thread 8 (2026-08-22): the family is grammatical, not
+    # enumerated — typographic apostrophes fold to ASCII and every tense /
+    # auxiliary of the negation is one rule.
+    for phrase in ("Your answers weren\u2019t stored.", "Your answers weren't stored.",
+                   "Your email wasn\u2019t saved.", "Your answers cannot be stored.",
+                   "Your responses will not be kept.", "Your answers are no longer stored.",
+                   "Your answers can\u2019t be retained.", "We didn't store your answers.",
+                   "We\u2019ll never save your email.", "Tus respuestas jam\u00e1s se guardan.",
+                   "No se guardar\u00e1n tus respuestas.", "Nunca almacenaremos tu informaci\u00f3n."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}
+        check(f"grammatical family + apostrophe folding -> rejected: {phrase[:44]!r}",
+              any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    for phrase in ("Card numbers weren\u2019t stored.", "Cookies can\u2019t be retained by this kiosk.",
+                   "Los n\u00fameros de tarjeta jam\u00e1s se guardan."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}; c["text_es"] = {"privacyBody": phrase}
+        check(f"the grammatical family is still clause-bound: unrelated claim accepted: {phrase[:44]!r}",
+              validate_store_config(c).ok)
+    c = _good_config(); c["text"] = {"emailPrivacy": "Nothing is sent from this tablet \u2014 it isn\u2019t connected."}
+    check("apostrophe folding applies to the unconditional signals too (\u2019isn\u2019t connected\u2019)",
+          any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    # External review thread 9 (2026-08-22): adverbs and auxiliaries between
+    # the negation and the verb.
+    for phrase in ("Your answers are not permanently stored.", "We do not permanently store your answers.",
+                   "Your answers won't be permanently kept.", "We will never store your answers.",
+                   "We do not ever retain your email.",
+                   "Usamos tus respuestas para crear tus resultados. No las guardamos.",
+                   "Tus respuestas no se guardan permanentemente.",
+                   "Tu correo solo sirve para enviarte resultados. Nunca lo almacenamos en ning\u00fan servidor."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}
+        check(f"adverb/auxiliary between negation and verb -> rejected: {phrase[:44]!r}",
+              any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    c = _good_config(); c["text"] = {"privacyBody": "Card numbers are not permanently stored."}
+    check("adverb gap is still clause-bound: unrelated subject accepted", validate_store_config(c).ok)
+    c = _good_config(); c["text_es"] = {"privacyBody": "No las guardamos."}
+    check("an object pronoun with no antecedent binds to nothing (consistent with 'It is not stored.' alone)",
+          validate_store_config(c).ok)
+    c = _good_config(); c["text"] = {"privacyBody": "We use your email to send results. We do not keep it on any server."}
+    check("a pronoun object followed by an adverbial widens to the previous sentence (governed antecedent -> rejected)",
+          any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    c = _good_config(); c["text"] = {"privacyBody": "Card numbers go to lacks.com. We do not keep them on any server."}
+    check("the same with an unrelated antecedent -> accepted", validate_store_config(c).ok)
+    # External review thread 10 (2026-08-22): transmission negations are in
+    # the family, rejected only when absolute and about governed data.
+    for phrase in ("Your answers are not transmitted.", "Your answers are never transmitted anywhere.",
+                   "Your answers are not sent.", "We do not share your information with anyone.",
+                   "Your email is not transmitted to any other party.", "Your answers are not uploaded elsewhere.",
+                   "Tus respuestas no se env\u00edan.", "Tus respuestas nunca se transmiten a nadie.",
+                   "No compartimos tu informaci\u00f3n con nadie."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}
+        check(f"absolute transmission negation about governed data -> rejected: {phrase[:44]!r}",
+              any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    for phrase in ("Your answers are not transmitted to lenders.", "Payment card details are not transmitted.",
+                   "Your answers are not sent unless you choose to email them.",
+                   "Your answers are not shared with lenders or advertisers.",
+                   "DreamFinder does not send your information to lenders.",
+                   "Tus respuestas no se transmiten a prestamistas.", "Tus respuestas no se env\u00edan a prestamistas.",
+                   "No enviamos tu informaci\u00f3n a prestamistas.",
+                   "Los datos de la tarjeta no se transmiten."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}; c["text_es"] = {"privacyBody": phrase}
+        check(f"qualified or unrelated transmission negation -> accepted: {phrase[:44]!r}",
+              validate_store_config(c).ok)
+    check("_transmission_is_absolute: bare, universal, qualified, conditional",
+          _transmission_is_absolute(" by this kiosk") and _transmission_is_absolute(" to anyone")
+          and _transmission_is_absolute(" anywhere") and not _transmission_is_absolute(" to lenders")
+          and not _transmission_is_absolute(" unless you choose to email them")
+          and _transmission_is_absolute(" a nadie") and not _transmission_is_absolute(" a prestamistas"))
+    # External review thread 11 (2026-08-22): an intensifier before a
+    # universal destination does not make the claim qualified.
+    for phrase in ("Your answers are not sent to absolutely anyone.",
+                   "Your email is never shared with literally anybody else.",
+                   "Your answers are not transmitted to any other party or system.",
+                   "Tus respuestas no se envían absolutamente a nadie.",
+                   "Tus respuestas nunca se comparten con ningún otro sitio."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}
+        check(f"intensified universal destination stays absolute -> rejected: {phrase[:44]!r}",
+              any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    check("_transmission_is_absolute: universal words anywhere in the destination",
+          _transmission_is_absolute(" to absolutely anyone") and _transmission_is_absolute(" with literally anybody else")
+          and _transmission_is_absolute(" a otro sitio") and not _transmission_is_absolute(" to our delivery partner"))
+    # External review thread 13 (2026-08-22): the destination is scanned to
+    # the end of its clause, so a coordinated universal is seen.
+    for phrase in ("Your answers are not shared with our service providers or anyone else.",
+                   "Your email is never sent to lenders, partners, advertisers or anybody else.",
+                   "Your answers are not transmitted to our delivery partner or to any other company.",
+                   "Tus respuestas no se comparten con nuestros proveedores ni con nadie más."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}
+        check(f"coordinated destination ending in a universal stays absolute -> rejected: {phrase[:44]!r}",
+              any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    check("_transmission_is_absolute: a universal late in a long coordinated destination is seen",
+          _transmission_is_absolute(" with our service providers or anyone else")
+          and not _transmission_is_absolute(" with our service providers or our delivery partner"))
+    # External review thread 15 (2026-08-22): only the coordinated
+    # continuation of the destination is scanned, not an unrelated clause.
+    for phrase in ("Your answers are not shared with lenders, but anyone can ask us questions.",
+                   "Your answers are not sent to lenders; anyone on our team can explain why.",
+                   "Your email is not shared with advertisers, which is something anyone can verify.",
+                   "Tus respuestas no se comparten con prestamistas, pero cualquiera puede preguntarnos."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}; c["text_es"] = {"privacyBody": phrase}
+        check(f"a universal in an unrelated following clause does not make the claim absolute -> accepted: {phrase[:44]!r}",
+              validate_store_config(c).ok)
+    check("_destination_continuation: list items continue, a new clause stops",
+          _destination_continuation(" with lenders", " with lenders, partners, advertisers or anybody else")
+          == " with lenders  partners  advertisers or anybody else"
+          and _destination_continuation(" with lenders", " with lenders, but anyone can ask us questions") == " with lenders"
+          and _destination_continuation(" to lenders", " to lenders, and to anyone else") == " to lenders  and to anyone else")
+    # External review threads 16 and 17 (2026-08-22): no length cap on a
+    # coordinated segment; only comma-joined list items continue.
+    for phrase in ("Your answers are not shared with lenders, our customer communication and cloud infrastructure service providers or anyone else.",
+                   "Your email is never sent to lenders, our delivery partner, our customer communication and cloud infrastructure service providers, or anybody else.",
+                   "Tus respuestas no se comparten con prestamistas, nuestros proveedores de comunicación y de infraestructura en la nube ni con nadie más."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}
+        check(f"a long coordinated segment is still scanned to its universal -> rejected: {phrase[:44]!r}",
+              any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    for phrase in ("Your answers are not sent to lenders — anyone needing help receives support.",
+                   "Your answers are not sent to lenders: anyone needing help receives support.",
+                   "Your answers are not sent to lenders (anyone needing help receives support).",
+                   "Your answers are not sent to lenders, anyone needing help receives support from our team.",
+                   "Tus respuestas no se envían a prestamistas — cualquiera que necesite ayuda recibe apoyo."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}; c["text_es"] = {"privacyBody": phrase}
+        check(f"a following clause (dash/colon/parenthesis, or a comma splice with a lexical verb) is not a destination -> accepted: {phrase[:44]!r}",
+              validate_store_config(c).ok)
+    check("_destination_continuation: comma list items of any length with a coordinator continue; other separators stop",
+          "anyone else" in _destination_continuation(" with lenders", " with lenders, our customer communication and cloud infrastructure service providers or anyone else")
+          and _destination_continuation(" to lenders", " to lenders — anyone needing help receives support") == " to lenders"
+          and _destination_continuation(" to lenders", " to lenders, anyone needing help receives support from our team") == " to lenders"
+          and _destination_continuation(" to lenders", " to lenders, anyone") == " to lenders  anyone")
+    check("_destination_continuation: separator semantics — colon/parenthesis stop, a coordinator-led dash continues",
+          _destination_continuation(" to lenders", " to lenders: anyone") == " to lenders"
+          and _destination_continuation(" to lenders", " to lenders (anyone)") == " to lenders"
+          and _destination_continuation(" to lenders", " to lenders — or anyone else") == " to lenders  or anyone else"
+          and _destination_continuation(" to lenders", " to lenders — anyone") == " to lenders")
+    c = _good_config(); c["text"] = {"privacyBody": "Your answers are not sent to lenders — or anyone else."}
+    check("an emphatic dash continuation ('— or anyone else') is still absolute -> rejected",
+          any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    # External review thread 18 (2026-08-22): a coordinated CLAUSE (", and
+    # anyone who asks receives support") is not a destination continuation.
+    for phrase in ("Your answers are not sent to lenders, and anyone who asks receives support.",
+                   "Your answers are not sent to lenders, and anyone needing help receives support.",
+                   "Your answers are not shared with advertisers, or anyone on our team explains why.",
+                   "Tus respuestas no se envían a prestamistas, y cualquiera que pregunte recibe ayuda."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}; c["text_es"] = {"privacyBody": phrase}
+        check(f"a coordinated clause after ', and' is not a destination -> accepted: {phrase[:44]!r}",
+              validate_store_config(c).ok)
+    for phrase in ("Your answers are not sent to lenders, and to anyone else.",
+                   "Your answers are not sent to lenders, or anyone else.",
+                   "Your answers are not sent to lenders, and nobody else."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}
+        check(f"', and/or' + a short universal item still continues the destination -> rejected: {phrase[:44]!r}",
+              any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    check("_destination_continuation: a leading coordinator needs a short item after it; a relative pronoun stops",
+          _destination_continuation(" to lenders", " to lenders, and anyone who asks receives support") == " to lenders"
+          and _destination_continuation(" to lenders", " to lenders, and anyone needing help receives support") == " to lenders"
+          and _destination_continuation(" to lenders", " to lenders, and to anyone else") == " to lenders  and to anyone else")
+    # External review thread 14 (2026-08-22): the determiner "any" / "ningún"
+    # before a noun is SCOPED (the quantified form of "to lenders"), not
+    # universal; only pronouns and universal phrases are absolute.
+    for phrase in ("Your answers are not sent to absolutely any lender.",
+                   "Your email is not transmitted to any third party.",
+                   "Your answers are never shared with any advertiser.",
+                   "Tus respuestas no se envían a ningún prestamista.",
+                   "Tu correo nunca se comparte con ninguna empresa de publicidad."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}; c["text_es"] = {"privacyBody": phrase}
+        check(f"scoped determiner destination is a qualified claim -> accepted: {phrase[:44]!r}",
+              validate_store_config(c).ok)
+    check("_transmission_is_absolute: determiner + noun is scoped; pronoun and 'any other' are universal",
+          not _transmission_is_absolute(" to any lender") and not _transmission_is_absolute(" a ningún prestamista")
+          and _transmission_is_absolute(" to any other party") and _transmission_is_absolute(" to anything else")
+          and _transmission_is_absolute(" a ningún sitio"))
+    # External review thread 12 (2026-08-22): the gap admits only auxiliaries
+    # and adverbs, so a claim about what lenders are asked to do is not a
+    # claim about the kiosk.
+    for phrase in ("We do not ask lenders to store your answers.",
+                   "We do not allow lenders to keep your answers.",
+                   "We do not require partners to retain your email.",
+                   "No pedimos a los prestamistas que guarden tus respuestas."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}; c["text_es"] = {"privacyBody": phrase}
+        check(f"gap restricted to modifiers: a claim about lenders is not a kiosk storage claim -> accepted: {phrase[:44]!r}",
+              validate_store_config(c).ok)
+    for phrase in ("Your answers are not going to be stored.", "Your answers will not ever be stored.",
+                   "Your answers are not at all stored.", "We do not simply store your answers."):
+        c = _good_config(); c["text"] = {"privacyBody": phrase}
+        check(f"gap still admits auxiliaries and adverbs -> rejected: {phrase[:44]!r}",
+              any("preview-mode wording" in e for e in validate_store_config(c).errors))
+    kinds = {k for k, *_ in _storage_matches("your answers aren't stored; we won't keep them; no se guardan; no guardamos; "
+                                             "not transmitted; do not send; no se env\u00edan; no enviamos")}
+    check("_storage_matches: every pattern kind is represented and sorted by position",
+          kinds == {"passive", "active", "es_reflexive", "es_active",
+                    "passive_transmit", "active_transmit", "es_reflexive_transmit", "es_active_transmit"}
+          and [t[1] for t in _storage_matches("a not stored b not saved")] == sorted(t[1] for t in _storage_matches("a not stored b not saved")))
+    check("_storage_matches: display carries the preceding word for a contraction",
+          _storage_matches("your answers aren't stored")[0][3] == "aren't stored"
+          and _storage_matches("your answers are not stored")[0][3] == "not stored")
+    def _bind(sentence, which=0, prev=""):
+        kind, start, end, _ = _storage_matches(sentence)[which]
+        return _storage_claim_is_governed(sentence, prev, kind, start, end)
+    check("_storage_claim_is_governed: binds the occurrence given, not the first",
+          _bind("card details are not stored, but your answers are not stored", 0) is False
+          and _bind("card details are not stored, but your answers are not stored", 1) is True)
+    check("_storage_claim_is_governed: subject before the verb, in clause",
+          _bind("during your session, card details are not stored") is False
+          and _bind("during your session, your answers are not stored") is True)
+    check("_storage_claim_is_governed: active object after the verb",
+          _bind("we do not store card numbers") is False and _bind("we do not store your answers") is True)
+    check("_has_content: pronouns and function words alone are not content",
+          not _has_content(" it is ") and not _has_content("se") and _has_content("card details"))
     # Config-or-nothing consequence: a text block that leaves the two prose
     # keys blank is warned (the surfaces render nothing), never errored.
     c = _good_config(); c["text"] = {"heritage": "x"}

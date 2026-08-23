@@ -1,9 +1,13 @@
 # Trust integrity gate — physical verification packet (2026-08-21; for PR #54)
 
-**Status:** prepared for the owner to execute. **Nothing here is evidence yet** —
-every Result cell is blank until Blake records an actual result at the kiosk.
-Browser emulation was used only to derive the target numbers the owner compares
-against; it satisfies none of these gates.
+**Status:** **PASS by owner attestation, 2026-08-22, for build `f748f59`.**
+Blake instructed the lead to treat every item in the compact 21-check packet as
+passed. The original detailed Result cells below remain blank: no checklist
+export, screenshot set, spoken transcript, exact device-version metadata or
+per-row evidence filenames were supplied, and this record does not invent
+them. The attestation and its limits are recorded in §15. Browser emulation was
+used only to derive the target numbers the owner compares against; it satisfies
+none of these gates and is not the basis of the recorded pass.
 
 **Build to test:** the PR #54 head actually served to the device on the day
 (record its 7+ character SHA and, if supplied, the served `index.html` SHA-256).
@@ -281,13 +285,13 @@ A copy-only change re-runs the IDs whose pass criterion quotes the changed strin
 
 ## 12. Blockers to executing this packet (in order of who can clear them)
 
-1. **Getting the branch build onto the iPad.** GitHub Pages for this repo deploys `main` only; the gate must pass *before* merge (circular). The domain lock admits `beford782.github.io` (and subdomains), `localhost` and `127.0.0.1` — a laptop LAN server (`http://192.168.x.x:8000`) is rejected with "Unauthorized domain", and `github.io` is HSTS-preloaded so a hosts-file trick cannot serve it over HTTP. **Precedent:** the dry-run mirror `beford782/df-phase1-dryrun` (Pages at `https://beford782.github.io/df-phase1-dryrun/`), decommissioned 2026-08-15 to a notice page but **kept for future device passes** (a session record, not a committed document) — it still answered HTTP 200 on 2026-08-21. The lead re-mirrors the exact PR head into it, waits for Pages, proves the served `index.html`/`data/*.json` byte-identical to the branch blobs (the deployed-smoke practice used for every merge), gives the owner that URL and the SHA, and restores the notice page afterwards. Until then the owner has nothing to test. The roadmap's 2026-08-14 evidence note is the model for recording a mirror-served pass ("served from a temporary static mirror pinned to commit …").
+1. **Cleared for this run — branch build served to the iPad.** GitHub Pages for this repo deploys `main` only; the gate had to pass *before* merge (circular). The retained dry-run mirror `beford782/df-phase1-dryrun` served mirror commit `22b9109`, whose tree was the exact public PR #54 tree at `f748f59` plus only `verify.html`. GitHub Pages reported `built`; the live `index.html` was byte-identical to the `f748f59` git blob (SHA-256 `B0981E11F9065FA69DBD8BCD31EE100C7044E1FFB58C56AC87241E525D412321`); the compact packet was live at `https://beford782.github.io/df-phase1-dryrun/verify.html`. The lead also verified the live app showed Welcome with no domain-lock or data-error screen. This clears the serving blocker for this run only; the mirror must not be mistaken for production.
 2. **The pass is valid only for the bytes served.** §11's "any `index.html` change → whole packet" rule applies; freeze the head before mirroring and record it in the header table.
 3. **The 5-minute idle wait, twice per orientation** (warning, then expiry) — ~25–40 minutes of hands-off time across the matrix. §9 routes 1–2 are evidence; route 3 is an accelerator for wording/layout only. Auto-Lock must be recorded and, for route 1, set to Never for the session.
-4. **R7 makes the VoiceOver pass a precondition for #54 leaving draft.** It needs VoiceOver on (and off again) on the shared, unmanaged showroom device, plus a Spanish voice installed for VO-ES; a Spanish voice download changes device state on a device the hardening doc already records as drifting.
+4. **Cleared for this run — R7 VoiceOver sanity pass.** Blake's 2026-08-22 all-tests-pass attestation covers the compact packet's five VoiceOver checks, including the Spanish spot-check. No transcript or voice-installation metadata was supplied; §15 records that evidence limitation. Screen-reader functionality remains outside this gate's scope.
 5. **Spanish wording is provisional.** The idle ES body (R5), the three privacy/audience sentences and the nine help lines are all owed native review (roadmap Invariant 12; the privacy sentences are the priority exception). The ES runs record wrap, clipping and accents; they cannot approve wording, and the packet must say so in the Result cell.
 6. *(cleared)* `.gitignore` now ignores `outputs/manual-gates/` and allowlists this packet.
-7. **The Windows check needs a real Windows machine with a contrast theme** applied, served from the same mirror URL (the domain lock admits it). Browser emulation already exists and is explicitly not the pass.
+7. **Cleared for this run — real Windows forced colors.** Blake's 2026-08-22 all-tests-pass attestation covers both compact Windows checks in Aquatic and Desert. No screenshots or Windows/browser version metadata were supplied; browser emulation remains explicitly not the basis of the pass.
 8. **No showroom authorization follows from a full PASS.** `docs/kiosk-device-hardening.md` remains BLOCKING (unsupervised, unpinned, personal Apple ID, autofill surfaces on); this packet is the Phase 1 merge-gate evidence for one PR, nothing more.
 
 ---
@@ -326,3 +330,32 @@ Every VoiceOver duplicate, ES clipping, wrap oddity, focus landing that differed
 | RR-01 | | | | | |
 | RR-02 | | | | | |
 | RR-03 | | | | | |
+
+---
+
+## 15. Owner attestation — compact physical run (2026-08-22)
+
+Blake reported **“all tests passed”** after receiving the compact packet and,
+when asked for its Share Results export, instructed the lead to **assume every
+test passed rather than exchange the export**. This is an explicit owner
+attestation, not reconstructed device telemetry.
+
+| Field | Recorded value |
+|---|---|
+| Tester / approver | Blake Ford, owner attestation in the Codex task |
+| Date | 2026-08-22 (America/Chicago) |
+| Build tested | PR #54 branch head `f748f59` |
+| Served build | `https://beford782.github.io/df-phase1-dryrun/`; mirror commit `22b9109` |
+| Served `index.html` proof | byte-identical to the `f748f59` git blob; SHA-256 `B0981E11F9065FA69DBD8BCD31EE100C7044E1FFB58C56AC87241E525D412321` |
+| Packet | compact 21-check `verify.html`; full packet remained linked as the detailed reference |
+| Result | **PASS — all 21 compact checks owner-attested passed** |
+| Gates closed | mounted iPad landscape EN/ES; mounted iPad portrait EN/ES; partner and solo paths; idle Continue and Restart/wipe; VoiceOver sanity pass including Spanish spot-check; real Windows forced colors in Aquatic and Desert; evidence/disposition checks |
+| Evidence supplied | owner attestation only; no Share Results export, screenshots, spoken transcript, exact device/iPadOS/Windows/browser versions, store/location or evidence-directory path supplied |
+| Residual observations | none reported by the owner |
+
+The absent metadata is recorded as an evidence limitation, not filled by
+assumption. Blake's instruction nevertheless resolves the R7/R8 physical gate
+for `f748f59`. It does **not** approve the English copy, legal/business
+representations, privacy policy, native Spanish, showroom use, deployment,
+ready-for-review status or merge. Any later `index.html` change invokes §11 and
+invalidates this physical pass until the applicable retest is recorded.

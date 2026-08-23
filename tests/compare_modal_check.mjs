@@ -111,11 +111,12 @@ function makeEnv({ lang = 'en', diffs = null, priorities = null, reactions = nul
   const stub = (v) => () => v;
   const src = keySrc + '\n' + openSrc + '\n' + closeSrc +
     '\nreturn { open: window.openCompareModal, close: window.closeCompareModal, keydown: compareModalKeydown };';
-  const fn = new Function('window', 'document', 'currentLang',
+  const fn = new Function('window', 'document', 'currentLang', 't',
     'buildMattressPriorities', 'hf2ReasonFor', 'reactionLabel', 'mattressResponseLabel',
     'mattressDifferentiators', 'mattressDifferenceText', 'escapeHtml', 'priceTierSymbol',
     src);
-  const api = fn(win, doc, lang,
+  // Slice 5 C2: the modal title now resolves through t('compare.modal_title').
+  const api = fn(win, doc, lang, (k) => (lang === 'es' ? 'ES:' : 'EN:') + k,
     priorities || stub([]), stub('reason'), stub('ok'), stub('resp'),
     diffs || stub([{ detail: 'diff' }]), stub('difftext'), (s) => String(s), stub('$'));
   return {
@@ -134,12 +135,15 @@ section('executed: localization on every open');
   const en = makeEnv({ lang: 'en' });
   en.focusOpener();
   en.api.open();
-  ok('EN title set on open', en.els.compareModalTitle.textContent === 'Compare Your Finalists');
+  // Slice 5 C2 (D5b): the title labelled an ARBITRARY compare pair as
+  // "finalists". It now resolves through t('compare.modal_title'); the
+  // sandbox's t() stamps the language so the key AND the language are pinned.
+  ok('EN title set on open through the dictionary key', en.els.compareModalTitle.textContent === 'EN:compare.modal_title');
   ok('EN close label set on open', en.els.compareModalClose.getAttribute('aria-label') === 'Close comparison');
   const es = makeEnv({ lang: 'es' });
   es.focusOpener();
   es.api.open();
-  ok('ES title set on open', es.els.compareModalTitle.textContent === 'Compara Tus Finalistas');
+  ok('ES title set on open through the dictionary key', es.els.compareModalTitle.textContent === 'ES:compare.modal_title');
   ok('ES close label set on open', es.els.compareModalClose.getAttribute('aria-label') === 'Cerrar comparación');
   en.api.close();
   en.els.compareModalClose.setAttribute('aria-label', 'stale');

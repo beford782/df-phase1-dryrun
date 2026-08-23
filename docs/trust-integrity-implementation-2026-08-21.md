@@ -1,10 +1,20 @@
 # Trust integrity and transparency — implementation report (2026-08-21)
 
-**Status (three separate states, per `docs/deployment-workflow.md`):** the
-branch `claude/phase1-trust-integrity` is **pushed** to `origin`; a **draft PR**
-targets `main` (number and URL in §23); **nothing is merged, nothing is
-deployed, and nothing is showroom-authorized.** Owner review, the device-matrix
-merge gate on the confirmed hardware, and the open decisions below all stand.
+**Status at 2026-08-23 (three separate states, per
+`docs/deployment-workflow.md`):** the branch `claude/phase1-trust-integrity` is
+**pushed** to `origin` and kept at `084f2f0`; PR #54 is **merged** to `main`
+as merge commit `d4049cb` (2026-08-23 00:13Z); the Pages preview is
+**deployed** at exactly `d4049cb`, serving `index.html` SHA-256
+`b0981e11…412321` — the bytes physically tested at `f748f59` and
+owner-reviewed at `9f27680` (§35). **Nothing is showroom-authorized:** preview
+deployment only, `gasUrl` blank (no live email), Spanish provisional (native
+review still owed, privacy sentences first). The device-matrix, VoiceOver and
+real Windows forced-colors gates passed by Blake's 2026-08-22 owner attestation
+at `f748f59` (§27); copy, legal/business, privacy and owner-live-review
+decisions were answered by the owner and recorded in §28–§34; merge was authorized
+2026-08-22. Earlier sections below are dated history of how the branch got
+there and are not re-written; where they say "draft PR" or "nothing is
+merged", read them as of their own date.
 **Owner packet:** `docs/trust-integrity-owner-review-2026-08-21.md` (the nine
 quiz lines, the privacy sentences, the tier-presentation options, the
 founding-year decision, the physical checklists).
@@ -307,11 +317,12 @@ and approval status. Pinned by `tests/trust_integrity_check.mjs` section A.
   the live `plush`/`soft` tags (the literal `pressureRelief` tag is inert here,
   3.1); the packet asks the owner to accept the gloss or take the stricter
   wording.
-- VoiceOver: not run. A one-time sanity pass on the mounted iPad is
-  **required** before PR #54 leaves draft (owner ruling R7, 2026-08-21; no
-  accepted-risk alternative); screen-reader functionality itself stays out of
-  scope (2026-08-12 ruling). Steps and expected announcements:
-  `docs/trust-integrity-physical-gate-2026-08-21.md`.
+- VoiceOver: a one-time sanity pass on the mounted iPad is **required**
+  before PR #54 leaves draft (owner ruling R7, 2026-08-21; no accepted-risk
+  alternative); screen-reader functionality itself stays out of scope
+  (2026-08-12 ruling). **Passed by owner attestation 2026-08-22 at `f748f59`
+  (§27; physical packet §15) — no transcript supplied.** Steps and expected
+  announcements: `docs/trust-integrity-physical-gate-2026-08-21.md`.
 
 ## 13. Generated-file lineage
 
@@ -451,13 +462,15 @@ sequence is now stated identically at the header, the slice-order list, the
 gate block, item 1.7 and the sequence of record: Slice 4 → this gate → Slice 5
 → Slice 6, with Slice 5's concurrent development recorded as history.
 
-## 15. Device-matrix status — browser emulation done; physical gates outstanding
+## 15. Device-matrix status — physical gates passed by owner attestation
 
 Browser (Chromium, Playwright, DPR 1) at the recorded matrix sizes and beyond,
-EN and ES, partner and solo paths — §12. **Physical iPad Pro 11" (1194×748
-landscape, 834×1108 portrait), real touch, glare, and the Windows
-forced-colors rendering remain owner-run gates under the phase-wide merge
-gate; not performed here.**
+EN and ES, partner and solo paths — §12. **Blake's 2026-08-22 attestation at
+`f748f59` records PASS for the compact packet's mounted-iPad matrix, partner
+and solo paths, VoiceOver sanity pass and real Windows Aquatic/Desert
+forced-colors checks.** The owner supplied no checklist export, screenshots,
+spoken transcript or exact device-version metadata; that evidence limitation
+and the byte-verified dry-run mirror are recorded in the physical packet §15.
 
 ## 16. Screenshots / scratch evidence
 
@@ -530,9 +543,13 @@ before #54 leaves draft; R8 the mounted-device gate stands.
    research condition.
 3. **Founding year:** corporate/archival confirmation of 1935 and an
    explanation of the BBB "1924" entry (no copy changes meanwhile).
-4. **Privacy approval:** approver of record; final showroom wording;
-   `privacyDraftNotice`; the native-Spanish reviewer for the data-use
-   sentences; the email-enabled wording (incl. BCC/sheet disclosure).
+4. **Privacy approval:** approver of record **named 2026-08-22: Blake
+   Ford**, who the same day **signed the Welcome and Review representations
+   for the preview-mode deployment (#6)** and chose **option C, preview-only
+   for this merge (#7)** — draft notice retained, policy not finalized (§29).
+   Still open: the native-Spanish reviewer for the data-use sentences; and,
+   for any future email-enabled configuration, the Code.gs audit, final
+   policy wording, business/legal approval and deployment authorization.
 5. **Specialist audience:** exact scope of the Consultation Summary; whether
    the customer may control what appears; whether health-derived implications
    remain.
@@ -541,16 +558,23 @@ before #54 leaves draft; R8 the mounted-device gate stands.
    store (must record no answers and no identity).
 7. **VoiceOver:** the required sanity pass itself (a physical-device gate,
    not a decision) — recorded in the physical packet when run.
-8. **Idle-dialog wording:** copy sign-off on the final EN sentence and native
-   review of the Spanish (the direction is ruled).
-9. **Quiz copy sign-off** as governed quiz copy (CLAUDE.md) — the nine lines
-   in §8 including the `sleep_position` gloss; and the `partner_disturbance`
-   preferred line once 3.1 ships.
+8. **Idle-dialog wording:** ~~copy sign-off on the final EN sentence~~
+   **approved as shipped, Blake Ford, 2026-08-22**; native review of the
+   Spanish still open.
+9. **Quiz copy sign-off** as governed quiz copy (CLAUDE.md) — **the nine
+   EN lines in §8 approved as proposed and the `sleep_position` gloss kept
+   (option A), Blake Ford, 2026-08-22**; the Welcome and Review sentences
+   approved as product wording the same day. Still open: the
+   `partner_disturbance` preferred line once 3.1 ships; every ES line
+   (native review).
 
 ## 20. Native-Spanish review debt
 
+**Owner ruling 2026-08-22 (Blake Ford): native-Spanish review is waived as a PR #54 readiness/merge gate for this preview-only merge.** The four priority strings are **not** native-reviewed, approved, final or production-ready; Spanish stays provisional; native review remains required before any Spanish showroom authorization or any live email/lead-enabled deployment, and any such activation or claim reopens it. The eight changed ES quiz lines stay on the consolidated ledger. No Spanish copy, dictionary, configuration or generated file changed.
+
 Provisional ES strings shipped by this gate (all owed native review; the four
-dictionary sentences **first**, ahead of the consolidated pass):
+dictionary sentences were to go **first**, ahead of the consolidated pass —
+that ordering stands for the review itself, it just no longer gates this PR):
 `privacy.data_use_preview`, `privacy.data_use_live`, `review.help`,
 `safety.timeout_body`; quiz
 `helpText.es` for `trigger`, `mattress_size`, `partner_sleep`,
@@ -560,10 +584,11 @@ the consolidated ledger.
 
 ## 21. Showroom-authorization status
 
-**Not authorized.** `docs/kiosk-device-hardening.md` remains BLOCKING; the
-phase-wide device-matrix merge gate (physical iPad, both orientations, EN/ES)
-and Blake's live review apply to this branch exactly as to every slice; Spanish
-is provisional; no privacy policy is claimed approved.
+**Not authorized.** `docs/kiosk-device-hardening.md` remains BLOCKING. The
+phase-wide physical device gate is complete for `f748f59` by owner attestation
+and Blake's distinct live review passed at `9f27680` (§31); Spanish is provisional; no
+privacy policy is claimed approved — the privacy gate for this PR is resolved
+by the explicit preview-only decision (§29), with the draft notice retained.
 
 ## 23. Pull request, CI and final state (2026-08-22)
 
@@ -572,10 +597,10 @@ is provisional; no privacy policy is claimed approved.
   ruled 2026-08-21 (this PR first; #53 integrates afterwards, §14d). Not to
   be marked ready until every gate in Exit 13 of the roadmap block is
   recorded: the nine-line copy approval (incl. the `sleep_position` gloss),
-  the Welcome/Review copy approval, the privacy-policy decision, the physical
-  mounted-iPad pass in both orientations and languages, the VoiceOver sanity
-  pass, a real Windows forced-colors pass, the priority native-Spanish review,
-  and the owner's live review.**
+  the Welcome/Review copy approval, the privacy-policy decision, the priority
+  native-Spanish review, and the owner's live review. The physical mounted-iPad,
+  VoiceOver and real Windows forced-colors gates are now recorded complete in
+  §27.**
 - Revalidation commit `f6fac09` (audits 1–3 resolved; packet; roadmap
   sequence) followed by this record. Pushed to `origin`.
 - GitHub CI: pull_request run 32542916416 at `12ad950` — **success** (trust
@@ -586,12 +611,11 @@ is provisional; no privacy policy is claimed approved.
 - Baselines: original implementation baseline `4a76503` (origin/main at branch
   creation); post-integration `main` baseline **unchanged — `4a76503`** (no
   new `main` existed to integrate; Slice 5 is unmerged draft PR #53).
-- **Nothing merged. Nothing deployed. No showroom authorization.** The physical
-  iPad pass (both orientations, EN/ES), the real Windows forced-colors check,
-  the VoiceOver sanity pass (required, R7), the priority native-Spanish review
-  of the three privacy/audience sentences and the idle body, the privacy-policy approval
+- **Nothing merged. Nothing deployed. No showroom authorization.** The priority
+  native-Spanish review of the three privacy/audience sentences and the idle body, the privacy-policy approval
   (`privacyDraftNotice` is customer-visible today) and Blake's sign-off on the
-  nine help lines all remain outstanding; the owner packet lists each.
+  nine help lines all remain outstanding; the owner packet lists each. The
+  three physical gates are complete by the §27 owner attestation.
 
 ## 24. Owner rulings round (2026-08-22) — what changed
 
@@ -699,6 +723,28 @@ reproduced by the lead before acting.
   three Markdown files only; the full run at its head is recorded by CI on
   the PR.
 
+## 27. Owner-attested physical pass (2026-08-22; `f748f59`)
+
+- The retained public dry-run mirror served commit `22b9109`: the exact PR #54
+  tree at `f748f59` plus only the compact `verify.html` packet. GitHub Pages
+  reported the build complete. The live `index.html` matched the `f748f59` git
+  blob byte-for-byte (SHA-256
+  `B0981E11F9065FA69DBD8BCD31EE100C7044E1FFB58C56AC87241E525D412321`),
+  and the live app reached Welcome with no domain-lock or data-error screen.
+- Blake first reported **“all tests passed”**, then instructed the lead to
+  assume every compact test passed without exchanging the Share Results
+  export. The physical packet §15 therefore records PASS for all 21 compact
+  checks: mounted iPad landscape/portrait EN/ES, partner/solo, idle and wipe,
+  VoiceOver including the Spanish spot-check, and real Windows Aquatic/Desert
+  forced colors.
+- Evidence limitation: no checklist export, screenshots, spoken transcript,
+  exact device/iPadOS/Windows/browser versions, location or evidence directory
+  were supplied. The record says so; no evidence details were invented.
+- This closes R7/R8's physical gates for the tested `f748f59` bytes. It does
+  not approve copy, legal/business representations, the privacy policy, native
+  Spanish, owner live review, showroom use, deployment, readiness or merge.
+  Any later `index.html` change invokes the packet's retest rule.
+
 ## 22. Rollback strategy
 
 Each commit is independently revertible with `git revert` (no commit depends
@@ -707,3 +753,371 @@ on a later one). Reverting `d56284d` requires re-running the canonical pipeline
 reverting `c979547`, `66f787d` or `812a984` requires `python tools/build_black_friday_demo.py`
 to keep the demo bundle byte-matched. `3bfbe92` is docs-only. Nothing was
 pushed to `main`; no deployment occurred.
+
+## 28. Owner copy approvals (2026-08-22)
+
+Blake Ford approved, in writing to the lead: all nine rewritten EN help lines
+as governed quiz copy; `sleep_position` option A (the shipped gloss stays);
+the Welcome data-use sentence, the Review specialist-summary sentence and the
+idle-dialog sentence as shipped English product wording; and named himself
+the business/legal approver of record. English only — every Spanish string
+remains provisional pending native review (§20). No bytes changed: the quiz
+pipeline was not re-run, `data/quiz.json`, both dictionaries and `index.html`
+are identical to `f748f59`, so the owner-attested physical pass (§27) carries
+forward.
+
+Not decided by this round and not inferred from it: the business/legal
+sign-off of the Welcome and Review representations by the approver of record;
+the privacy-policy and draft-notice decision (both decided later the same day
+— §29); native Spanish; the owner live review; the reviewed-head designation;
+ready-for-review and merge authorization. PR #54 stays draft.
+
+## 29. Owner business/legal decisions (2026-08-22)
+
+**#6 — signed.** Blake Ford, as the named business/legal approver of record,
+signed the English Welcome sentence ("During this showroom session, your
+answers stay on this tablet and are used to create your matches and
+specialist summary. Restart clears them.") and the English Review sentence
+("These answers create your matches and the summary your specialist will
+review with you.") as accurate business representations for the **current
+preview-mode deployment**: `gasUrl` blank; answers stay on the tablet unless a
+future email-enabled configuration is separately approved. The signature does
+not cover a live-email configuration, does not approve the Spanish, and does
+not authorize showroom use, deployment, readiness or merge.
+
+**#7 — option C, preview-only for this merge.** `gasUrl` stays blank; live
+email and lead collection stay off; the draft privacy policy and its visible
+notice ("Draft policy — pending Lacks Furniture approval before live use.")
+stay as shipped; the policy is **not** claimed finalized. The privacy-policy
+gate is resolved for this PR by that explicit decision — not by approving the
+draft. Any future live activation requires, separately: a Code.gs audit,
+final policy wording, business/legal approval, native-Spanish review and
+deployment authorization. The fail-closed validation in `tools/validation.py`
+is unchanged and is not to be weakened.
+
+No bytes changed: `index.html`, both dictionaries, `data/store-config.json`,
+`data/quiz.json` and the demo bundle are identical to `f748f59`, so the
+owner-attested physical pass (§27) carries forward. Still open after this
+round: native Spanish (the four priority strings were the PR gate until the
+2026-08-22 waiver, §30; the eight quiz lines follow on the consolidated
+ledger), the owner live review, the reviewed-head designation, and the
+ready-for-review and merge authorizations. PR #54 stays draft.
+
+## 30. Owner ruling — native-Spanish review waived as a PR #54 gate (2026-08-22)
+
+Blake Ford directed that native-Spanish review be skipped for PR #54 and not
+block this preview-only merge. Recorded narrowly:
+
+- The PR #54 checklist gate for native review of `privacy.data_use_preview`,
+  `privacy.data_use_live`, `review.help` and `safety.timeout_body` is resolved
+  by **explicit owner waiver/deferment** — not by review. None of the four is
+  native-reviewed, approved, final or production-ready; Spanish remains
+  provisional in every record.
+- The eight changed Spanish quiz help lines stay pending on the consolidated
+  ledger (§20).
+- Native review remains required before any Spanish showroom authorization
+  or any live email/lead-enabled deployment; any future live activation, or
+  any claim that Spanish is showroom-ready, reopens it.
+- `gasUrl` stays blank; the preview-only decision (§29) and the visible draft
+  policy notice remain in force.
+- No Spanish copy, dictionary, application code, configuration, generated
+  file, scoring or touch behaviour changed; application bytes are identical
+  to `f748f59`, so the owner-attested physical pass (§27) carries forward.
+- This ruling does not authorize marking ready, merging, deployment or
+  showroom use. Gates still open: the owner live review, the reviewed-head /
+  CI designation, and the explicit authorizations to mark ready and to merge.
+
+## 31. Owner live review — passed (2026-08-22; `9f27680`)
+
+Blake Ford walked the build on the retained dry-run mirror
+(`https://beford782.github.io/df-phase1-dryrun/`) and reported it passed.
+Immediately before the walk the lead re-verified the mirror's served
+`index.html`, `data/store-config.json`, `data/quiz.json` and
+`data/dict-es.json` byte-identical (SHA-256) to the branch blobs at `9f27680`,
+whose application bytes are identical to the attested `f748f59`. The walk
+covered the seven customer-visible changes (Welcome data-use sentence and
+single heritage line; the help lines in place; question transitions incl.
+Back from the tall questions and Edit from Review; the Review sentence; the
+15px tier-relativity note with ordering unchanged; the email screen without
+the retired promise and with the draft-policy overlay notice retained by
+option C; the idle dialog wording against its two controls) and the critical
+path in Spanish, viewed as provisional — not a translation approval.
+
+This closes the live-review gate only. The reviewed-head designation and
+the ready-for-review authorization followed the same day (§32); merge
+authorization is still open. Commits after `9f27680` on this branch are
+documentation only and do not change the reviewed bytes. Nothing merged or
+deployed.
+
+## 32. Reviewed application head designated; ready-for-review authorized (2026-08-22)
+
+**Designation.** Blake Ford designated **`9f27680` as the owner-reviewed
+application head** for PR #54: the owner live review (§31) was performed
+against those application bytes; CI run 32593585017 at `9f27680` passed; the
+application bytes are identical to the physically tested `f748f59` (§27);
+later commits only record decisions and do not change the application.
+
+Three heads, one set of application bytes: **physical-test head `f748f59`** (owner-attested device pass), **reviewed application head `9f27680`** (owner live review; CI run 32593585017 pass), and the **current PR/documentation head** (the latest docs-only commit recording these decisions). `index.html` and the `data/`, `demo/`, `tests/`, `tools/` and `incoming/` trees are byte-identical across all three. The proof at the time of
+recording: `git diff --name-only 9f27680 HEAD` lists only
+`docs/rebuild-roadmap.md`, `docs/trust-integrity-implementation-2026-08-21.md`
+and `docs/trust-integrity-owner-review-2026-08-21.md`; `git diff --stat
+f748f59 9f27680 -- index.html data/ demo/ tests/ tools/ incoming/` is empty;
+the `index.html` blob (SHA-256 `b0981e11…412321`) and the five tree ids are
+equal at `f748f59`, `9f27680` and the current head.
+
+**Ready-for-review.** Blake Ford authorized marking PR #54 ready for review
+once all state and SHA checks pass, this designation is recorded
+consistently, the current documentation-only head has green CI, and the
+checklist shows only the merge-authorization gate open. The lead performs the
+draft → ready change only after the CI run at the documentation head that
+carries this record is green.
+
+**Not authorized:** merging PR #54. The merge gate stays unchecked; nothing
+is merged, deployed or showroom-authorized; PR #53 is untouched; Spanish
+stays provisional (native review waived as a gate only, §30); `gasUrl` stays
+blank; the preview-only privacy decision (§29) and the visible draft-policy
+notice remain in force.
+
+## 33. External review at `f7a63f5` — two P2 threads, owner disposition option B (2026-08-22)
+
+Marking the PR ready triggered the repository's automated Codex review, which
+left two P2 threads on `tools/validation.py`. The pre-merge rule (no
+unresolved review threads) stopped the merge; Blake Ford chose option B — fix
+before merging — with the disposition below.
+
+**Thread 1 (`live_at_runtime`, ~line 397) — preserved as intentional.** The
+runtime's `emailDeliveryLive()` is `gasUrl && !activeScenario.disableEmailSubmission`;
+the validator treats any non-blank `gasUrl` as live. Codex proposed deriving
+the validator's notion from the scenario flag. Ruled no: a scenario is a
+date-windowed runtime state, so the same configured bytes go live the day it
+expires without another build — a config must be true in every state it can
+reach, and a non-blank `gasUrl` is therefore *live-capable* for admission.
+Change: the comment that wrongly claimed the runtime treats every non-blank
+`gasUrl` as presently live is corrected and now explains the live-capable
+rule; the code line `live_at_runtime = not _blank(gas)` is byte-identical.
+Four self-tests pin it (live `gasUrl` + active `historical-demo` scenario
+with `disableEmailSubmission: true` + preview wording → still rejected, EN and
+ES; placeholder under a blocking scenario → still the placeholder error;
+blank `gasUrl` under a blocking scenario → accepted). A sweep mutant that
+makes the validator follow the scenario is caught by those tests (3 failures).
+
+**Thread 2 (`PREVIEW_MODE_SIGNALS`, ~line 287) — fixed.** The bare
+storage-negation phrases ("not stored", "never stored", "do not store",
+"not saved", "no se guarda(n)", "no se almacena(n)", …) moved out of the
+unconditional list into `STORAGE_NEGATION_SIGNALS`, matched by
+`_preview_signal_hit()` only inside a sentence (split on `. ! ? ;` and line
+breaks) that also names governed data (`GOVERNED_DATA_TERMS`: answers,
+responses, quiz, results, session, email, phone, contact, your name,
+your/personal/customer/contact information, your/personal/customer data, and
+the Spanish equivalents — deliberately not generic "details", "information"
+or "data" alone). Unconditional signals ("nothing is sent", "stays on this
+tablet", "does not send or store", …) are unchanged. Self-tests: nine
+governed-data storage claims still fail under a live `gasUrl` (EN and ES);
+five unrelated truthful storage statements ("Payment card details are not
+stored by this application.", "This kiosk does not store cookies.", …) are
+accepted; sentence scoping cannot be laundered by an unrelated sentence in
+the same key; unconditional signals still fire regardless of context; every
+prose key is read; the same governed claim is accepted under a blank `gasUrl`;
+three unit checks on `_preview_signal_hit`. Two sweep mutants (context gate
+removed → 6 failures; storage family disabled → 16 failures) are caught.
+The absolute-promise ban (R4) is a product rule outside the validator and is
+untouched; no existing rejection was weakened — every previously caught
+sentence in the self-test still fails.
+
+**Counts.** Validator self-test 978 → 1003 (0 failed); mutation manifest
+339 → 342; every other `ci.yml` step re-run locally green (financing
+totality 3395/0, smoke 118/0, golden strict reproduced, lineage 10/0, QR
+188/0, Daybreak contract 87/0 and server 23/0, workbook validation OK with
+warnings-as-errors, 28 node suites green, `git diff --check` clean). Full local mutation sweep at the fix commit `8742764`: **342/342 caught, 0
+survived, 0 did not apply** — the three new validator mutants all caught by
+the self-test; the PR's CI re-runs it.
+
+**Scope statement, re-framed.** `index.html` and the `data/`, `demo/` and `incoming/` trees — every customer-visible byte, configuration, generated file and scoring input — are byte-identical across all three. After the reviewed head, and only by the owner's 2026-08-22 option-B direction on the external review, `tools/validation.py` (the build-admission validator) and `tests/mutation_sweep.mjs` changed; those are build tooling and test manifest, not the served application, so the physical and live-review passes are not reopened. The physical packet's §11
+keys retests on `index.html`, dictionary, config and quiz copy — none
+changed. The reviewed application head stays `9f27680`; the merge candidate
+is the head carrying this change plus its record.
+
+**Thread 3 (`aa08e7e`, raised on the re-review) — fixed in `5a1f70c`.** The
+kiosk reads `STORE_CONFIG.gasUrl` raw: `emailDeliveryLive()` is `!!gasUrl`
+and `sendResults()` guards its POST with `if (gasUrl && …)`, so a
+whitespace-only `gasUrl` is live at runtime (live-mode copy, a real fetch),
+while the validator stripped it to blank and admitted preview prose under
+it — the validator admitting a promise the kiosk would break, the exact case
+the live-capable ruling forbids. The whitespace self-test that expected
+acceptance was this branch's own (`8d0bda6`) and was wrong. Fix: a
+`_runtime_truthy()` helper mirroring JavaScript truthiness; `live_at_runtime`
+derives from the raw value, never the stripped string; a whitespace-only
+`gasUrl` is refused as a non-blank placeholder ("whitespace counts") and
+preview prose under it is refused too; `""` and `null` stay preview; a padded
+real endpoint stays live-capable. Self-tests 1003 → 1008 / 0; manifest 342 →
+343 (a stripped-admission regression mutant, 2 failures; the scenario mutant
+re-anchored, 3 failures); `tests/trust_integrity_check.mjs` re-pins the
+corrected line and additionally requires the helper and the new self-test
+(122/122). Customer-visible bytes unchanged. The external reviewer was asked
+to re-inspect again at this head.
+
+**Thread 4 (`133fef2`, second re-review) — fixed.** The sentence-wide
+context test still rejected "During your showroom session, payment card
+details are not stored by this application" (the time adverbial "session").
+`_storage_claim_is_governed()` now binds the negation to the noun phrase it
+is about — passive/reflexive: the in-clause text before the verb; active:
+the in-clause text after it; Spanish reflexive: the object after the verb
+when it opens with a noun phrase rather than a preposition — and, when the
+bound fragment has no noun of its own (a bare pronoun, an interjected
+aside), widens in the fail-closed direction to the rest of the sentence and
+then the previous sentence. Self-tests 1008 → 1027 / 0; manifest 343 → 345;
+all eight validator entries proven caught in place. Customer-visible bytes
+unchanged. The external reviewer was asked to re-inspect a third time.
+
+**Threads 5 and 6 (`bf87c26`, third re-review) — fixed in `b98b7a7`.** Thread
+5 was a real fail-open: only the first occurrence of a signal in a sentence
+was bound, so "Payment card details are not stored, but your answers are not
+stored." was admitted; every occurrence is now inspected. Thread 6: "but",
+"while", "whereas", "although", "though", "yet" (ES "pero", "sino",
+"aunque", "mientras") now delimit the clause a negation binds to, so "Your
+answers are emailed but payment card details are not stored." passes.
+"and"/"or" are **deliberately not** clause delimiters — they also coordinate
+subject noun phrases ("your email and card numbers are not stored"), and
+splitting there would admit a false promise about the first conjunct; a
+coordinated clause on "and" stays rejected (fail closed, rephrasable) and
+two self-tests pin that choice by name. Self-tests 1027 → 1038 / 0; manifest
+345 → 347; all ten validator entries proven caught in place. Customer-visible
+bytes unchanged. The external reviewer was asked to re-inspect a fourth time.
+
+**Thread 7 (`e4f4d42`, fourth re-review) — fixed in `babef79`.** A fail-open
+list gap: "aren't stored" / "isn't stored" were absent, so "Your answers
+aren't stored." shipped with no error. The family now covers, for
+store/save/keep/retain, the passive negations with contractions and "won't
+be", the active "do not / don't / doesn't / does not / never / won't" forms,
+and the Spanish reflexive and active forms; the active and reflexive
+sub-families are derived from the one list. Every addition is clause-bound,
+so unrelated statements stay accepted. Self-tests 1038 → 1056 / 0; manifest
+347 → 348; all eleven validator entries proven caught in place.
+Customer-visible bytes unchanged. The external reviewer was asked to
+re-inspect a fifth time.
+
+**Thread 8 (`a9d24cd`, fifth re-review) — fixed in `bbf3c9c`.** Typographic
+apostrophes ("weren’t stored") and past-tense contractions bypassed the
+enumerated list. Enumeration cannot close that class, so the storage family
+is now grammatical: apostrophes and quotes fold to ASCII before matching
+(for the unconditional signals too), and four compiled patterns — passive
+(n't / not / never / cannot / no longer + optional be + stored / saved /
+kept / retained), active (+ store / save / keep / retain), Spanish reflexive
+and Spanish active, including future forms — replace the list. Each match is
+bound to its clause exactly as before. Self-tests 1056 → 1073 / 0; manifest
+348 → 349; all twelve validator entries proven caught in place.
+Customer-visible bytes unchanged. The external reviewer was asked to
+re-inspect a sixth time.
+
+**Threads 9 and 10 (`3b5b837`, sixth re-review) — fixed in `9aa11ac`.** Thread
+9 (fail-open): only "ever" or an auxiliary could sit between the negation and
+the verb, so "not permanently stored" passed; up to three words may now
+(`_GAP`), and the Spanish patterns accept a clitic object. Thread 10 (false
+rejection, inconsistent with the "sent to lenders" acceptance): transmission
+negations (transmit / send / share / upload / forward / submit; ES transmitir
+/ enviar / compartir) move from the unconditional list into the grammatical
+family and are a preview claim only when **absolute** — no destination after
+the verb, or a universal one ("anywhere", "to anyone", "a nadie") — and bound
+to governed data; a qualifying destination or condition ("to lenders",
+"unless you choose to email them") is a claim the business owns. Binder
+corrections found while testing: fallback fragments never include the
+matched verb; auxiliaries and Spanish clitics are non-content; a pronoun
+object followed by an adverbial widens to the previous sentence. Self-tests
+1073 → 1104 / 0; manifest 349 → 352; all fifteen validator entries proven
+caught in place. Customer-visible bytes unchanged. The external reviewer was
+asked to re-inspect a seventh time.
+
+**Threads 11 and 12 (`d33bde2`, seventh re-review) — fixed in `dbde3ec`.**
+Thread 11 (fail-open): the universal-destination test looked only at the
+first captured word, so "not sent to absolutely anyone" was admitted as a
+qualified destination; every word of the destination is now tested. Thread
+12 (false rejection): the three-word gap accepted any word, so "we do not
+ask lenders to store your answers" — a claim about lenders, not the kiosk —
+was reported as a storage negation; the gap now admits only auxiliaries and
+adverbs. Self-tests 1104 → 1118 / 0; manifest 352 → 354; all seventeen
+validator entries proven caught in place. Customer-visible bytes unchanged.
+The external reviewer was asked to re-inspect an eighth time.
+
+**Threads 13 and 14 (`f3a8b91`, eighth re-review) — fixed in `9988795`.**
+Thread 13 (fail-open): the destination capture stopped at three words, so
+"not shared with our service providers or anyone else" was admitted; the
+destination now runs to the end of its clause and the universal scan
+separately covers everything after the verb to the end of the sentence
+(fail closed across a comma list). Thread 14 (false rejection): the bare
+determiner "any" counted as universal, so "not sent to absolutely any
+lender" was rejected; universality now means a pronoun or a universal phrase
+("any other", "anyone else", "ningún sitio"), and determiner + noun stays a
+scoped, qualified claim. Self-tests 1118 → 1129 / 0; manifest 354 → 356; all
+nineteen validator entries proven caught in place. Customer-visible bytes
+unchanged. The external reviewer was asked to re-inspect a ninth time.
+
+**Thread 15 (`4fe6db5`, ninth re-review) — fixed in `53b7e27`.** The
+sentence-tail scan from thread 13 also caught a universal in an unrelated
+following clause ("not shared with lenders, *but anyone* can ask us
+questions"). The destination now extends only through comma segments that
+read as coordinated list items, stopping at a clause starter, a verb-like
+token or a long segment. Self-tests 1129 → 1134 / 0; manifest 356 → 357;
+all twenty validator entries proven caught in place. Customer-visible bytes
+unchanged. The external reviewer was asked to re-inspect a tenth time.
+
+**Threads 16 and 17 (`9fa87e2`, tenth re-review) — fixed in `f2aa300`.**
+Thread 16 (fail-open): a coordinated segment longer than six words stopped
+the destination scan before "… or anyone else"; the length cap is gone.
+Thread 17 (false rejection): a dash-introduced clause with a lexical verb
+was appended to the destination. A segment now continues only on structural
+evidence of coordination — comma-joined (a colon, parenthesis, quote or a
+dash that does not open with a coordinator ends the destination), no clause
+starter or verb-like token, and either a coordinator or a short list item of
+at most four words. Self-tests 1134 → 1145 / 0; manifest 357 → 359; all
+twenty-two validator entries proven caught in place. Customer-visible bytes
+unchanged. The external reviewer was asked to re-inspect an eleventh time.
+
+**Thread 18 (`04a4190`, eleventh re-review) — fixed in `b7eff97`.** ", and
+anyone who asks receives support" satisfied the coordinator test because
+"and" is a coordinator. When the coordinator is the segment's first word the
+remainder must itself be a short list item, and a relative pronoun marks a
+clause. Self-tests 1145 → 1153 / 0; manifest 359 → 360; all twenty-three
+validator entries proven caught in place. Customer-visible bytes unchanged.
+
+**Closing the external-review loop (lead decision, 2026-08-22).** Eleven
+Codex passes produced eighteen threads, every one on the same build-time
+heuristic — the validator's reading of retailer-authored privacy prose —
+alternating between "too strict" and "too loose" on an unbounded long tail
+of English and Spanish phrasing. None touched the application, the Lacks
+configuration (`gasUrl` blank) or any customer-visible byte. The owner's
+option-B direction was to let external review inspect the validation
+change; it has, repeatedly, and every finding was fixed rather than waived.
+No further re-review was requested after `b7eff97`: the heuristic's remaining
+limits are documented in the code (fail-closed where ambiguous: "and"-joined
+subject noun phrases, comma-spliced clauses, pronoun objects without an
+antecedent), every rule is pinned by self-tests and sweep mutants, and
+future retailer prose that trips a false rejection is reported with the
+exact phrase and can be rephrased. Automatic Codex reviews still fire on any
+later ready-for-review transition.
+
+All eighteen threads were answered on the PR with this rationale and resolved after
+the tests passed; the external reviewer was asked to re-inspect the change
+before the merge.
+
+## 34. Merge authorization (Blake Ford, 2026-08-22)
+
+Blake Ford explicitly authorized merging PR #54: a **merge commit**, source
+branch **kept**, no squash, no rebase, no auto-merge; acknowledging that a
+merge to `main` automatically updates the GitHub Pages preview. Merging to `main` publishes only the existing GitHub Pages preview. The authorization grants no showroom use, no live email or lead collection, no non-blank `gasUrl`, no final Spanish approval, no production/live-business approval beyond the existing preview deployment, and no permission to merge or modify PR #53.
+
+Pre-merge state at the time of recording: `origin/main` `4a76503`; PR #53
+open/draft at `6decbef`, untouched; PR #54 open, ready, MERGEABLE/CLEAN, all
+eighteen external-review threads resolved, auto-merge disabled; the
+application bytes (`index.html`, `data/`, `demo/`, `incoming/`) identical to
+the physically tested `f748f59` and the owner-reviewed `9f27680`; the
+validator and test changes after `9f27680` (§33) CI-green at `1b776a1`.
+The merge proceeds only after this record's own commit is CI-green and the
+PR re-verified ready and mergeable; the post-merge verification (merge
+commit, new `main`, Pages build/deploy, served `index.html` SHA-256
+`b0981e11…412321`, blank `gasUrl`, preview wording) is recorded in §35.
+
+## 35. Merged and deployed (2026-08-23)
+
+PR #54 merged 2026-08-23 00:13Z as merge commit `d4049cb` (parents `4a76503` + `084f2f0`; merge, not squash; branch kept). Post-merge CI run 32607312520 and Pages run 32607311802 both succeeded at exactly `d4049cb`; the public preview `https://beford782.github.io/LacksFurniture/` serves `index.html` with SHA-256 `B0981E11F9065FA69DBD8BCD31EE100C7044E1FFB58C56AC87241E525D412321` — the bytes physically tested at `f748f59` and owner-reviewed at `9f27680` — and `store-config`, `quiz`, both dictionaries, `mattresses` and `allowed-hosts` hash-identical to `main`; a headless render showed Welcome with its Start button, one heritage line and the data-use sentence, no unauthorized-domain screen, no data-error overlay, a clean console; served `gasUrl` is blank, the draft-policy notice and preview wording are served. Preview deployment only: no showroom use, no live email, Spanish provisional.
+
+PR #53 (Slice 5) is untouched at `6decbef`, open and draft. Its next step: update from `main` at `d4049cb`; re-run the conflict forecast against that actual `main` (the pre-merge forecast was five files / three both-added regions against `4a76503`; `main` now also carries the `tools/validation.py`, `tests/mutation_sweep.mjs` and `tests/trust_integrity_check.mjs` changes from the external-review fixes, so the manifest's observer constants are a fresh conflict surface); resolve every conflict semantically, preserving both features; rebuild `demo/black-friday/` with `python tools/build_black_friday_demo.py`; run the complete suite and the full mutation sweep on the combined tree. #53's existing CI is not post-merge evidence.

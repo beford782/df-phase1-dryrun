@@ -477,9 +477,14 @@ ok("tools/validation.py rejects preview-mode privacy prose under a live gasUrl (
   && /preview-mode privacy wording under a live gasUrl -> error/.test(VALIDATION));
 ok("the validator's signal list covers the runtime's preview sentence (build gate and runtime agree on what preview wording is)",
   /"stays on this tablet"/.test(VALIDATION) && /"permanecen en esta tableta"/.test(VALIDATION));
-ok("the validator keys the gate on the runtime's notion of live (any non-blank gasUrl) and refuses a non-blank placeholder",
-  /live_at_runtime = not _blank\(gas\)/.test(VALIDATION) && /if live_at_runtime:\s*\n\s*_check_privacy_prose_mode/.test(VALIDATION.replace(/\r\n/g, "\n"))
-  && /non-blank placeholder/.test(VALIDATION));
+ok("the validator keys the gate on the RAW runtime truthiness of gasUrl (whitespace-only is live, as in index.html's !!gasUrl) and refuses a non-blank placeholder",
+  /def _runtime_truthy\(v\)/.test(VALIDATION)
+  && /raw_gas = config\.get\("gasUrl"\)/.test(VALIDATION)
+  && /live_at_runtime = _runtime_truthy\(raw_gas\)/.test(VALIDATION)
+  && !/live_at_runtime = not _blank\(gas\)/.test(VALIDATION)
+  && /if live_at_runtime:\s*\n\s*_check_privacy_prose_mode/.test(VALIDATION.replace(/\r\n/g, "\n"))
+  && /non-blank placeholder/.test(VALIDATION)
+  && /whitespace-only gasUrl is live at runtime -> non-blank placeholder error/.test(VALIDATION));
 
 // ================================================================ D. tier-relativity legibility
 section("D — the tier-relativity statement is legible and semantically untouched");

@@ -71,9 +71,12 @@ for (const [tag, src] of [['top pick', topPickSrc], ['supporting', supportSrc]])
     src.includes(`aria-label="' + escapeHtml((es ? 'Comparar' : 'Compare') + ': ' + m.name) + '"`));
   ok(`${tag}: ruled visible label EN/ES`,
     src.includes(`(es ? 'Comparar' : 'Compare')`));
-  ok(`${tag}: compare sits inside the action cluster between details and save`,
-    /detailsBtn\s*'?\s*\+\s*compareBtn\s*\+\s*saveBtn/.test(src.replace(/\s+/g, ' ')) ||
-    /\+\s+detailsBtn\s+\+\s+compareBtn\s+\+\s+saveBtn/.test(src));
+  // Slice 5 C2: the cluster gained the "Choose as finalist" control (R-1)
+  // between compare and save. The pin is updated to the new order so the
+  // finalist control's position is itself pinned going forward.
+  ok(`${tag}: compare sits inside the action cluster between details and the finalist control, ahead of save`,
+    /detailsBtn\s*'?\s*\+\s*compareBtn\s*\+\s*finalistBtn\s*\+\s*saveBtn/.test(src.replace(/\s+/g, ' ')) ||
+    /\+\s+detailsBtn\s+\+\s+compareBtn\s+\+\s+finalistBtn\s+\+\s+saveBtn/.test(src));
   ok(`${tag}: compare control carries NO inline handler (delegated path only)`,
     !/compareBtn = [^;]*onclick/.test(src.replace(/\n/g, ' ')));
 }

@@ -735,7 +735,11 @@ ok('the constellation is never an engine input (absent from the scoring path)',
 ok('the engine block inside the render is untouched: cap, sort and state exports intact',
   /priorities\.sort\(function\(a, b\) \{ return b\.score - a\.score; \}\);/.test(profileSrc)
   && /var topPriorities = priorities\.slice\(0, 3\);/.test(profileSrc)
-  && /analytics\.trialFocus = topPriorities\.map\(/.test(profileSrc));
+  // Slice 5 C1 (owner ruling R-8): the export is now gated by the inlined
+  // all-or-nothing completeness predicate — the built array is stored only
+  // when every entry is complete, else []. Cap and sort are unchanged.
+  && /var builtTrialFocus = topPriorities\.map\(/.test(profileSrc)
+  && /analytics\.trialFocus = trialFocusIsComplete\(builtTrialFocus\) \? builtTrialFocus : \[\];/.test(profileSrc));
 
 // ----------------------------------------------- negative controls (D1)
 section('negative controls — the D1 assertions genuinely bite');

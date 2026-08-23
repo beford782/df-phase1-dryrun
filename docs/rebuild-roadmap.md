@@ -9,7 +9,7 @@ owner-review decisions (see "Phase 1 direction decisions — recorded
 see the open-decisions register. Device hardening remains BLOCKING for
 showroom use.**
 
-**Last updated:** 2026-08-22 *(records the owner's 2026-08-21 product-direction
+**Last updated:** 2026-08-23 *(closes out the Trust integrity gate: PR #54 merged 2026-08-23 00:13Z as merge commit `d4049cb` (parents `4a76503` + `084f2f0`; merge, not squash; branch kept). Post-merge CI run 32607312520 and Pages run 32607311802 both succeeded at exactly `d4049cb`; the public preview `https://beford782.github.io/LacksFurniture/` serves `index.html` with SHA-256 `B0981E11F9065FA69DBD8BCD31EE100C7044E1FFB58C56AC87241E525D412321` — the bytes physically tested at `f748f59` and owner-reviewed at `9f27680` — and `store-config`, `quiz`, both dictionaries, `mattresses` and `allowed-hosts` hash-identical to `main`; a headless render showed Welcome with its Start button, one heritage line and the data-use sentence, no unauthorized-domain screen, no data-error overlay, a clean console; served `gasUrl` is blank, the draft-policy notice and preview wording are served. Preview deployment only: no showroom use, no live email, Spanish provisional. The gate moves 🔨 → ✅; Slice 5 (draft PR #53, `6decbef`) is next and must update from `main` at `d4049cb`, re-run the conflict forecast against that actual `main` — which now also carries the validator and test-manifest changes from the external-review fixes — resolve keep-both, rebuild the demo bundle with the canonical tool and re-run the complete suite and sweep on the combined tree; #53's pre-integration CI is not post-gate evidence. The reconciliation baseline is re-pointed from `4a76503` to `d4049cb`.)* The previous revision, 2026-08-22, recorded the owner's 2026-08-21 product-direction
 rulings on the Trust integrity gate — R1 merge order: draft PR #54 (the gate)
 merges before draft PR #53 (Slice 5), which then integrates the resulting
 `main` and proves the combined behaviour; R2 heritage stays Welcome-only this
@@ -27,7 +27,7 @@ not authorization to merge either PR. The conflict forecast between the two
 branches is re-stated as five files (it was three before the Sleep System
 containers joined the wipe inventory). The previous revision, 2026-08-21,
 inserted the **Phase 1 cross-cutting gate —
-Trust integrity and transparency** (🔨, on branch `claude/phase1-trust-integrity`
+Trust integrity and transparency** (now ✅ — merged as `d4049cb`; it was 🔨 on branch `claude/phase1-trust-integrity`
 from `4a76503`), discovered by the 2026-08-21 quiz trust investigation
 (`docs/quiz-trust-investigation-2026-08-21.md`). By owner instruction it sits
 after Slice 4 Payment Choice and before Slice 5 Sleep Plan in the approved
@@ -65,10 +65,13 @@ owner-approved scoring change they carried.)*
 `main` when this document's phase statuses were written, the merge commit of
 PR #16 (2026-08-05). It is **not** current `main`. GitHub state is
 authoritative; a local checkout never is.
-**Reconciliation baseline:** `4a765034b402ddfbfdb8bfcf3313cf2ee6c8e88b` — GitHub
-`main` at this revision; PR #52 merge commit (2026-08-20, the docs-only Slice 4
-close-out), and the commit the trust-integrity branch was cut from. The prior
-baseline was `b2acd7edfb0aa2dfb3add2cf55d7489c0fe50c2a` (PR #51, Nocturne
+**Reconciliation baseline:** `d4049cb0694f2dcba5322afef433a08c088238a3` — GitHub
+`main` at this revision; PR #54 merge commit (2026-08-23, the Phase 1
+cross-cutting Trust integrity gate), and the `main` that Slice 5 (draft PR #53)
+must integrate. The prior baseline was
+`4a765034b402ddfbfdb8bfcf3313cf2ee6c8e88b` (PR #52, the docs-only Slice 4
+close-out, 2026-08-20, and the commit the trust-integrity branch was cut
+from), before that `b2acd7edfb0aa2dfb3add2cf55d7489c0fe50c2a` (PR #51, Nocturne
 Slice 4, the Payment Choice model per D4, 2026-08-20), before that
 `5436deaea432ec87eb6b4d9f06cd82a85fb1910c` (PR #47, Nocturne Slice 3,
 2026-08-16), before that `b05d47fdf88c54d2dda666e7e3c6b475aa1cc734` (PR #46,
@@ -88,11 +91,11 @@ still changed nothing the engine computes — the Phase 1 output-regression
 fixture and its pinned sha256 are byte-identical across it — and it added no
 telemetry, no email content and no payment math.
 
-**Current work (2026-08-21), two branches.** The owner-inserted **Phase 1
-cross-cutting gate — Trust integrity and transparency** is `🔨` on
-`claude/phase1-trust-integrity` (cut from `4a76503`); it is placed in the
-approved order after Slice 4 and before Slice 5, and its block sits after item
-1.7. **(5) Slice 5 — the Sleep Plan screen (D5 / item 1.7)** is `🔨` on
+**Current work (2026-08-23).** The owner-inserted **Phase 1
+cross-cutting gate — Trust integrity and transparency** is `✅` — PR #54 merged
+as `d4049cb` on 2026-08-23 (branch `claude/phase1-trust-integrity`, cut from
+`4a76503`, kept); it is placed in the approved order after Slice 4 and before
+Slice 5, and its block sits after item 1.7. One branch remains in progress: **(5) Slice 5 — the Sleep Plan screen (D5 / item 1.7)** is `🔨` on
 `claude/nocturne-slice5-sleep-plan` (commits C0–C7, draft PR #53, unmerged).
 *(An earlier revision of this paragraph said Slice 5 was `⬜`, approved to build
 and not started; it began on its own branch — draft PR #53, head `6decbef` —
@@ -2128,7 +2131,7 @@ surface may substitute one state for another.
 wipe coverage proven by the session suites, EN and ES, verified on the
 confirmed hardware per the phase-wide merge gate.
 
-### Phase 1 cross-cutting gate — Trust integrity and transparency 🔨
+### Phase 1 cross-cutting gate — Trust integrity and transparency ✅ (merged 2026-08-23, `d4049cb`)
 
 **Inserted 2026-08-21 on Blake Ford's instruction (given in conversation, not
 in a committed document)**, following the 2026-08-21 quiz
@@ -2235,6 +2238,12 @@ still reviewed against the sentence. No privacy policy is claimed approved:
 gate ships, and the privacy/data-use sentences (and, since R5, the idle-dialog
 body `safety.timeout_body`) are the recorded exception that goes first** — a wrong translation there changes the promise, so they are
 owed native review before showroom use rather than at the consolidated pass.
+**Owner ruling 2026-08-22 (Blake Ford): that review is waived as a PR #54
+readiness/merge gate for the preview-only merge** — the four strings are not
+native-reviewed or approved, Spanish stays provisional, and native review is
+still required before any Spanish showroom authorization or any live
+email/lead-enabled deployment (either reopens it). The eight changed ES quiz
+lines stay on the consolidated ledger.
 The copy inventory is in `docs/trust-integrity-implementation-2026-08-21.md`.
 
 **This gate grants no showroom-use authorization.** `docs/kiosk-device-hardening.md`
@@ -2245,7 +2254,39 @@ required before PR #54 leaves draft (owner ruling R7, 2026-08-21)** — a check
 of the new headline focus and of the Welcome and Review lines in reading
 order, with no accepted-risk alternative; screen-reader functionality itself
 stays out of scope by the 2026-08-12 permanent ruling, which this does not
-reopen.
+reopen. **Recorded PASS for `f748f59` by Blake's 2026-08-22 owner attestation:**
+all 21 compact physical checks passed, covering the mounted-iPad matrix,
+VoiceOver sanity pass and real Windows forced colors. The physical packet §15
+records the byte-verified mirror and the absence of an exported checklist or
+screenshots. This closes only the physical portion of Exit 13. **Recorded
+2026-08-22, Blake Ford:** the nine rewritten EN help lines approved as governed
+quiz copy; `sleep_position` keeps its shipped gloss (option A); the Welcome,
+Review and idle-dialog sentences approved as shipped English product wording;
+Blake Ford named business/legal approver of record. No bytes changed. **Also
+recorded 2026-08-22, Blake Ford as approver of record:** the Welcome and Review
+English sentences signed as accurate business representations for the current
+preview-mode deployment (`gasUrl` blank; not a live-email approval); and the
+privacy-policy decision taken as **option C, preview-only for this merge** —
+the draft policy and its visible notice stay, the policy is not claimed
+finalized, live activation stays a separate gated decision. **Also 2026-08-22:**
+the priority native-Spanish review waived as a PR #54 gate (owner ruling; not
+a translation approval — see the native-review paragraph above). **Blake's
+live review passed 2026-08-22 at `9f27680`** (app bytes identical to the
+attested `f748f59`; mirror re-verified byte-identical before the walk).
+**Reviewed application head designated `9f27680`** (Blake Ford, 2026-08-22;
+CI run 32593585017 pass; app bytes identical to `f748f59`; later commits are
+documentation only) and **ready-for-review authorized** the same day,
+conditional on green CI at the documentation head. **External review at the
+ready head (2026-08-22):** two P2 validator threads, owner option B — the
+live-capable `gasUrl` rule preserved and documented with self-tests; the
+storage-negation phrase match narrowed to governed-data sentences with
+positive and negative self-tests (implementation report §33); validator and
+sweep manifest only, customer-visible bytes unchanged, physical and
+live-review passes not reopened; eighteen external-review threads on that
+heuristic fixed, none waived (report §33). **Merge authorized 2026-08-22 by
+Blake Ford** — merge commit, branch kept; the merge publishes only the existing
+Pages preview and grants no showroom use, no live email, no non-blank `gasUrl`,
+no Spanish approval and nothing for PR #53. **Merged and verified:** PR #54 merged 2026-08-23 00:13Z as merge commit `d4049cb` (parents `4a76503` + `084f2f0`; merge, not squash; branch kept). Post-merge CI run 32607312520 and Pages run 32607311802 both succeeded at exactly `d4049cb`; the public preview `https://beford782.github.io/LacksFurniture/` serves `index.html` with SHA-256 `B0981E11F9065FA69DBD8BCD31EE100C7044E1FFB58C56AC87241E525D412321` — the bytes physically tested at `f748f59` and owner-reviewed at `9f27680` — and `store-config`, `quiz`, both dictionaries, `mattresses` and `allowed-hosts` hash-identical to `main`; a headless render showed Welcome with its Start button, one heritage line and the data-use sentence, no unauthorized-domain screen, no data-error overlay, a clean console; served `gasUrl` is blank, the draft-policy notice and preview wording are served. Preview deployment only: no showroom use, no live email, Spanish provisional. Exit 13 is complete.
 
 **Exit:**
 
@@ -2272,7 +2313,9 @@ reopen.
     of the Welcome and Review sentences; the privacy-policy decision; the
     priority native-Spanish review of `privacy.data_use_preview`,
     `privacy.data_use_live`, `review.help` and `safety.timeout_body` (the
-    Invariant 12 exception); the physical mounted-iPad pass in both
+    Invariant 12 exception — *waived as a gate for this preview-only merge by
+    owner ruling 2026-08-22; still owed before Spanish showroom or live-mode
+    use*); the physical mounted-iPad pass in both
     orientations and languages; the VoiceOver sanity pass; a real Windows
     forced-colors pass; and Blake's live review. None of these is satisfied by
     browser emulation or by the strings being implemented.
@@ -2337,6 +2380,17 @@ configuration audit — 2026-08-12*):
 | Viewport, landscape | 1194 × 748 CSS px |
 | Intended operating orientation | landscape |
 | Supervision / management | not supervised, no MDM profiles (see the hardening doc — BLOCKING for showroom use) |
+
+**PR #54 trust-gate run — 2026-08-22:** Blake instructed the lead to record all
+21 compact checks as PASS for branch head `f748f59`, served from the retained
+dry-run mirror at mirror commit `22b9109`. This covers landscape and portrait,
+EN and ES, partner and solo paths, VoiceOver, and real Windows Aquatic/Desert
+forced colors. The served `index.html` was byte-identical to the branch blob
+(SHA-256 `B0981E11F9065FA69DBD8BCD31EE100C7044E1FFB58C56AC87241E525D412321`).
+No Share Results export, screenshots or exact device-version metadata were
+supplied; `docs/trust-integrity-physical-gate-2026-08-21.md` §15 is the record.
+The matrix gate is closed for these bytes only; showroom hardening and every
+non-physical Exit 13 approval remain separate.
 
 With the matrix recorded, "real iPad dimensions" is now a checkable acceptance
 criterion, and the breakpoint-justification restriction below lifts on its own
@@ -2554,11 +2608,11 @@ approval; its presence is a bar on proceeding.
 | **Tier presentation (trust)** — a neutral initial tier choice or another presentation control, versus the shipped Gold-first initial tier with the within-tier model | ❓ | Blake | *(Ruled for this cycle, 2026-08-21: the shipped Gold-first / within-tier presentation is retained with the 15px relativity note; a neutral initial tier (B) and any other control (D) are DEFERRED to a later owner/research decision; this is not a permanent endorsement of Gold-first.)* Any future change is presentation only — it must preserve tier identity and membership, within-tier order, the threshold, cap and back-fill. A cross-tier highest-fit marker or any global best-match computation is the 3.3 row above (NOT AUTHORIZED), not this one. The legible within-tier relativity note is NOT this decision |
 | **Heritage content** — Welcome only (current), an optional moderated-research condition, or no additional heritage | ❓ | Blake | *(Ruled for this cycle, 2026-08-21: the restrained Welcome treatment stays; no per-question rail, no anniversary count, no store counts, awards, testimonials, QR codes, community claims or anecdotes in the quiz; the research prototype is preserved separately; historical content may be tested later as an optional research condition — that later test is what stays open here.)* Any future fact beyond the Welcome line needs governance modelled on financing (freshness, allowlisted source, approval, ES review) |
 | **Founding-year discrepancy** — lacks.com "1935" vs the BBB record "Business Started 1/1/1924" | ❓ | Blake | *(Ruled for this branch, 2026-08-21: the "since 1935" line is not altered and is treated as provisional; the BBB entry is an unresolved discrepancy, not proof; no second founding-year exposure and no anniversary arithmetic are added; the ruling is not historical verification.)* Resolve through corporate or archival records. 1935 is corroborated by two independent sources (the ISJL encyclopedia; the HFA's 2025 "90th year"); the BBB entry may describe a predecessor entity, an earlier registration, or be inaccurate — it is not evidence that 1935 is false, and the corroboration is not proof either. Affects `text.heritage` / `voice.eyebrow` (and the dead `text.trustSignal`); the shipped line stays as it is meanwhile. No anniversary arithmetic is to be added either way |
-| **Privacy approval** — approver of record; final showroom wording; `text.privacyDraftNotice` resolution — **the overlay shows "Draft policy — pending Lacks Furniture approval before live use." to customers today, EN and ES, until this is resolved**; the native-Spanish reviewer for the data-use sentences; the live-mode (email-enabled) wording, which must disclose what `Code.gs` does with a submitted address | ❓ | Blake + business/legal | Written approval recorded in config or this document. Until then the preview-mode sentence ships only while `gasUrl` is blank, and the overlay keeps its draft notice |
+| **Privacy approval** — approver of record; final showroom wording; `text.privacyDraftNotice` resolution — **the overlay shows "Draft policy — pending Lacks Furniture approval before live use." to customers today, EN and ES, until this is resolved**; the native-Spanish reviewer for the data-use sentences; the live-mode (email-enabled) wording, which must disclose what `Code.gs` does with a submitted address | ❓ | Blake Ford (approver of record, named 2026-08-22) | Written approval recorded in config or this document. **Recorded 2026-08-22:** the EN sentences approved as product wording and signed as business representations for the preview-mode deployment; the policy decision taken as option C, preview-only — the overlay keeps its draft notice by decision, not by omission. Still ❓ for what remains: final showroom policy wording, the live-mode (email-enabled) wording and its Code.gs disclosure, and the native-Spanish reviewer |
 | **Specialist-summary scope** — exactly what the Consultation Summary shows from the answers (today: finalists, what to test, and implications derived from sleep-issue and health answers), whether the customer may control what appears, whether health-derived implications remain | ❓ | Blake | A ruling; 1.6 owns the presentation. The trust gate's Review line describes today's behaviour and must be re-verified if the scope changes |
 | **Idle-dialog wording** — the Gate 1B body "Your session is paused to protect your privacy." described intent, not behaviour (a grace countdown runs; the answers persist until it ends or Start new customer) | ❓ | Blake | *(Ruled 2026-08-21, R5: replaced on the trust branch with dictionary copy that names the dialog's real controls — EN "Session paused. Continue this session where you left off, or start a new customer to clear it."; ES provisional. Product direction only.)* Still open here: the final EN wording's copy sign-off and the native review of the Spanish |
 | **Trust measurement** — moderated current-vs-process-transparency sessions; whether a restrained heritage condition is retained as a third research condition; any aggregate local measurement store (which must record no answers and no identity, or the data-use sentence becomes false) | ❓ | Blake | Approval of the study design; the store is designed before anything is promised |
-| **VoiceOver sanity pass on the trust copy** — the owner's 2026-08-21 ruling (R7) requires a one-time sanity pass on the mounted iPad (new headline focus, the Welcome and Review lines in reading order, no duplicate announcement) before PR #54 leaves draft | ❓ | Blake | Run it and record the result in `docs/trust-integrity-physical-gate-2026-08-21.md`; there is no accepted-risk alternative. Screen-reader functionality itself stays out of scope by the 2026-08-12 permanent ruling, which this row does not reopen |
+| **VoiceOver sanity pass on the trust copy** — the owner's 2026-08-21 ruling (R7) requires a one-time sanity pass on the mounted iPad (new headline focus, the Welcome and Review lines in reading order, no duplicate announcement) before PR #54 leaves draft | ✅ | Blake | PASS by Blake's 2026-08-22 all-tests-pass attestation for `f748f59`; compact VO-01…04 and VO-ES-01 covered. No transcript/export supplied; evidence limitation recorded in `docs/trust-integrity-physical-gate-2026-08-21.md` §15. Screen-reader functionality itself stays out of scope by the 2026-08-12 permanent ruling. |
 
 *(Resolved and removed from the table: "Phase 1 scoring-fixture exit gate" —
 approved by owner directive 2026-08-12 and built the same day; see the Phase 1
@@ -2675,12 +2729,14 @@ document, not here.
    forced-colors and physical-iPad gates passed. Then Slice 4, Payment Choice per
    D4 (1.5), merged 2026-08-20 as `b2acd7e`, with all four of its manual gates
    passed and its Pages deployment verified at exactly that commit.
-8. 🔨 **Trust integrity and transparency** — the Phase 1 cross-cutting gate,
+8. ✅ **Trust integrity and transparency** — the Phase 1 cross-cutting gate,
    inserted 2026-08-21 by owner instruction after Slice 4 and before Slice 5
    (block after item 1.7; branch `claude/phase1-trust-integrity` from
-   `4a76503`). Slice 5 is concurrently in development on its own branch
-   (draft PR #53, head `6decbef`) and, by owner ruling 2026-08-21, merges
-   after this gate and integrates the resulting `main`.
+   `4a76503`). Merged 2026-08-23 as `d4049cb` (PR #54; post-merge CI and
+   Pages verified at exactly that commit; served bytes identical to the
+   physically tested `f748f59`). Slice 5 was developed concurrently on its
+   own branch (draft PR #53, head `6decbef`) and, by owner ruling 2026-08-21,
+   now integrates the resulting `main` at `d4049cb`.
 9. 🔨 **The visible redesign** — Phase 1. *(Implementation explicitly
    authorized by Blake 2026-08-12 — see the authorization block at the top of
    Phase 1. Direction set by the 2026-08-14 Nocturne owner review, D1–D6,

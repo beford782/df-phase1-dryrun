@@ -128,6 +128,13 @@ const FUNCS = {
   renderFinancingSheet: 'function renderFinancingSheet()',
   updateFinancingSheetStatus: 'function updateFinancingSheetStatus()',
   renderHandoffFinancing: 'function renderHandoffFinancing()',
+  // Slice 5 C5: the Sleep Plan's payment moment is a fifth financing surface
+  // and joins this extraction list so the whole D4 battery (no writes, no
+  // raw ids, byte-identical email, wipe) covers it — otherwise the guarantee
+  // would silently narrow to the surfaces that existed before.
+  renderSleepPlanFinancing: 'function renderSleepPlanFinancing()',
+  finPlanVisible: 'function finPlanVisible()',
+  setPaymentNotNowFromPlan: 'window.setPaymentNotNowFromPlan = function()',
   renderResultsFinancing: 'function renderResultsFinancing()',
   finResultsVisible: 'function finResultsVisible()',
   renderDrawerFinancing: 'function renderDrawerFinancing()',
@@ -158,7 +165,11 @@ const VARS = {
   scenarioMexico: /var FIN_SCENARIO_MEXICO = [^;]+;/,
   evergreenKinds: /var FIN_EVERGREEN_KINDS = [^;]+;/,
   pathKinds: /var FIN_PATH_KINDS = [^;]+;/,
-  keydownBound: /var _finSheetKeydownBound = false;/
+  keydownBound: /var _finSheetKeydownBound = false;/,
+  // Slice 5 C5: the Not-right-now surface table and the per-call surface
+  // selector (the single owned payPref write stays in setPaymentNotNow).
+  notNowSurfaces: /var PAY_NOT_NOW_SURFACES = \{[\s\S]*?\n    \};/,
+  notNowSurface: /var _payNotNowSurface = 'hf2';/
 };
 const vars = {};
 const missingVar = [];
@@ -350,7 +361,7 @@ function makeDoc() {
 const MODULE_ORDER = [
   vars.clockSkew, vars.scenarioMexico, vars.evergreenKinds, vars.pathKinds,
   vars.payState, vars.returnFocus, vars.impression, vars.sheetStale,
-  vars.announceTimer, vars.keydownBound,
+  vars.announceTimer, vars.keydownBound, vars.notNowSurfaces, vars.notNowSurface,
   src.L, src.escapeHtml, src.storeName,
   src.getFinancingConfig, src.financingEnabled, src.finSurfaceEnabled,
   src.finPlanScenario, src.finPlanGroup, src.finSafeProvider,
@@ -370,7 +381,8 @@ const MODULE_ORDER = [
   src.finEsc, src.finPathBlock,
   src.renderFinancingSheet, src.updateFinancingSheetStatus,
   src.renderHandoffFinancing, src.renderResultsFinancing, src.finResultsVisible,
-  src.renderDrawerFinancing, src.renderAllFinancingSurfaces
+  src.renderDrawerFinancing, src.renderSleepPlanFinancing, src.finPlanVisible,
+  src.setPaymentNotNowFromPlan, src.renderAllFinancingSurfaces
 ].join('\n');
 
 const RETURN_API = `
@@ -390,6 +402,8 @@ const RETURN_API = `
     closeSheet: window.closeFinancingSheet,
     renderSheet: renderFinancingSheet,
     renderHandoff: renderHandoffFinancing,
+    renderPlan: renderSleepPlanFinancing,
+    notNowFromPlan: window.setPaymentNotNowFromPlan,
     renderResults: renderResultsFinancing,
     renderDrawer: renderDrawerFinancing,
     renderAll: renderAllFinancingSurfaces,
@@ -428,10 +442,12 @@ const RETURN_API = `
   };`;
 
 function makeEnv({ lang = 'en', config = CFG, mutate = null,
-                   sheetOpen = false, handoffActive = true, resultsActive = false } = {}) {
+                   sheetOpen = false, handoffActive = true, resultsActive = false, planActive = false } = {}) {
   const doc = makeDoc();
   if (handoffActive) doc.getElementById('hf2Screen').classList.add('active');
   if (resultsActive) doc.getElementById('resultsScreen').classList.add('active');
+  // Slice 5: the Sleep Plan is a fifth financing surface with its own live region.
+  if (planActive) doc.getElementById('sleepPlanScreen').classList.add('active');
   if (sheetOpen) {
     doc.getElementById('financingSheet').hidden = false;
     doc.getElementById('financingSheetBackdrop').hidden = false;
@@ -2028,7 +2044,12 @@ section('§26 — the drawer and Sleep System surfaces are config-DISABLED, not 
   ok('§26 the drawer financing CSS is still present',
     /\.drawer-financing \{/.test(norm));
   ok('§26 the closed placement enum still carries BOTH disabled surfaces',
-    /placement: \['results', 'drawer', 'handoff', 'sheet', 'mexico', 'sleep-system'\]/.test(norm));
+    // Slice 5 C5 (owner ruling R-3 option A, 2026-08-21): 'sleep-plan' joins the
+    // closed enum so the Plan's explore control emits a TRUTHFUL placement on
+    // the existing finance_details_open event. This literal is pinned exactly
+    // so that adding a value is a deliberate, reviewed act (this line must be
+    // edited), never a silent drop.
+    /placement: \['results', 'drawer', 'handoff', 'sheet', 'mexico', 'sleep-system', 'sleep-plan'\]/.test(norm));
 
   // The Sleep System gate is source-level (its renderer is a large screen
   // builder outside this harness's module), so it is asserted as a gate rather
@@ -2673,6 +2694,84 @@ section('negative controls — each load-bearing behaviour is proved detectable'
   try { threwOrDisabled = env.api.surfaceEnabled('drawer') !== true; }
   catch (e) { threwOrDisabled = true; }
   ok('control: dropping the malformed-surfaces guard is detected (§26)', threwOrDisabled);
+}
+
+// ===========================================================================
+// §29 — Slice 5: the Sleep Plan's payment moment (owner ruling R-3 option A)
+// ===========================================================================
+section('§29 — Sleep Plan surface: truthful placement, read-only rows, one owned write');
+{
+  const env = openEnv();
+  const before = snapshot(env);
+  env.api.openSheet('sleep-plan');
+  ok('§29 opening the sheet from the Plan records NOTHING in payExplored / payPref / payOpen',
+    snapshot(env) === before, snapshot(env));
+  const opens = env.events.filter((e) => e.name === 'finance_details_open');
+  ok('§29 the open emits the EXISTING finance_details_open event (no new event)',
+    opens.length >= 1 && env.events.every((e) => e.name !== 'sleep_plan_viewed'));
+  ok("§29 the emitted placement is the TRUTHFUL 'sleep-plan' — never 'handoff' or 'sleep-system'",
+    opens.some((e) => e.data && e.data.placement === 'sleep-plan')
+    && !opens.some((e) => e.data && (e.data.placement === 'handoff' || e.data.placement === 'sleep-system')),
+    JSON.stringify(opens.map((e) => e.data)));
+  ok('§29 the emitted payload carries no payment identifier',
+    opens.every((e) => !/pay|path|pref|explored/i.test(JSON.stringify(e.data))));
+  ok("§29 'sleep-plan' is a member of the closed placement enum (so the value is not silently dropped)",
+    /placement: \[[^\]]*'sleep-plan'[^\]]*\]/.test(norm));
+  ok('§29 the Plan renderer emits the explore CTA calling openFinancingSheet with the literal sleep-plan placement',
+    /id="sleepPlanFinancingExplore"[\s\S]*?openFinancingSheet\(\\'sleep-plan\\'\)/.test(stripComments(src.renderSleepPlanFinancing)));
+  // Drive the RENDERED control, not a direct call: parse the placement the
+  // emitted onclick actually passes and open the sheet with exactly that.
+  env.api.renderPlan();
+  const planCta = tagOf(env.get('sleepPlanFinancingInterest').innerHTML, 'sleepPlanFinancingExplore');
+  const ctaPlacement = planCta ? (planCta.attrs.match(/openFinancingSheet\('([^']+)'\)/) || [])[1] : null;
+  ok("§29 the RENDERED explore control passes 'sleep-plan' (never 'handoff' / 'sleep-system')", ctaPlacement === 'sleep-plan', String(ctaPlacement));
+  env.events.length = 0;
+  if (ctaPlacement) env.api.openSheet(ctaPlacement);
+  ok("§29 opening through the rendered control's own placement emits finance_details_open{placement:'sleep-plan'}",
+    env.events.some((e) => e.name === 'finance_details_open' && e.data && e.data.placement === 'sleep-plan'));
+  // Read-only rows: rendering the Plan twice changes nothing and writes no dimension.
+  const b2 = snapshot(env);
+  env.api.renderPlan(); env.api.renderPlan();
+  ok('§29 renderSleepPlanFinancing() called twice leaves payExplored / payPref / payOpen untouched', snapshot(env) === b2);
+  ok('§29 the Plan renderer writes no payment dimension (source)',
+    !/\bpayPref\s*=[^=]|\bpayExplored\s*=[^=]|\bpayOpen\s*=[^=]|payRecordExplored\(/.test(stripComments(src.renderSleepPlanFinancing)));
+  // Not right now from the Plan surface: the SAME payPref, ONE owned write.
+  const [A] = P(env);
+  env.api.review(A);
+  const exploredBefore = JSON.stringify(env.api.state().explored);
+  env.api.notNowFromPlan();
+  ok("§29 'Not right now' from the Plan sets the single shared payPref to not_now", env.api.state().pref === 'not_now');
+  ok('§29 ...and preserves the explored history internally', JSON.stringify(env.api.state().explored) === exploredBefore);
+  env.api.notNowFromPlan();
+  ok("§29 'Not right now' from the Plan is reversible (back to nothing selected)", env.api.state().pref === null);
+  ok('§29 the surface selector is restored after the call (the handoff control stays the default)',
+    /var _payNotNowSurface = 'hf2';/.test(norm) && /finally \{ _payNotNowSurface = 'hf2'; \}/.test(norm));
+  ok('§29 the Plan wrapper contains NO payPref write of its own (the single owned write stays in setPaymentNotNow)',
+    !/payPref\s*=[^=]/.test(stripComments(src.setPaymentNotNowFromPlan)));
+
+  // Liveness of the Plan's own region — the §19 doctrine applied to the fifth
+  // surface: an announcement from the Plan lands in the Plan's region ONLY
+  // when the Plan is the active screen and its module is visible; an inactive
+  // Plan schedules nothing and its region stays untouched.
+  const live = makeEnv({ handoffActive: false, planActive: true });
+  live.api.renderPlan();
+  live.api.notNowFromPlan();
+  live.flush();
+  ok("§29 with the Plan ACTIVE, 'Not right now' from the Plan populates the Plan's own region",
+    live.get('sleepPlanFinancingStatus').textContent.length > 0,
+    JSON.stringify(live.get('sleepPlanFinancingStatus').textContent));
+  ok("§29 ...and does NOT write the handoff's region", live.get('hf2FinancingStatus').textContent === '');
+  const dark = makeEnv({ handoffActive: false, planActive: false });
+  dark.api.renderPlan();
+  dark.api.notNowFromPlan();
+  dark.flush();
+  ok("§29 with the Plan INACTIVE, the Plan's region is untouched (never populated behind another screen)",
+    dark.get('sleepPlanFinancingStatus').textContent === '');
+  ok("§29 the Plan's Not right now control carries aria-pressed reflecting the shared payPref",
+    (() => { const e = openEnv({ handoffActive: false, planActive: true }); e.api.renderPlan();
+      const off = tagOf(e.get('sleepPlanFinancingInterest').innerHTML, 'sleepPlanFinancingNotNow');
+      e.api.notNowFromPlan(); const on = tagOf(e.get('sleepPlanFinancingInterest').innerHTML, 'sleepPlanFinancingNotNow');
+      return off && on && /aria-pressed="false"/.test(off.attrs) && /aria-pressed="true"/.test(on.attrs); })());
 }
 
 console.log(`\n${failures === 0 ? 'PASS' : 'FAIL'} — ${checks - failures}/${checks} checks passed`);

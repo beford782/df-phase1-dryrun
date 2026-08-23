@@ -1997,42 +1997,104 @@ check("[Gate 2A] container names are applied as aria-label from the dictionary",
 // -- F4b: EVERY container that can be a focus destination is nameable -------
 // Not just the two headingless screens: each mapped screen falls back to its
 // own container whenever its heading is empty, so all eight need this.
-{
-  const NAMEABLE = {
-    welcomeScreen: /<main class="main screen active" id="welcomeScreen"/,
-    questionScreen: /id="questionScreen" role="region"/,
-    reviewScreen: /id="reviewScreen" role="region"/,
-    profileScreen: /id="profileScreen" role="region"/,
-    resultsScreen: /id="resultsScreen" role="region"/,
-    hf2Screen: /id="hf2Screen" role="region"/,
-    emailScreen: /id="emailScreen" role="region"/,
-    accessoriesScreen: /id="accessoriesScreen" role="region"/,
-  };
-  const namesSrc = (html.match(/var SCREEN_NAME_KEYS = \{[\s\S]*?\n    \};/) || [""])[0];
-  for (const [screen, re] of Object.entries(NAMEABLE)) {
-    check(`[Gate 2A] ${screen} carries a nameable role, so its aria-label is not discarded`,
-      re.test(html));
-    check(`[Gate 2A] ${screen} is named from the dictionary`,
-      new RegExp(`${screen}: 'screen\\.`).test(namesSrc));
+//
+// Slice 5 C0: the roster is DERIVED from the shipped markup, not restated in
+// this file. The earlier hand-written NAMEABLE map compared one authored list
+// (SCREEN_NAME_KEYS) against another authored list (the map) — a ninth
+// `.screen` container added to index.html and registered nowhere left both
+// lists at eight and the suite green, with the new screen anonymous to
+// assistive technology. Deriving the roster from the markup closes that:
+// markup is the thing being guarded, so it cannot also be the restatement.
+//
+// The regex is element-agnostic on purpose: welcomeScreen is a <main>, not a
+// <div>, and a <div>-anchored scan scores 7 of 8. Attributes are pulled out
+// of the tag independently so class/id/role order never matters, and the
+// class test is a TOKEN test so "question-screen" alone would not qualify.
+function deriveScreenRoster(markup) {
+  const roster = [];
+  for (const m of markup.matchAll(/<(main|div|section)\b([^>]*)>/g)) {
+    const attrs = m[2];
+    const cls = (attrs.match(/\sclass="([^"]*)"/) || [, ""])[1];
+    if (!/(^|\s)screen(\s|$)/.test(cls)) continue;
+    const id = (attrs.match(/\sid="([^"]*)"/) || [, ""])[1];
+    const role = (attrs.match(/\srole="([^"]*)"/) || [, ""])[1];
+    roster.push({ id, tag: m[1], role, nameable: m[1] === "main" || role === "region" });
   }
-  // SET EQUALITY, both directions. The subset check above only proves every
-  // nameable container is named; on its own it would pass with a ninth entry
-  // added to SCREEN_NAME_KEYS, and applyTranslations() would then apply an
-  // aria-label to a container whose nameable role was never established —
-  // the exact defect this section exists to prevent, arriving from the other
-  // side. The keys are read out of the shipped object rather than restated.
+  return roster;
+}
+{
+  const roster = deriveScreenRoster(html);
+  const tokenOccurrences = (html.match(/\sclass="(?:[^"]*\s)?screen(?:\s[^"]*)?"/g) || []).length;
+  check(`[Gate 2A] the derived roster found every .screen container (${roster.length} of ${tokenOccurrences} class tokens)`,
+    roster.length === tokenOccurrences && roster.length >= 8);
+  check("[Gate 2A] every derived screen has a non-blank id",
+    roster.every((s) => /^[A-Za-z][A-Za-z0-9_-]*$/.test(s.id)));
+  const namesSrc = (html.match(/var SCREEN_NAME_KEYS = \{[\s\S]*?\n    \};/) || [""])[0];
+  for (const s of roster) {
+    check(`[Gate 2A] ${s.id} carries a nameable role, so its aria-label is not discarded`, s.nameable);
+    check(`[Gate 2A] ${s.id} is named from the dictionary`,
+      new RegExp(`${s.id}: 'screen\\.`).test(namesSrc));
+  }
+  // SET EQUALITY, both directions, between the DERIVED roster and the shipped
+  // SCREEN_NAME_KEYS. Neither side is restated in this file.
   const namedScreens = [...namesSrc.matchAll(/^\s*([A-Za-z0-9_]+):\s*'screen\./gm)]
     .map((m) => m[1]).sort();
-  const nameableScreens = Object.keys(NAMEABLE).sort();
-  const unNameable = namedScreens.filter((s) => !nameableScreens.includes(s));
-  const unNamed = nameableScreens.filter((s) => !namedScreens.includes(s));
-  check(`[Gate 2A] every aria-labelled container has a nameable role${unNameable.length ? " — LABEL WOULD BE DISCARDED FOR: " + unNameable.join(", ") : ""}`,
+  const rosterIds = roster.map((s) => s.id).sort();
+  const unNameable = namedScreens.filter((s) => !rosterIds.includes(s));
+  const unNamed = rosterIds.filter((s) => !namedScreens.includes(s));
+  check(`[Gate 2A] every aria-labelled container is a real .screen${unNameable.length ? " — LABEL WOULD BE DISCARDED FOR: " + unNameable.join(", ") : ""}`,
     unNameable.length === 0);
-  check(`[Gate 2A] every nameable container is actually named${unNamed.length ? " — UNNAMED: " + unNamed.join(", ") : ""}`,
+  check(`[Gate 2A] every .screen container is actually named${unNamed.length ? " — UNNAMED: " + unNamed.join(", ") : ""}`,
     unNamed.length === 0);
   check(`[Gate 2A] the two sets are exactly equal (${namedScreens.length} screens)`,
-    namedScreens.length === nameableScreens.length
-    && namedScreens.every((s, i) => s === nameableScreens[i]));
+    namedScreens.length === rosterIds.length
+    && namedScreens.every((s, i) => s === rosterIds[i]));
+
+  // Heading map: every registered heading must name a real screen and resolve
+  // to a real element. Registration is a per-call-site decision (the source
+  // explains why questionScreen/reviewScreen are deliberately absent), so the
+  // reverse direction is not asserted.
+  const headSrc = (html.match(/var SCREEN_HEADING_IDS = \{[\s\S]*?\n    \};/) || [""])[0];
+  const headingMap = Object.fromEntries([...headSrc.matchAll(/^\s*([A-Za-z0-9_]+):\s*'([A-Za-z0-9_-]+)'/gm)].map((m) => [m[1], m[2]]));
+  const markupIds = new Set([...html.matchAll(/\bid="([A-Za-z0-9_:-]+)"/g)].map((m) => m[1]));
+  check(`[Gate 2A] the heading map was read (${Object.keys(headingMap).length} entries)`, Object.keys(headingMap).length >= 5);
+  for (const [screen, hid] of Object.entries(headingMap)) {
+    check(`[Gate 2A] SCREEN_HEADING_IDS.${screen} names a real screen and a real heading (#${hid})`,
+      rosterIds.includes(screen) && markupIds.has(hid));
+  }
+
+  // Every screen.* dictionary key the shipped map points at is present,
+  // non-blank and genuinely translated — DERIVED from SCREEN_NAME_KEYS rather
+  // than restated as a literal list.
+  const screenKeys = [...namesSrc.matchAll(/'(screen\.[a-z_]+)'/g)].map((m) => m[1]);
+  check(`[Gate 2A] the derived screen.* key list is non-empty (${screenKeys.length})`, screenKeys.length >= 8);
+  for (const k of screenKeys) {
+    check(`[Gate 2A] ${k} is bilingual and actually translated`,
+      typeof dictEn[k] === 'string' && dictEn[k].length > 0
+      && typeof dictEs[k] === 'string' && dictEs[k].length > 0
+      && dictEn[k] !== dictEs[k]);
+  }
+
+  // NON-VACUITY, proved on every run by injection into a SANDBOX COPY of the
+  // markup. Each injection must be detectable by the derived machinery; a
+  // derived check that cannot detect a ninth screen is the hand-written map
+  // with extra steps. The injected tag writes id BEFORE class deliberately —
+  // every shipped screen writes class first, so attribute-order independence
+  // is otherwise unobservable.
+  const injected = html.replace('<div class="screen" id="reviewScreen" role="region">',
+    '<div id="sentinelScreen" role="region" class="screen"></div>\n<div class="screen" id="reviewScreen" role="region">');
+  const injRoster = deriveScreenRoster(injected).map((s) => s.id);
+  check("[Gate 2A][non-vacuity] an injected ninth screen with id BEFORE class is found by the derived roster",
+    injRoster.includes("sentinelScreen") && injRoster.length === roster.length + 1);
+  check("[Gate 2A][non-vacuity] ...and it is UNNAMED, so set equality would go red from the markup side",
+    !namedScreens.includes("sentinelScreen"));
+  const dropped = namesSrc.replace(/^\s*hf2Screen:\s*'screen\.handoff',?\r?\n/m, "");
+  const droppedNames = [...dropped.matchAll(/^\s*([A-Za-z0-9_]+):\s*'screen\./gm)].map((m) => m[1]);
+  check("[Gate 2A][non-vacuity] deleting a SCREEN_NAME_KEYS entry leaves a real screen unnamed, so set equality would go red from the map side",
+    droppedNames.length === namedScreens.length - 1 && !droppedNames.includes("hf2Screen") && rosterIds.includes("hf2Screen"));
+  const divOnly = [...html.matchAll(/<div\b[^>]*\sclass="(?:[^"]*\s)?screen(?:\s[^"]*)?"[^>]*>/g)].length;
+  check("[Gate 2A][non-vacuity] a <div>-anchored scan would MISS the <main> welcome screen (the derived scan must not be that scan)",
+    divOnly === roster.length - 1);
 
   // A missing dictionary entry must never become the spoken name. t() returns
   // the KEY when the dictionary lacks it, so without a guard a failed fetch or
@@ -2172,13 +2234,5 @@ check("[Gate 2A] the transition path adds no raw timer",
 }
 check("[Gate 2A] the transition path never writes the handoff region",
   !/hf2FinancingStatus/.test((html.match(/function focusScreenDestination[\s\S]*?\n    \}/) || [""])[0]));
-for (const k of ['screen.welcome', 'screen.question', 'screen.review', 'screen.profile',
-  'screen.results', 'screen.handoff', 'screen.email', 'screen.sleep_system']) {
-  check(`[Gate 2A] ${k} is bilingual and actually translated`,
-    typeof dictEn[k] === 'string' && dictEn[k].length > 0
-    && typeof dictEs[k] === 'string' && dictEs[k].length > 0
-    && dictEn[k] !== dictEs[k]);
-}
-
 console.log(`\nSession safety check: ${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

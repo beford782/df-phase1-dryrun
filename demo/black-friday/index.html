@@ -7882,6 +7882,32 @@
       color: var(--color-bg);
       border-color: var(--color-accent);
     }
+    /* "Choose as finalist" — same family as .compare-btn; the chosen state
+       is carried by aria-pressed (semantics), a 2px border (geometry) and
+       the "Chosen ✓" label (text), never by colour alone. */
+    .finalist-btn {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      background: transparent;
+      color: var(--color-text-subtle);
+      border: 0.5px solid var(--color-border);
+      font-family: var(--font-sans);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .finalist-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .finalist-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+    .finalist-btn.chosen, .finalist-btn[aria-pressed="true"] {
+      background: var(--gold);
+      color: var(--color-bg);
+      border: 2px solid var(--gold);
+    }
     .mattress-card { position: relative; }
 
     /* ===== COMPARE TRAY (fixed bottom) ===== */
@@ -9513,6 +9539,7 @@
     }
     @media (forced-colors: active) {
       .fin-btn:focus-visible,
+      .finalist-btn:focus-visible,
       .fin-sheet-close:focus-visible,
       .fin-sheet-title:focus-visible,
       .fin-official-link:focus-visible,
@@ -9551,6 +9578,12 @@
        forced-colors block as the focus one. */
     @media (forced-colors: active) {
       .noct-tier-tab.active { border: 2px solid CanvasText; }
+    }
+    /* Slice 5: the chosen finalist keeps its 2px geometry in forced colours
+       (fills and author hues are stripped; border-style/width survive). Its
+       own block — results_presentation_check pins the tab block's shape. */
+    @media (forced-colors: active) {
+      .finalist-btn.chosen, .finalist-btn[aria-pressed="true"] { border: 2px solid CanvasText; }
     }
     /* Quiz option state under forced colors.
 
@@ -10398,7 +10431,7 @@
       <div class="noct-results-footer">
         <div class="noct-results-footer-actions">
           <button class="noct-results-cta" id="buildSystemBtn" onclick="window.showAccessories()" ontouchend="event.preventDefault();window.showAccessories();">Build Your Sleep System →</button>
-          <button class="noct-results-review-btn" id="reviewWithCustomerBtn" onclick="window.showSavedPicks()" ontouchend="event.preventDefault();window.showSavedPicks();">Review with customer →</button>
+          <button class="noct-results-review-btn" id="reviewWithCustomerBtn" onclick="window.showSleepPlan('results')" ontouchend="event.preventDefault();window.showSleepPlan('results');">Review with customer →</button>
         </div>
         <div class="noct-results-footer-hint" id="resultsFooterHint"></div>
       </div>
@@ -10572,7 +10605,7 @@
           <button type="button" data-reaction="firm" onclick="window.setDrawerReaction('firm')" ontouchend="event.preventDefault();window.setDrawerReaction('firm');">Too Firm</button>
         </div>
         <div class="drawer-cta-row">
-          <button id="drawerInterestedBtn" class="drawer-btn drawer-btn-primary" onclick="window.saveDrawerPick()" ontouchend="event.preventDefault();window.saveDrawerPick();">Save as Finalist</button>
+          <button id="drawerInterestedBtn" class="drawer-btn drawer-btn-primary" onclick="window.saveDrawerPick()" ontouchend="event.preventDefault();window.saveDrawerPick();">Save for later</button>
         </div>
         <div class="drawer-system-prompt" id="drawerSystemPrompt" aria-live="polite">
           <div class="drawer-system-prompt__eyebrow" id="drawerSystemPromptEyebrow"></div>
@@ -10594,6 +10627,72 @@
   </div>
 
   <!-- SCREEN: Saved Picks (Salesperson View) -->
+  <!-- SCREEN: Sleep Plan (D5 / roadmap 1.7, Slice 5). The customer's plan for
+       the in-store trial, BETWEEN comparison and the Consultation Summary
+       (hf2Screen). Distinct from hf2Screen: different id, different spoken
+       name (screen.sleep_plan), different heading. Rendered statically so the
+       derived screen roster, the heading map and the wipe inventories can
+       see it; renderSleepPlan() fills the blocks and runs BEFORE
+       showScreen('sleepPlanScreen') so the heading is the 0.3 focus target. -->
+  <div class="screen" id="sleepPlanScreen" role="region">
+    <div class="hf2-review-nav">
+      <button class="hf2-back-btn" id="sleepPlanBack" type="button"
+              onclick="window.sleepPlanBack()"
+              ontouchend="event.preventDefault();window.sleepPlanBack();"></button>
+    </div>
+    <div class="hf2-review-eyebrow" id="sleepPlanEyebrow"></div>
+    <h1 class="hf2-review-title" id="sleepPlanTitle"></h1>
+
+    <!-- 1. Finalist block: Finalist ✓ / Recommended starting point / No
+         finalist selected yet — never a silent substitution (D5b). -->
+    <section class="hf2-review-section" id="sleepPlanFinalistSection" aria-labelledby="sleepPlanFinalistLabel">
+      <div class="hf2-review-section__label" id="sleepPlanFinalistLabel"></div>
+      <div id="sleepPlanFinalist"></div>
+    </section>
+
+    <!-- 2. Trial priorities with in-store testing prose: the stored ordered
+         collection, rendered ALL-OR-NOTHING (R-8). On an invalid collection
+         the governed recovery replaces the list. -->
+    <section class="hf2-review-section" id="sleepPlanPrioritiesSection" aria-labelledby="sleepPlanPrioritiesLabel">
+      <div class="hf2-review-section__label" id="sleepPlanPrioritiesLabel"></div>
+      <ol id="sleepPlanPriorities" style="margin-top:8px; padding-left:1.5em"></ol>
+      <div id="sleepPlanPrioritiesRecovery" hidden>
+        <p id="sleepPlanPrioritiesRecoveryText"></p>
+        <button class="hf2-pick__action" id="sleepPlanPrioritiesRecoveryBtn" type="button"
+                onclick="window.sleepPlanReturnToBrief()"
+                ontouchend="event.preventDefault();window.sleepPlanReturnToBrief();"></button>
+      </div>
+    </section>
+
+    <!-- 3. Compared models: current _compareSelected membership, in order. -->
+    <section class="hf2-review-section" id="sleepPlanComparedSection" aria-labelledby="sleepPlanComparedLabel">
+      <div class="hf2-review-section__label" id="sleepPlanComparedLabel"></div>
+      <div id="sleepPlanCompared"></div>
+    </section>
+
+    <!-- 4. Sleep System items: the engine's pillow then protection groups at
+         exact indices, add/added as an overlay. -->
+    <section class="hf2-review-section" id="sleepPlanSystemSection" aria-labelledby="sleepPlanSystemLabel">
+      <div class="hf2-review-section__label" id="sleepPlanSystemLabel"></div>
+      <div id="sleepPlanSystem"></div>
+    </section>
+
+    <!-- 5. Payment moment per D4 — rendered by the D4 integration commit. -->
+    <section class="hf2-review-section fin-handoff" id="sleepPlanFinancing" hidden
+             aria-labelledby="sleepPlanFinancingHeadline">
+      <span class="fin-eyebrow" id="sleepPlanFinancingEyebrow"></span>
+      <h2 class="fin-handoff__headline" id="sleepPlanFinancingHeadline"></h2>
+      <div class="fin-handoff__interest" id="sleepPlanFinancingInterest"></div>
+      <div class="sr-only" id="sleepPlanFinancingStatus" role="status" aria-live="polite" aria-atomic="true"></div>
+    </section>
+
+    <div class="hf2-review-nav">
+      <button class="hf2-send-btn" id="sleepPlanContinue" type="button"
+              onclick="window.sleepPlanContinue()"
+              ontouchend="event.preventDefault();window.sleepPlanContinue();"></button>
+    </div>
+  </div>
+
   <!-- SCREEN: Handoff v2 (the live RSA handoff screen). -->
   <!-- No .active class so it's invisible by default. Preview via showScreen('hf2Screen'). -->
   <div class="screen" id="hf2Screen" role="region">
@@ -10667,7 +10766,7 @@
         </div>
         <button class="hf2-compare-finalists" id="hf2CompareBtn" type="button"
                 onclick="window.compareReviewFinalists()"
-                ontouchend="event.preventDefault();window.compareReviewFinalists();">Compare finalists</button>
+                ontouchend="event.preventDefault();window.compareReviewFinalists();">Compare saved picks</button>
       </div>
       <div id="hf2PicksList"></div>
     </section>
@@ -11607,15 +11706,33 @@
     // path. Either way the explored history is PRESERVED: not_now suppresses
     // the explored row in the handoff presentation only, and undoing it restores
     // the row unchanged.
+    // Slice 5: the same reversible control exists on the Sleep Plan. ONE
+    // payPref, ONE pending-announcement slot (a per-region slot was tried and
+    // reverted — see the invariant above); only the originating control and
+    // the region that is live differ. The surface name picks the pair.
+    var PAY_NOT_NOW_SURFACES = {
+      hf2: { control: 'hf2FinancingNotNow', region: 'hf2FinancingStatus' },
+      plan: { control: 'sleepPlanFinancingNotNow', region: 'sleepPlanFinancingStatus' }
+    };
+    // The surface whose control is being operated. Set by the Plan's wrapper
+    // for the duration of ONE call and restored after, so the single owned
+    // payPref write below stays inside window.setPaymentNotNow (the D4
+    // ownership audit names that function as the sole writer for this
+    // transition) while the control/region pair follows the surface.
+    var _payNotNowSurface = 'hf2';
     window.setPaymentNotNow = function() {
-      var control = 'hf2FinancingNotNow';
-      var keepFocus = payFocusOrigin(control);
+      var ids = PAY_NOT_NOW_SURFACES[_payNotNowSurface] || PAY_NOT_NOW_SURFACES.hf2;
+      var keepFocus = payFocusOrigin(ids.control);
       var turningOn = payPref !== PAY_NOT_NOW;
       payPref = turningOn ? PAY_NOT_NOW : null;
       renderAllFinancingSurfaces();
-      if (keepFocus) payRestoreFocus(control);
-      announcePayAction('hf2FinancingStatus',
+      if (keepFocus) payRestoreFocus(ids.control);
+      announcePayAction(ids.region,
         turningOn ? 'preferenceNotNowAnnounce' : 'preferenceClearedAnnounce');
+    };
+    window.setPaymentNotNowFromPlan = function() {
+      _payNotNowSurface = 'plan';
+      try { window.setPaymentNotNow(); } finally { _payNotNowSurface = 'hf2'; }
     };
 
     // ---- Focus restoration across a rerender -----------------------------------
@@ -11671,6 +11788,7 @@
     // populated.
     function payRegionLive(regionId) {
       if (regionId === 'hf2FinancingStatus') return finHandoffVisible();
+      if (regionId === 'sleepPlanFinancingStatus') return finPlanVisible();
       var sheet = document.getElementById('financingSheet');
       return !!(sheet && !sheet.hidden);
     }
@@ -11705,6 +11823,12 @@
     // while the handoff screen is active and the module itself is visible.
     // Explicit screen-state + hidden-ancestor checks — offsetParent is unreliable
     // for this app's overlay/`:has()`-themed layouts, so it is not used here.
+    function finPlanVisible() {
+      var screen = document.getElementById('sleepPlanScreen');
+      var mod = document.getElementById('sleepPlanFinancing');
+      return !!(screen && screen.classList.contains('active')
+        && mod && !mod.hidden && !mod.closest('[hidden]'));
+    }
     function finHandoffVisible() {
       var screen = document.getElementById('hf2Screen');
       var mod = document.getElementById('hf2Financing');
@@ -11727,7 +11851,7 @@
     // untouched — a language switch is a copy swap, not a reset.
     function clearPayAnnouncements() {
       cancelPayAnnouncePending();
-      ['hf2FinancingStatus', 'financingSheetAction'].forEach(function(id) {
+      ['hf2FinancingStatus', 'financingSheetAction', 'sleepPlanFinancingStatus'].forEach(function(id) {
         var region = document.getElementById(id);
         if (region) region.textContent = '';
       });
@@ -12233,12 +12357,69 @@
       document.getElementById('hf2FinancingExplore').textContent = FC('cta');
     }
 
+    // Slice 5 — the Sleep Plan's payment moment (D4, owner ruling R-3 A).
+    // READ-ONLY over payPref / payExplored: the preference line, the explored
+    // row (suppressed — not erased — under "Not right now"), the exploration
+    // consequence line, the reversible "Not right now" control, and a governed
+    // "Explore payment options" CTA that opens the sheet DIRECTLY with the
+    // truthful placement 'sleep-plan'. Opening records no exploration (that
+    // is D4's sheet-open contract); deliberate review on the sheet remains
+    // the only recorder. Nothing here writes a payment dimension.
+    function renderSleepPlanFinancing() {
+      var mod = document.getElementById('sleepPlanFinancing');
+      if (!mod) return;
+      if (!financingEnabled()) { mod.hidden = true; return; }
+      mod.hidden = false;
+      document.getElementById('sleepPlanFinancingEyebrow').textContent = FC('eyebrow');
+      document.getElementById('sleepPlanFinancingHeadline').textContent = FC('handoffHeadline');
+
+      var paths = finPaymentPaths();
+      function labelFor(id) {
+        for (var i = 0; i < paths.length; i++) if (paths[i].id === id) return paths[i].label;
+        return '';
+      }
+      var notNow = payPref === PAY_NOT_NOW;
+      var prefLabel = notNow ? FC('preferenceNotNow') : (payPref ? labelFor(payPref) : '');
+      if (!prefLabel) prefLabel = FC('preferenceNone');
+      var exploredLabels = notNow ? [] : payExplored
+        .filter(function(id) { return id !== payPref; })
+        .map(labelFor)
+        .filter(function(x) { return !!x; });
+
+      var rows = '<div class="fin-pref-row">'
+        + '<dt class="fin-pref-row__label">' + finEsc(FC('paymentPreferenceLabel')) + '</dt>'
+        + '<dd class="fin-pref-row__value">' + finEsc(prefLabel) + '</dd>'
+        + '</div>';
+      if (exploredLabels.length) {
+        rows += '<div class="fin-pref-row">'
+          + '<dt class="fin-pref-row__label">' + finEsc(FC('optionsExploredLabel')) + '</dt>'
+          + '<dd class="fin-pref-row__value"><ul class="fin-explored-list">'
+          + exploredLabels.map(function(x) { return '<li>' + finEsc(x) + '</li>'; }).join('')
+          + '</ul></dd></div>';
+      }
+      document.getElementById('sleepPlanFinancingInterest').innerHTML =
+        '<dl class="fin-pref-rows">' + rows + '</dl>'
+        + '<p class="fin-explore-consequence">' + finEsc(FC('exploreConsequence')) + '</p>'
+        + '<div class="fin-actions">'
+        + '<button type="button" class="fin-btn fin-btn-primary" id="sleepPlanFinancingExplore" '
+        + 'onclick="window.openFinancingSheet(\'sleep-plan\')" '
+        + 'ontouchend="event.preventDefault();window.openFinancingSheet(\'sleep-plan\');">'
+        + finEsc(FC('cta')) + '</button>'
+        + '<button type="button" class="fin-btn fin-btn-ghost fin-not-now" id="sleepPlanFinancingNotNow" '
+        + 'aria-pressed="' + (notNow ? 'true' : 'false') + '" '
+        + 'onclick="window.setPaymentNotNowFromPlan()" '
+        + 'ontouchend="event.preventDefault();window.setPaymentNotNowFromPlan();">'
+        + finEsc(FC('preferenceNotNow')) + '</button>'
+        + '</div>';
+    }
+
     // Refresh every financing surface (called after language switches; each
     // renderer is also called when its screen renders).
     function renderAllFinancingSurfaces() {
       renderResultsFinancing();
       renderDrawerFinancing();
       renderHandoffFinancing();
+      renderSleepPlanFinancing();
       var sheet = document.getElementById('financingSheet');
       if (sheet && !sheet.hidden) renderFinancingSheet();
     }
@@ -12600,6 +12781,12 @@
       var hf2Screen = document.getElementById('hf2Screen');
       if (hf2Screen && hf2Screen.classList.contains('active')) {
         renderHf2();
+      }
+      // Slice 5: the Plan re-renders its copy in the new language; every
+      // value it shows is re-read from its owner, nothing is reset.
+      var sleepPlanScreen = document.getElementById('sleepPlanScreen');
+      if (sleepPlanScreen && sleepPlanScreen.classList.contains('active')) {
+        renderSleepPlan();
       }
       // If email screen is active, re-render chrome + preview in the new language.
       // Preserve any in-progress contact fields while rebuilding localized copy.
@@ -14842,7 +15029,17 @@
       // nothing beyond these customer-facing strings ever leaves this object.
       // Reassigned wholesale on every profile render (never appended), and
       // reset to [] by the authoritative wipe.
-      analytics.trialFocus = topPriorities.map(function(priority) {
+      var trialFocusIsComplete = function(stored) {
+        var str = function(v) { return typeof v === 'string' && v.trim().length > 0; };
+        var entryOk = function(item) {
+          return !!item && typeof item === 'object'
+            && str(item.en) && str(item.es)
+            && !!item.why && typeof item.why === 'object' && str(item.why.en) && str(item.why.es)
+            && !!item.test && typeof item.test === 'object' && str(item.test.en) && str(item.test.es);
+        };
+        return Array.isArray(stored) && stored.length > 0 && stored.every(entryOk);
+      };
+      var builtTrialFocus = topPriorities.map(function(priority) {
         return {
           en: priority.nameEn,
           es: priority.nameEs,
@@ -14850,6 +15047,11 @@
           test: { en: priority.testEn, es: priority.testEs }
         };
       });
+      // Producer-boundary enforcement (R-8): the stored collection is either
+      // COMPLETE or EMPTY — never a partially-shaped array that a consumer
+      // would have to filter. An incomplete build is a producer defect; it
+      // stores [] so every consumer fails closed on one signal.
+      analytics.trialFocus = trialFocusIsComplete(builtTrialFocus) ? builtTrialFocus : [];
 
       // ----- RENDER TRIAL PRIORITIES (D1 single-open disclosure) -----
       // Position is the order — the row set and its sequence are the engine's
@@ -14963,7 +15165,7 @@
         lang: ['en', 'es'],
         step: ['adjustability', 'support', 'pillow', 'protection'],
         decisionStatus: ['already', 'confirm', 'demo', 'later', 'open', 'selected'],
-        placement: ['results', 'drawer', 'handoff', 'sheet', 'mexico', 'sleep-system'],
+        placement: ['results', 'drawer', 'handoff', 'sheet', 'mexico', 'sleep-system', 'sleep-plan'],
         layout: ['tablet', 'desktop'],
         endReason: ['start_over', 'confirmed_new_customer', 'idle_timeout',
                     'results_viewed', 'unspecified']
@@ -15523,6 +15725,17 @@
         + ' aria-label="' + escapeHtml((es ? 'Comparar' : 'Compare') + ': ' + m.name) + '">'
         + (es ? 'Comparar' : 'Compare')
         + '</button>';
+      // "Choose as finalist" (R-1): the explicit finalist PRODUCER, distinct
+      // from Save. aria-pressed carries the single-finalist state. Routed
+      // through the delegated click handler like .compare-btn so the
+      // card-tap path never double-fires.
+      var isChosen = m.id === window._favoriteMattressId;
+      var finalistBtn = '<button type="button" class="finalist-btn' + (isChosen ? ' chosen' : '') + '"'
+        + ' data-id="' + escapeHtml(m.id) + '"'
+        + ' aria-pressed="' + (isChosen ? 'true' : 'false') + '"'
+        + ' aria-label="' + escapeHtml(t('finalist.choose_as') + ': ' + m.name) + '">'
+        + finalistButtonLabel(isChosen)
+        + '</button>';
 
       // Role label is INDEX-ONLY: this renderer receives the engine list's
       // first element and nothing else, so "Best match" is a statement of
@@ -15545,6 +15758,7 @@
         +     '<div class="noct-card-action-cluster">'
         +       detailsBtn
         +       compareBtn
+        +       finalistBtn
         +       saveBtn
         +     '</div>'
         +   '</div>'
@@ -15604,6 +15818,13 @@
           + ' aria-label="' + escapeHtml((es ? 'Comparar' : 'Compare') + ': ' + m.name) + '">'
           + (es ? 'Comparar' : 'Compare')
           + '</button>';
+        var isChosen = m.id === window._favoriteMattressId;
+        var finalistBtn = '<button type="button" class="finalist-btn' + (isChosen ? ' chosen' : '') + '"'
+          + ' data-id="' + escapeHtml(m.id) + '"'
+          + ' aria-pressed="' + (isChosen ? 'true' : 'false') + '"'
+          + ' aria-label="' + escapeHtml(t('finalist.choose_as') + ': ' + m.name) + '">'
+          + finalistButtonLabel(isChosen)
+          + '</button>';
 
         return '<div class="noct-support-card" data-id="' + escapeHtml(m.id) + '" data-tier="' + escapeHtml(tier) + '">'
           + promotionOfferTabHtml(promotion)
@@ -15621,6 +15842,7 @@
           +     '<div class="noct-card-action-cluster">'
           +       detailsBtn
           +       compareBtn
+          +       finalistBtn
           +       saveBtn
           +     '</div>'
           +   '</div>'
@@ -15756,8 +15978,50 @@
         btn.textContent = saveButtonLabel(willBeSaved);
       }
 
+      // Un-saving the chosen finalist clears the finalist ATOMICALLY (R-1):
+      // the shipped code left _favoriteMattressId pointing at a mattress no
+      // longer in _savedPicks, and the old resolver then promoted saved[0].
+      if (!willBeSaved && window._favoriteMattressId === mattressId) {
+        window._favoriteMattressId = '';
+        if (typeof window._repaintFinalistControls === 'function') window._repaintFinalistControls();
+      }
+
       if (typeof window._updatePicksBadge === 'function') window._updatePicksBadge();
       if (analytics) analytics.log('save_pick_toggle', { mattressId: mattressId, tier: foundTier, saved: willBeSaved });
+    };
+
+    // ---- "Choose as finalist" — the explicit finalist PRODUCER (R-1) -------
+    // Distinct from "Save for later". Choosing atomically (1) ensures the
+    // mattress is in _savedPicks, (2) sets _favoriteMattressId, (3) replaces
+    // any previous finalist. Choosing the current finalist again is an
+    // idempotent no-op (Remove/un-save is the way to unset it). Saving alone
+    // NEVER chooses. No analytics event: D4's posture, and the owner added no
+    // telemetry for this control.
+    window.chooseFinalist = function(mattressId) {
+      if (typeof mattressId !== 'string' || mattressId.trim() === '') return;
+      var saved = Array.isArray(window._savedPicks) ? window._savedPicks : (window._savedPicks = []);
+      var isSaved = saved.some(function(p) { return p && p.id === mattressId; });
+      if (!isSaved) {
+        window._toggleSavePick(mattressId);
+        saved = window._savedPicks || [];
+        if (!saved.some(function(p) { return p && p.id === mattressId; })) return; // unknown id: nothing to choose
+      }
+      if (window._favoriteMattressId === mattressId) return;
+      window._favoriteMattressId = mattressId;
+      if (typeof window._repaintFinalistControls === 'function') window._repaintFinalistControls();
+    };
+    function finalistButtonLabel(isChosen) {
+      return isChosen ? t('finalist.chosen_btn') : t('finalist.choose_as');
+    }
+    // Repaint every Results "Choose as finalist" control in place (no full
+    // re-render) so the single-finalist invariant is visible immediately.
+    window._repaintFinalistControls = function() {
+      document.querySelectorAll('.finalist-btn').forEach(function(btn) {
+        var on = btn.getAttribute('data-id') === window._favoriteMattressId;
+        btn.classList.toggle('chosen', on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        btn.textContent = finalistButtonLabel(on);
+      });
     };
 
     // Premium pass reveal. RSA-tap-triggered on the review screen and populated
@@ -17425,6 +17689,8 @@
       }
     ];
 
+    // Slice 5: the Plan's own state (see resetSessionState for the contract).
+    window._sleepPlanState = window._sleepPlanState || { prioritiesInvalid: false, origin: '' };
     window._sleepSystemState = {
       activeStep: 'adjustability',
       decisions: {},
@@ -17472,7 +17738,18 @@
       return qualified;
     }
 
-    function getSleepSystemViewModel() {
+    // ---- The engine's Sleep System groups — side-effect-free read -----------
+    // Slice 5 (owner ruling, accessory projection A): the grouping,
+    // qualification, cap/back-fill, threshold stamp and the fixed support
+    // sub-type order are ENGINE behaviour (Phase 1 constraint 2 exempts the
+    // support re-sort as "inside the engine"). They live here, once. This
+    // accessor writes nothing — no analytics, no window state — and reads
+    // only answers / ACCESSORIES / currentLang through the scorer. It is the
+    // Plan's only accessory source; the Plan renderer never calls the scorer
+    // and never calls getSleepSystemViewModel() (which writes analytics and
+    // bundles the finalist). The view model below composes over this so the
+    // Sleep System screen and the Phase 1 fixture see byte-identical groups.
+    function readSleepSystemGroups() {
       var scored = Array.isArray(ACCESSORIES) ? scoreAccessoriesFromAnswers() : [];
       var groups = {
         support: scored.filter(function(item) {
@@ -17508,6 +17785,15 @@
         return (order[a.subType] == null ? 9 : order[a.subType]) -
           (order[b.subType] == null ? 9 : order[b.subType]);
       });
+      return groups;
+    }
+
+    // Fixture-facing view model, retained by name and shape. It composes the
+    // engine groups with the analytics projection the Sleep System screen has
+    // always written and the (chosen-only) finalist. The Plan does NOT call
+    // this.
+    function getSleepSystemViewModel() {
+      var groups = readSleepSystemGroups();
 
       var recommended = groups.pillow.concat(groups.protection).map(function(item) {
         return {
@@ -17526,15 +17812,44 @@
       };
     }
 
-    function getSleepSystemFinalist() {
-      var saved = window._savedPicks || [];
-      var favoriteId = window._favoriteMattressId || '';
-      var finalist = saved.find(function(item) { return item.id === favoriteId; }) || saved[0];
-      if (!finalist && _resultsState && _resultsState.tierData && _resultsState.tierData.gold) {
-        finalist = _resultsState.tierData.gold[0];
+    // ---- Explicit finalist provenance (D5b, owner ruling R-1 2026-08-21) ----
+    // THREE states and nothing else: 'chosen' (the customer explicitly chose
+    // this saved mattress), 'recommended' (no explicit finalist; the engine's
+    // top pick is offered as a RECOMMENDED STARTING POINT and is never called
+    // a finalist), 'none' (no explicit finalist and no engine pick either).
+    //
+    // _favoriteMattressId is a finalist ONLY when it is a non-blank string
+    // that resolves to a mattress CURRENTLY in _savedPicks. A blank, stale,
+    // malformed, unknown or un-saved id produces NO finalist. This replaces
+    // the shipped fallback chain (saved[0] -> tierData.gold[0] ->
+    // analytics.topPick), which silently promoted the first saved pick or the
+    // engine's Gold #1 to "your finalist" for every customer who had not
+    // chosen — including the reachable orphan where the chosen mattress was
+    // un-saved on Results. The resolver never reaches engine output; the
+    // 'recommended' item is supplied by the CALLER that owns that engine
+    // read, so the finalist path carries no engine fallback at all.
+    function resolveFinalistState() {
+      var saved = Array.isArray(window._savedPicks)
+        ? window._savedPicks.filter(function(p) { return !!p && typeof p === 'object'; })
+        : [];
+      var favId = window._favoriteMattressId;
+      if (typeof favId !== 'string' || favId.trim() === '') favId = null;
+      var chosen = null;
+      if (favId !== null) {
+        for (var i = 0; i < saved.length; i++) {
+          var pid = saved[i].id;
+          if (typeof pid === 'string' && pid.trim() !== '' && pid === favId) { chosen = saved[i]; break; }
+        }
       }
-      if (!finalist && analytics.topPick) finalist = analytics.topPick;
-      return finalist || null;
+      if (chosen) return { kind: 'chosen', item: chosen };
+      return { kind: 'none', item: null };
+    }
+    // Fixture-facing entry retained by name: the Sleep System view model and
+    // the Phase 1 output-regression harness call this. It now returns the
+    // explicitly chosen mattress or null — never a promoted substitute.
+    function getSleepSystemFinalist() {
+      var state = resolveFinalistState();
+      return state.kind === 'chosen' ? state.item : null;
     }
 
     function sleepSystemDecision(stepId) {
@@ -17771,7 +18086,19 @@
       return notices.slice(0, 3);
     }
 
-    function renderSleepSystemAnchor(finalist) {
+    // The engine's top pick, read ONCE here for the recommended-starting-point
+    // presentation. This is a consume-only read of existing engine output
+    // (Phase 1 constraint 2): tierData.gold[0] at its index, never re-ranked.
+    function finalistRecommendedFallback() {
+      if (_resultsState && _resultsState.tierData && Array.isArray(_resultsState.tierData.gold)
+          && _resultsState.tierData.gold[0]) {
+        return _resultsState.tierData.gold[0];
+      }
+      return null;
+    }
+    function renderSleepSystemAnchor(finalistState, recommended) {
+      var kind = finalistState && finalistState.kind === 'chosen' ? 'chosen' : (recommended ? 'recommended' : 'none');
+      var finalist = kind === 'chosen' ? finalistState.item : (kind === 'recommended' ? recommended : null);
       var target = document.getElementById('sleepSystemAnchor');
       if (!target) return;
       if (!finalist) {
@@ -17791,7 +18118,7 @@
       target.innerHTML =
         (image ? '<img class="sleep-system__anchor-image" src="' + escapeHtml(image) + '" alt="">' : '') +
         '<div>' +
-          '<div class="sleep-system__anchor-label">' + escapeHtml(sleepSystemText({ en: 'Building around your finalist', es: 'Construyendo alrededor de tu finalista' })) + '</div>' +
+          '<div class="sleep-system__anchor-label">' + escapeHtml(kind === 'chosen' ? t('finalist.building_around_finalist') : t('finalist.building_around_recommended')) + '</div>' +
           '<div class="sleep-system__anchor-name">' + escapeHtml(finalist.name || '') + '</div>' +
           '<div class="sleep-system__anchor-meta">' + escapeHtml(meta) + '</div>' +
         '</div>' +
@@ -18322,7 +18649,10 @@
         if (element) element.textContent = sleepSystemText(staticCopy[id]);
       });
 
-      renderSleepSystemAnchor(viewModel.finalist);
+      // D5b: the anchor renders the explicit finalist when one is chosen,
+      // otherwise the engine's top pick HONESTLY LABELED as a recommended
+      // starting point. The engine read is the caller's, never the resolver's.
+      renderSleepSystemAnchor(resolveFinalistState(), finalistRecommendedFallback());
       if (empty) empty.hidden = hasAccessories;
       if (workspace) workspace.hidden = !hasAccessories;
       if (rail) rail.hidden = !hasAccessories;
@@ -18386,7 +18716,7 @@
       });
       var nextIndex = index + direction;
       if (nextIndex >= SLEEP_SYSTEM_STEPS.length) {
-        window.showSavedPicks();
+        window.showSleepPlan('sleep-system');
         return;
       }
       if (nextIndex < 0) return;
@@ -18402,7 +18732,11 @@
       if (action === 'back-to-matches') {
         window.backToResultsFromReview();
       } else if (action === 'review-plan') {
-        window.showSavedPicks();
+        // Slice 5: the Sleep Plan sits between here and the Consultation
+        // Summary. (The accessories-unavailable empty state's button shares
+        // this branch; the Plan renders its system block at the engine's
+        // produced length, which is then empty.)
+        window.showSleepPlan('sleep-system');
       } else if (action === 'step') {
         window._sleepSystemState.activeStep = control.getAttribute('data-step') || 'adjustability';
         analytics.log('sleep_system_step_viewed', { step: window._sleepSystemState.activeStep });
@@ -18606,7 +18940,7 @@
       // Update button state
       var btn = document.getElementById('drawerInterestedBtn');
       if (btn) {
-        btn.textContent = currentLang === 'es' ? '✓ Finalista guardado' : '✓ Finalist saved';
+        btn.textContent = saveButtonLabel(true);
         btn.style.background = 'linear-gradient(180deg,var(--color-match-positive),#4caf6e)';
       }
       // Update picks badge
@@ -18694,6 +19028,292 @@
     };
 
     // === Handoff v2 renderer (step 4) ============================================
+    // ---- Trial priorities (0.5) ---------------------------------------------
+    // Renders the stored consultation priorities — the widened
+    // analytics.trialFocus — as a real ordered list, in the array's order,
+    // resolved to the ACTIVE language at render time. No recomputation happens
+    // here and none may: the profile renderer owns computation, this function
+    // owns display, and a language switch on this screen re-runs renderHf2()
+    // which lands back here reading the same stored array.
+    //
+    // COMPLETENESS IS ALL-OR-NOTHING (owner ruling R-8, 2026-08-21). The stored
+    // collection is consumed only when EVERY entry carries a name pair and
+    // both prose pairs in BOTH languages; completeness is a property of the
+    // stored object, not of the active language, so a collection is never
+    // "valid in EN, partial in ES". One malformed entry invalidates the whole
+    // collection: nothing is filtered, shortened, padded, synthesised or
+    // partially rendered. The 0.5 contract ("the engine's count in the
+    // engine's order — never padded, never synthesised") forbids rendering a
+    // different count than the producer stored; Phase 1 constraint 2 forbids
+    // filtering elements. This predicate is the single authority for that
+    // decision and is shared by every on-screen consumer so two adjacent
+    // screens can never disagree about the same array.
+    // The predicate is INLINED, byte-identically, inside showProfileScreen()
+    // (producer) and renderHf2Priorities() (consumer) rather than hoisted:
+    // four suites extract those two functions by regex and execute them in
+    // isolation, so a hoisted helper would be invisible to every one of them.
+    // tests/consultation_priorities_check.mjs pins the two inlined copies as
+    // identical text so they cannot drift.
+    // If the stored collection is not complete (fresh session, wiped session,
+    // a pre-widening shape, OR any single malformed entry), the WHOLE section
+    // hides and the list empties — the label must never sit over an empty,
+    // stale or shortened list.
+    function renderHf2Priorities() {
+      var trialFocusIsComplete = function(stored) {
+        var str = function(v) { return typeof v === 'string' && v.trim().length > 0; };
+        var entryOk = function(item) {
+          return !!item && typeof item === 'object'
+            && str(item.en) && str(item.es)
+            && !!item.why && typeof item.why === 'object' && str(item.why.en) && str(item.why.es)
+            && !!item.test && typeof item.test === 'object' && str(item.test.en) && str(item.test.es);
+        };
+        return Array.isArray(stored) && stored.length > 0 && stored.every(entryOk);
+      };
+      var section = document.getElementById('hf2PrioritiesSection');
+      var list = document.getElementById('hf2Priorities');
+      if (!section || !list) return;
+      var es = currentLang === 'es';
+      var stored = (typeof analytics !== 'undefined') ? analytics.trialFocus : undefined;
+      if (!trialFocusIsComplete(stored)) {
+        list.innerHTML = '';
+        section.style.display = 'none';
+        return;
+      }
+      var valid = stored;
+      // Inline spacing, not a class: without it the reset collapses the three
+      // items into one six-line block. Mirrors the email body's inline
+      // treatment of the same content; 1.6 re-decides both.
+      list.innerHTML = valid.map(function(item) {
+        return '<li style="margin-bottom:8px; line-height:1.5">'
+          + '<strong>' + escapeHtml(L(item)) + '</strong> — '
+          + escapeHtml(item.why[currentLang] || item.why.en)
+          + '<br><em>' + (es ? 'Pruébalo: ' : 'Try this: ') + '</em>'
+          + escapeHtml(item.test[currentLang] || item.test.en)
+          + '</li>';
+      }).join('');
+      section.style.display = '';
+    }
+
+    // ===== SLEEP PLAN (D5 / roadmap 1.7, Slice 5) ==============================
+    // Everything here CONSUMES. The finalist comes from resolveFinalistState();
+    // the engine's top pick for the recommended-starting-point state comes
+    // from one caller-owned read of _resultsState (finalistRecommendedFallback);
+    // the priorities are the stored ordered collection, all-or-nothing; the
+    // compared models are current _compareSelected membership in order; the
+    // Sleep System items are readSleepSystemGroups().pillow then .protection
+    // at exact indices with _accCart as an overlay. This renderer never calls
+    // scoreAccessoriesFromAnswers(), never calls getSleepSystemViewModel(),
+    // writes no analytics, and re-resolves every value on every render —
+    // nothing rendered is cached. Copy is dictionary-driven throughout.
+
+    // The same completeness predicate the producer and the Consultation Summary
+    // inline (R-8); kept textually identical with them — tests pin it.
+    function sleepPlanTrialFocusIsComplete(stored) {
+      var str = function(v) { return typeof v === 'string' && v.trim().length > 0; };
+      var entryOk = function(item) {
+        return !!item && typeof item === 'object'
+          && str(item.en) && str(item.es)
+          && !!item.why && typeof item.why === 'object' && str(item.why.en) && str(item.why.es)
+          && !!item.test && typeof item.test === 'object' && str(item.test.en) && str(item.test.es);
+      };
+      return Array.isArray(stored) && stored.length > 0 && stored.every(entryOk);
+    }
+
+    // Tier label through the EXISTING canonical dictionary keys
+    // (results.tier_gold/silver/bronze) — no second tier-naming authority.
+    function sleepPlanTierLabel(tier) {
+      var key = 'results.tier_' + String(tier || '').toLowerCase();
+      var v = t(key);
+      return v === key ? '' : v;
+    }
+
+    // Resolve a mattress id to a displayable record without re-ranking:
+    // saved picks first (they carry the full record), then the engine's
+    // per-customer drawer data, else null. Never renders a raw id.
+    function sleepPlanMattressById(id) {
+      if (typeof id !== 'string' || id.trim() === '') return null;
+      var saved = Array.isArray(window._savedPicks) ? window._savedPicks : [];
+      for (var i = 0; i < saved.length; i++) if (saved[i] && saved[i].id === id) return saved[i];
+      var d = window._drawerData && window._drawerData[id];
+      if (d && d.m) return Object.assign({}, d.m, { tier: d.tier || d.m.tier, firmFeel: d.firmFeel });
+      return null;
+    }
+
+    function sleepPlanModelLine(m) {
+      // "tier and position" (roadmap 1.7): the tier label from the dictionary
+      // and the engine's position within that tier, never a naked cross-tier
+      // number. Position is the index in _resultsState.tierData[tier].
+      var tier = m && m.tier;
+      var tierLabel = sleepPlanTierLabel(tier);
+      var pos = -1;
+      if (_resultsState && _resultsState.tierData && Array.isArray(_resultsState.tierData[tier])) {
+        pos = _resultsState.tierData[tier].findIndex(function(x) { return x && x.id === m.id; });
+      }
+      var posKey = pos === 0 ? 'results.match_lead' : pos === 1 ? 'results.match_second' : pos === 2 ? 'results.match_third' : '';
+      var parts = [tierLabel, posKey ? t(posKey) : ''].filter(Boolean);
+      return parts.join(' · ');
+    }
+
+    function renderSleepPlanFinalist() {
+      var label = document.getElementById('sleepPlanFinalistLabel');
+      var box = document.getElementById('sleepPlanFinalist');
+      if (!label || !box) return;
+      var state = resolveFinalistState();
+      var recommended = state.kind === 'chosen' ? null : finalistRecommendedFallback();
+      var kind = state.kind === 'chosen' ? 'chosen' : (recommended ? 'recommended' : 'none');
+      var m = kind === 'chosen' ? state.item : (kind === 'recommended' ? recommended : null);
+      label.textContent = kind === 'chosen' ? t('finalist.chosen')
+        : kind === 'recommended' ? t('finalist.recommended') : t('finalist.none');
+      var html = '';
+      if (m) {
+        html += '<div class="hf2-pick">'
+          + '<div class="hf2-pick__name">' + escapeHtml(m.name || '') + '</div>'
+          + '<div class="hf2-pick__tier">' + escapeHtml(sleepPlanModelLine(m)) + '</div>'
+          + '</div>';
+      }
+      if (kind !== 'chosen') {
+        // The absence is stated plainly and a route BACK to choose one is
+        // offered (roadmap 1.7). It routes to Results (R-1), never to hf2.
+        html += '<p class="hf2-review-section__hint" id="sleepPlanNoFinalistNote">' + escapeHtml(t('finalist.none')) + '</p>'
+          + '<button class="hf2-pick__action" type="button" id="sleepPlanChooseFinalist"'
+          + ' onclick="window.sleepPlanChooseFinalist()"'
+          + ' ontouchend="event.preventDefault();window.sleepPlanChooseFinalist();">'
+          + escapeHtml(t('finalist.choose')) + '</button>';
+      }
+      box.innerHTML = html;
+    }
+
+    function renderSleepPlanPriorities() {
+      var label = document.getElementById('sleepPlanPrioritiesLabel');
+      var list = document.getElementById('sleepPlanPriorities');
+      var recovery = document.getElementById('sleepPlanPrioritiesRecovery');
+      if (!label || !list || !recovery) return;
+      label.textContent = t('brief.priorities_heading');
+      var stored = (typeof analytics !== 'undefined') ? analytics.trialFocus : undefined;
+      if (!sleepPlanTrialFocusIsComplete(stored)) {
+        // R-8: ALL-OR-NOTHING. Nothing is filtered, shortened, padded or
+        // synthesised; the list empties and the governed recovery shows.
+        window._sleepPlanState.prioritiesInvalid = true;
+        list.innerHTML = '';
+        list.hidden = true;
+        document.getElementById('sleepPlanPrioritiesRecoveryText').textContent = t('plan.priorities_recovery');
+        document.getElementById('sleepPlanPrioritiesRecoveryBtn').textContent = t('plan.priorities_recovery_action');
+        recovery.hidden = false;
+        return;
+      }
+      window._sleepPlanState.prioritiesInvalid = false;
+      recovery.hidden = true;
+      list.hidden = false;
+      list.innerHTML = stored.map(function(item) {
+        return '<li style="margin-bottom:8px; line-height:1.5">'
+          + '<strong>' + escapeHtml(L(item)) + '</strong> — '
+          + escapeHtml(item.why[currentLang] || item.why.en)
+          + '<br><em>' + escapeHtml(t('brief.try_this')) + '</em>'
+          + escapeHtml(item.test[currentLang] || item.test.en)
+          + '</li>';
+      }).join('');
+    }
+
+    function renderSleepPlanCompared() {
+      var label = document.getElementById('sleepPlanComparedLabel');
+      var box = document.getElementById('sleepPlanCompared');
+      if (!label || !box) return;
+      label.textContent = t('plan.compared_label');
+      var ids = Array.isArray(window._compareSelected) ? window._compareSelected : [];
+      var rows = [];
+      for (var i = 0; i < ids.length; i++) {
+        var m = sleepPlanMattressById(ids[i]);
+        if (!m) continue;  // an unresolvable id is never rendered as a raw token
+        rows.push('<div class="hf2-pick" data-compared-id="' + escapeHtml(m.id) + '">'
+          + '<div class="hf2-pick__name">' + escapeHtml(m.name || '') + '</div>'
+          + '<div class="hf2-pick__tier">' + escapeHtml(sleepPlanModelLine(m)) + '</div>'
+          + '</div>');
+      }
+      box.innerHTML = rows.length ? rows.join('')
+        : '<p class="hf2-review-section__hint">' + escapeHtml(t('plan.compared_empty')) + '</p>';
+    }
+
+    function renderSleepPlanSystem() {
+      var label = document.getElementById('sleepPlanSystemLabel');
+      var box = document.getElementById('sleepPlanSystem');
+      if (!label || !box) return;
+      label.textContent = t('plan.system_label');
+      // The engine's projection, consumed at exact indices: pillow group then
+      // protection group, each in the engine's order and at its produced
+      // length. No cap, no predicate, no re-sort. Added state is an OVERLAY.
+      var groups = readSleepSystemGroups();
+      var items = (groups.pillow || []).concat(groups.protection || []);
+      var cart = window._accCart || {};
+      box.innerHTML = items.map(function(a, i) {
+        var added = !!cart[a.id];
+        return '<div class="hf2-pick" data-acc-id="' + escapeHtml(a.id) + '" data-acc-index="' + i + '">'
+          + '<div class="hf2-pick__name">' + escapeHtml(sleepSystemText(a.name)) + '</div>'
+          + '<div class="hf2-pick__tier">' + escapeHtml(added ? t('plan.added') : t('plan.not_added')) + '</div>'
+          + '</div>';
+      }).join('');
+    }
+
+    function renderSleepPlan() {
+      var back = document.getElementById('sleepPlanBack');
+      if (back) back.textContent = t('plan.back_to_matches');
+      var eyebrow = document.getElementById('sleepPlanEyebrow');
+      if (eyebrow) eyebrow.textContent = t('plan.eyebrow');
+      var title = document.getElementById('sleepPlanTitle');
+      if (title) title.textContent = t('plan.title');
+      var cont = document.getElementById('sleepPlanContinue');
+      if (cont) cont.textContent = t('plan.continue');
+      renderSleepPlanFinalist();
+      renderSleepPlanPriorities();
+      renderSleepPlanCompared();
+      renderSleepPlanSystem();
+      renderSleepPlanFinancing();
+      // R-8: the Plan does not reach a behaviour-complete state without its
+      // priorities; the forward control is withheld while the recovery shows.
+      if (cont) cont.hidden = !!window._sleepPlanState.prioritiesInvalid;
+    }
+
+    // ENTRY. Render first, THEN showScreen, so #sleepPlanTitle is rendered in
+    // the current language at focus time (SCREEN_HEADING_IDS contract).
+    window.showSleepPlan = function(origin) {
+      if (!_resultsState) return;  // unreachable before Results, by data
+      window._sleepPlanState.origin = typeof origin === 'string' ? origin : '';
+      renderSleepPlan();
+      showScreen('sleepPlanScreen');
+    };
+    // ROUTES. Back returns to Results (the only screen the Plan can precede
+    // that it was reached from); forward goes to the Consultation Summary.
+    window.sleepPlanBack = function() {
+      if (!_resultsState) return;
+      _renderResults();
+      showScreen('resultsScreen');
+    };
+    window.sleepPlanContinue = function() {
+      if (window._sleepPlanState.prioritiesInvalid) return;
+      window.showSavedPicks();
+    };
+    // "Choose a finalist" routes BACK to Results and focuses the first
+    // finalist control so the customer lands on the chooser (R-1).
+    window.sleepPlanChooseFinalist = function() {
+      if (!_resultsState) return;
+      _renderResults();
+      showScreen('resultsScreen');
+      sessionTimeout(function() {
+        var ctl = document.querySelector('.finalist-btn');
+        if (ctl && typeof ctl.focus === 'function') {
+          try { ctl.focus({ preventScroll: false }); } catch (err) { ctl.focus(); }
+          if (ctl.scrollIntoView) ctl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 80);
+    };
+    // R-8 governed recovery: return to the authoritative producer (the Sleep
+    // Brief / profile screen) and focus its heading. It does NOT invoke the
+    // data-error overlay, set _dataLoadFailed, retry any fetch, wipe, fabricate
+    // priorities or log an event. Re-entry to the Plan re-reads the stored
+    // collection; if still invalid the Plan stays fail-closed (no auto-loop).
+    window.sleepPlanReturnToBrief = function() {
+      showProfileScreen();
+    };
+
     // showSavedPicks is the routing chokepoint — every entry point (header pill,
     // accCartBar, picks badge, internal calls) goes through it. Replacing the body
     // re-targets all of them to hf2Screen without per-call-site updates.
@@ -18738,7 +19358,7 @@
         // Reuses the Sleep Brief's approved heading pair verbatim — same
         // content, same name, zero invented copy (0.5).
         hf2PrioritiesLabel: es ? 'Lo que probaremos juntos' : 'What we will test together',
-        hf2FinalistsLabel: es ? 'Tus finalistas' : 'Your finalists',
+        hf2FinalistsLabel: t('hf2.saved_picks_label'),
         hf2FinalistsHint: es ? 'Los finalistas guardados se envían; las sugerencias son opciones para comparar.' : 'Saved finalists are sent; suggestions remain comparison options.',
         hf2SystemLabel: es ? 'Sistema de Sueño seleccionado' : 'Selected Sleep System',
         hf2SystemHint: es ? 'Solo las piezas que ya se agregaron al plan.' : 'Only the pieces already added to the plan.',
@@ -18756,7 +19376,7 @@
         if (el) el.textContent = reviewCopy[id];
       });
       var compareBtn = document.getElementById('hf2CompareBtn');
-      if (compareBtn) compareBtn.textContent = es ? 'Comparar finalistas' : 'Compare finalists';
+      if (compareBtn) compareBtn.textContent = t('hf2.compare_saved');
       var editSystemBtn = document.getElementById('hf2EditSystemBtn');
       if (editSystemBtn) editSystemBtn.textContent = es ? 'Editar Sistema de Sueño' : 'Edit Sleep System';
       renderHf2Brief();
@@ -18851,49 +19471,6 @@
       if (profile) profile.textContent = vm.profile;
     }
 
-    // ---- Trial priorities (0.5) ---------------------------------------------
-    // Renders the stored consultation priorities — the widened
-    // analytics.trialFocus — as a real ordered list, in the array's order,
-    // resolved to the ACTIVE language at render time. No recomputation happens
-    // here and none may: the profile renderer owns computation, this function
-    // owns display, and a language switch on this screen re-runs renderHf2()
-    // which lands back here reading the same stored array.
-    //
-    // An entry is valid only when it carries a resolvable name AND both prose
-    // pairs. If nothing valid is stored (fresh session, wiped session, or a
-    // pre-widening shape), the WHOLE section hides — the label must never sit
-    // over an empty or stale list.
-    function renderHf2Priorities() {
-      var section = document.getElementById('hf2PrioritiesSection');
-      var list = document.getElementById('hf2Priorities');
-      if (!section || !list) return;
-      var es = currentLang === 'es';
-      var stored = (typeof analytics !== 'undefined' && Array.isArray(analytics.trialFocus))
-        ? analytics.trialFocus : [];
-      var valid = stored.filter(function(item) {
-        return item && L(item)
-          && item.why && (item.why[currentLang] || item.why.en)
-          && item.test && (item.test[currentLang] || item.test.en);
-      });
-      if (!valid.length) {
-        list.innerHTML = '';
-        section.style.display = 'none';
-        return;
-      }
-      // Inline spacing, not a class: without it the reset collapses the three
-      // items into one six-line block. Mirrors the email body's inline
-      // treatment of the same content; 1.6 re-decides both.
-      list.innerHTML = valid.map(function(item) {
-        return '<li style="margin-bottom:8px; line-height:1.5">'
-          + '<strong>' + escapeHtml(L(item)) + '</strong> — '
-          + escapeHtml(item.why[currentLang] || item.why.en)
-          + '<br><em>' + (es ? 'Pruébalo: ' : 'Try this: ') + '</em>'
-          + escapeHtml(item.test[currentLang] || item.test.en)
-          + '</li>';
-      }).join('');
-      section.style.display = '';
-    }
-
     // Resolve a human-readable label for a single quiz answer ID.
     // QUESTIONS options have label as either a plain string or {en, es} object.
     // The Consultation Summary uses this ONLY for the neutral mattress-size
@@ -18973,9 +19550,9 @@
         hint.textContent = currentLang === 'es'
           ? saved.length + ' guardado' + (saved.length === 1 ? '' : 's') + ' · '
               + suggestionCount + ' sugerencia' + (suggestionCount === 1 ? '' : 's')
-              + '. Solo los finalistas guardados se envían.'
+              + '. Solo las selecciones guardadas se envían.'
           : saved.length + ' saved · ' + suggestionCount + ' suggestion'
-              + (suggestionCount === 1 ? '' : 's') + '. Only saved finalists are sent.';
+              + (suggestionCount === 1 ? '' : 's') + '. Only saved picks are sent.';
       }
 
       var compareBtn = document.getElementById('hf2CompareBtn');
@@ -19210,8 +19787,8 @@
           : 'A floating, flexible feel that gives way under pressure points.';
       }
       return es
-        ? 'Una sensación equilibrada que vale comparar directamente con tu otro finalista.'
-        : 'A balanced feel worth comparing directly with your other finalist.';
+        ? 'Una sensación equilibrada que vale comparar directamente con tus otras selecciones.'
+        : 'A balanced feel worth comparing directly with your other saved picks.';
     }
 
     function renderHf2Pick(m, tier, suggested) {
@@ -19227,7 +19804,7 @@
         : { gold: 'Gold', silver: 'Silver', bronze: 'Bronze' };
       tierTag.textContent = (suggested
         ? (currentLang === 'es' ? 'Sugerencia · ' : 'Suggested · ')
-        : (m.id === window._favoriteMattressId ? (currentLang === 'es' ? 'Favorito · ' : 'Favorite · ') : ''))
+        : (m.id === window._favoriteMattressId ? t('finalist.chosen_prefix') : ''))
         + tierNames[tier] + ' · ' + firmnessFeel(m.firmness) + ' · ' + mattressResponseLabel(m)
         + (m.meetsMatchThreshold ? '' : ' · ' + (currentLang === 'es'
           ? 'Opción adicional para comparar'
@@ -19263,11 +19840,11 @@
         ? '<button class="hf2-pick__action is-selected"'
             + ' onclick="window.addReviewMattress(\'' + m.id + '\')"'
             + ' ontouchend="event.preventDefault();window.addReviewMattress(\'' + m.id + '\');">'
-            + (currentLang === 'es' ? 'Agregar a finalistas' : 'Add to finalists') + '</button>'
+            + t('hf2.add_to_saved') + '</button>'
         : '<button class="hf2-pick__action' + (m.id === window._favoriteMattressId ? ' is-selected' : '') + '"'
             + ' onclick="window.toggleFavoriteMattress(\'' + m.id + '\')"'
             + ' ontouchend="event.preventDefault();window.toggleFavoriteMattress(\'' + m.id + '\');">'
-            + (currentLang === 'es' ? 'Favorito' : 'Favorite') + '</button>')
+            + finalistButtonLabel(m.id === window._favoriteMattressId) + '</button>')
         + '<button class="hf2-pick__action"'
           + ' onclick="window.showMattressInResults(\'' + m.id + '\',\'' + tier + '\')"'
           + ' ontouchend="event.preventDefault();window.showMattressInResults(\'' + m.id + '\',\'' + tier + '\');">'
@@ -19306,7 +19883,12 @@
     };
 
     window.toggleFavoriteMattress = function(mattressId) {
-      window._favoriteMattressId = window._favoriteMattressId === mattressId ? '' : mattressId;
+      if (window._favoriteMattressId === mattressId) {
+        window._favoriteMattressId = '';
+        if (typeof window._repaintFinalistControls === 'function') window._repaintFinalistControls();
+      } else {
+        window.chooseFinalist(mattressId);
+      }
       renderHf2();
     };
 
@@ -20126,7 +20708,10 @@
       resultsScreen: 'resultsHeadline',
       hf2Screen: 'hf2ReviewTitle',
       emailScreen: 'emailHeadline',
-      accessoriesScreen: 'sleepSystemTitle'
+      accessoriesScreen: 'sleepSystemTitle',
+      // Slice 5: renderSleepPlan() runs before showScreen('sleepPlanScreen'),
+      // so the heading is rendered in the current language at focus time.
+      sleepPlanScreen: 'sleepPlanTitle'
     };
 
     // Every screen has a name so a container focus is never anonymous, whether
@@ -20141,7 +20726,8 @@
       resultsScreen: 'screen.results',
       hf2Screen: 'screen.handoff',
       emailScreen: 'screen.email',
-      accessoriesScreen: 'screen.sleep_system'
+      accessoriesScreen: 'screen.sleep_system',
+      sleepPlanScreen: 'screen.sleep_plan'
     };
 
     // Refusal gate. Every predicate answers one question: is some other layer
@@ -20421,7 +21007,10 @@
       // be seen again, but the Welcome line says Restart CLEARS the answers,
       // and a container the previous render still fills is not cleared.
       // (Found by the privacy audit; measured after a confirmed Restart.)
-      'sleepSystemMain', 'sleepSystemGuidance', 'sleepSystemRail', 'sleepSystemPlanList'
+      'sleepSystemMain', 'sleepSystemGuidance', 'sleepSystemRail', 'sleepSystemPlanList',
+      // Slice 5: every generated container on the Sleep Plan.
+      'sleepPlanFinalist', 'sleepPlanPriorities', 'sleepPlanCompared', 'sleepPlanSystem',
+      'sleepPlanFinancingInterest'
     ];
 
     // Short customer-derived strings, including every announcement region that
@@ -20435,6 +21024,7 @@
       // this comment: the session suite parses the quoted ids from this block.
       'drawerShortlistFit', 'drawerSystemPromptTitle', 'drawerSystemPromptReason',
       'hf2FinancingStatus', 'financingSheetStatus', 'financingSheetAction',
+      'sleepPlanFinancingStatus', 'sleepPlanPrioritiesRecoveryText',
       'sessionSafetyLive', 'dataErrorLive',
       'resultsRevealTitle', 'resultsRevealSubtitle',
       'revealCertCode', 'revealCertPctNum', 'revealCertScope', 'revealCertExpiry',
@@ -20665,6 +21255,12 @@
           pillowFeedback: '',
           protectionGoal: ''
         };
+        // Slice 5: the Plan's own state. It holds only the fail-closed
+        // priorities flag (set when a render found the stored collection
+        // invalid) and the origin it should return to; finalist, compare,
+        // cart and payment state are read from their owners on every render,
+        // never cached here. Cleared BY NAME with NO typeof guard.
+        window._sleepPlanState = { prioritiesInvalid: false, origin: '' };
         if (typeof window.updateCompareTray === 'function') window.updateCompareTray();
         if (typeof window._updatePicksBadge === 'function') window._updatePicksBadge();
 
@@ -20956,7 +21552,7 @@
       }
 
       var title = document.getElementById('compareModalTitle');
-      if (title) title.textContent = currentLang === 'es' ? 'Compara Tus Finalistas' : 'Compare Your Finalists';
+      if (title) title.textContent = t('compare.modal_title');
       // Accessible close label in the active language — the financing
       // sheet's exact pattern; re-set on every open so a language change
       // between opens relocalises it.
@@ -21049,6 +21645,15 @@
 
       // Compare button on a mattress card — handle BEFORE the card check
       // so it doesn't also open the drawer.
+      // "Choose as finalist" on a mattress card — same treatment as Compare:
+      // handled BEFORE the card check so it never also opens the drawer.
+      var finBtn = e.target.closest('.finalist-btn');
+      if (finBtn) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.chooseFinalist(finBtn.getAttribute('data-id'));
+        return;
+      }
       var cmpBtn = e.target.closest('.compare-btn');
       if (cmpBtn) {
         e.preventDefault();
@@ -21102,7 +21707,7 @@
        aria-modal="true" aria-labelledby="compareModalTitle">
     <div class="compare-modal-inner">
       <div class="compare-modal-header">
-        <div id="compareModalTitle" tabindex="-1" style="font-size:0.65rem; text-transform:uppercase; letter-spacing:2px; color:var(--gold); font-weight:700;">Compare Your Finalists</div>
+        <div id="compareModalTitle" tabindex="-1" style="font-size:0.65rem; text-transform:uppercase; letter-spacing:2px; color:var(--gold); font-weight:700;" data-i18n="compare.modal_title">Compare your selections</div>
         <button class="compare-modal-close" id="compareModalClose" onclick="window.closeCompareModal()"
           ontouchend="event.preventDefault();window.closeCompareModal();">&times;</button>
       </div>
@@ -21268,7 +21873,7 @@
       var intBtn = document.getElementById('drawerInterestedBtn');
       if (intBtn) {
         var alreadySaved = window._savedPicks && window._savedPicks.some(function(p) { return p.id === mattressId; });
-        intBtn.textContent = alreadySaved ? (currentLang === 'es' ? '✓ Finalista guardado' : '✓ Finalist saved') : (currentLang === 'es' ? 'Guardar como finalista' : 'Save as Finalist');
+        intBtn.textContent = saveButtonLabel(alreadySaved);
         intBtn.style.background = alreadySaved ? 'linear-gradient(180deg,var(--color-match-positive),#4caf6e)' : '';
       }
       var systemPrompt = document.getElementById('drawerSystemPrompt');
@@ -21318,7 +21923,7 @@
         (currentLang === 'es' ? 'Sensación: ' : 'Feel: ')
         + d.firmFeel + ' ' + m.firmness + '/10 · ' + mattressResponseLabel(m);
       document.getElementById('drawerWhyLabel').textContent = currentLang === 'es'
-        ? 'Por qué llegó a tus finalistas'
+        ? 'Por qué llegó a tu lista'
         : 'Why it made your shortlist';
       document.getElementById('drawerShortlistFit').textContent = mattressShortlistFitText(m);
       // Claim retirement (2026-08-12): a fully retired model has no

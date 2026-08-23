@@ -135,7 +135,7 @@ function makeResultsEnv({ lang = 'en', tier = 'gold', list = [], state = null, c
   const api = new Function(
     'document', 'window', 'currentLang', 't', 'escapeHtml',
     'topPickReasonText', 'firmnessFeel', 'getMattressPromotion',
-    'promotionOfferTabHtml', 'promotionBadgesHtml', 'saveButtonLabel',
+    'promotionOfferTabHtml', 'promotionBadgesHtml', 'saveButtonLabel', 'finalistButtonLabel',
     'buildDrawerData', 'renderResultsChrome', 'renderResultsTrialFocus',
     'renderResultsOfferCue', 'analytics', '__initialState',
     'var _resultsState = __initialState;\n'
@@ -150,6 +150,7 @@ function makeResultsEnv({ lang = 'en', tier = 'gold', list = [], state = null, c
     (p) => (p ? '<!--PROMO-TAB-->' : ''),
     () => '<!--PROMO-BADGES-->',
     (s) => (s ? 'Saved' : 'Save'),
+    (c) => (c ? 'Chosen' : 'Choose as finalist'),
     () => ({}),
     () => {}, () => {},
     (l) => { offerCue.calls.push(l); },

@@ -1,16 +1,13 @@
 {
   "lang.toggle_en": "EN",
   "lang.toggle_es": "ES",
-
   "header.tagline": "Personalized Sleep Consultation",
   "header.picks": "Selections",
-
   "session.lang_group": "Language",
   "session.lang_en": "English",
   "session.lang_es": "Español",
   "session.restart": "Restart",
   "session.restart_aria": "Restart — start a new customer",
-
   "safety.restart_title": "Start a new customer?",
   "safety.restart_body": "This clears the current answers, mattress selections, and Sleep Plan.",
   "safety.restart_keep": "Keep this session",
@@ -23,15 +20,12 @@
   "safety.timeout_final_warning": "This session clears in about {seconds} seconds.",
   "privacy.data_use_preview": "During this showroom session, your answers stay on this tablet and are used to create your matches and specialist summary. Restart clears them.",
   "privacy.data_use_live": "Your answers are used on this tablet to create your matches and specialist summary. They are sent only if you choose to email your Sleep Brief. Restart clears them.",
-
   "footer.powered": "Powered by <strong>DreamFinder</strong>",
-
   "review.category": "Almost There",
   "review.title": "Quick review",
   "review.help": "These answers create your matches and the summary your specialist will review with you.",
   "review.looks_good": "Looks Good →",
   "nav.back": "← Back",
-
   "brief.heading": "Your Sleep Brief",
   "brief.hero": "Made from your answers",
   "brief.signature_eyebrow": "Your sleep signature",
@@ -40,11 +34,9 @@
   "brief.priorities_intro": "Use these signals to compare each mattress instead of relying on first impressions alone.",
   "brief.try_this": "Try this: ",
   "brief.quiz_finish": "See my sleep signature",
-
   "profile.badge": "Personalized From Your Answers",
   "profile.perfect_match": "Your Sleep Brief",
   "profile.edit_answers": "← Edit my answers",
-
   "results.header": "Your strongest matches are ready",
   "results.specialist_cue": "<span style=\"color:var(--gold); font-weight:700;\">Ask your sleep specialist</span> to walk you through each option below.",
   "results.tier_gold": "Gold",
@@ -58,7 +50,6 @@
   "results.complete_setup": "Build Your Sleep System →",
   "results.discount_applies": "Your 30-day Savings Pass applies to a qualifying mattress selection",
   "results.back_to_results": "← Back to all matches",
-
   "drawer.why_matches": "Why it matches you",
   "drawer.about": "About this mattress",
   "drawer.whats_in_it": "What's in it",
@@ -67,14 +58,12 @@
   "drawer.brand_heading": "About the brand",
   "drawer.prev": "← Prev",
   "drawer.next": "Next →",
-
   "discount.title": "Your Savings Pass",
   "discount.calculating": "Preparing your 30-day offer...",
   "discount.code_label": "Your Savings Pass",
   "discount.unlocked": "30-Day Savings Pass",
   "discount.off": "% OFF",
   "discount.show_specialist": "Take your time. Your offer is saved.",
-
   "handoff.summary_label": "Your Selections",
   "handoff.title": "Your <em>interested</em> picks",
   "handoff.subtitle": "Mattresses you marked as interested.",
@@ -84,7 +73,6 @@
   "handoff.demo_hook": "DEMO HOOK:",
   "handoff.close_angle": "CLOSE ANGLE:",
   "handoff.rsa_note": "RSA NOTE:",
-
   "email.title": "Don't forget your results",
   "email.subtitle": "Bring home your Sleep Brief, mattress matches, and 30-day Savings Pass so you can decide on your time.",
   "email.name_label": "Your Name",
@@ -98,7 +86,6 @@
   "email.discount_label": "Your 30-Day Savings Pass",
   "email.discount_hint": "Show this code to your sleep specialist · <span style=\"color:var(--gold); font-weight:600;\" id=\"dreamCodePct\"></span>",
   "email.start_new": "↺ Start New Customer",
-
   "accessories.analysis_label": "Sleep Brief Priorities",
   "accessories.title": "Your Complete Sleep System",
   "accessories.subtitle": "Your mattress is one piece of the puzzle. The right foundation, pillow, and protector complete the system.",
@@ -106,13 +93,37 @@
   "accessories.send_results": "Send Me My Results",
   "accessories.start_over": "Start Over",
   "accessories.tap_hint": "Tap a card to add or remove",
-
   "screen.welcome": "Welcome",
   "screen.question": "Sleep quiz",
   "screen.review": "Quick review",
   "screen.profile": "Your Sleep Brief",
   "screen.results": "Your matches",
-  "screen.handoff": "Your sleep plan",
+  "screen.handoff": "Your consultation summary",
   "screen.email": "Save your results",
-  "screen.sleep_system": "Your sleep system"
+  "screen.sleep_system": "Your sleep system",
+  "finalist.chosen": "Finalist ✓",
+  "finalist.recommended": "Recommended starting point",
+  "finalist.none": "No finalist selected yet",
+  "finalist.choose": "Choose a finalist",
+  "finalist.choose_as": "Choose as finalist",
+  "finalist.chosen_btn": "Chosen ✓",
+  "finalist.chosen_prefix": "Finalist ✓ · ",
+  "finalist.building_around_finalist": "Building around your finalist",
+  "finalist.building_around_recommended": "Building around a recommended starting point",
+  "compare.modal_title": "Compare your selections",
+  "hf2.saved_picks_label": "Your saved picks",
+  "hf2.compare_saved": "Compare saved picks",
+  "hf2.add_to_saved": "Add to saved picks",
+  "screen.sleep_plan": "Your Sleep Plan",
+  "plan.eyebrow": "Your plan for the in-store trial",
+  "plan.title": "Your Sleep Plan",
+  "plan.back_to_matches": "← Back to matches",
+  "plan.continue": "Continue to your consultation summary →",
+  "plan.compared_label": "Compared mattresses",
+  "plan.compared_empty": "No mattresses compared yet.",
+  "plan.system_label": "Your Sleep System",
+  "plan.added": "Added to your plan",
+  "plan.not_added": "Not added",
+  "plan.priorities_recovery": "We couldn't prepare the trial priorities. Return to the Sleep Brief and try again.",
+  "plan.priorities_recovery_action": "Return to Sleep Brief"
 }
