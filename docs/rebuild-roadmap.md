@@ -9,7 +9,7 @@ owner-review decisions (see "Phase 1 direction decisions — recorded
 see the open-decisions register. Device hardening remains BLOCKING for
 showroom use.**
 
-**Last updated:** 2026-08-23 *(closes out the Trust integrity gate: PR #54 merged 2026-08-23 00:13Z as merge commit `d4049cb` (parents `4a76503` + `084f2f0`; merge, not squash; branch kept). Post-merge CI run 32607312520 and Pages run 32607311802 both succeeded at exactly `d4049cb`; the public preview `https://beford782.github.io/LacksFurniture/` serves `index.html` with SHA-256 `B0981E11F9065FA69DBD8BCD31EE100C7044E1FFB58C56AC87241E525D412321` — the bytes physically tested at `f748f59` and owner-reviewed at `9f27680` — and `store-config`, `quiz`, both dictionaries, `mattresses` and `allowed-hosts` hash-identical to `main`; a headless render showed Welcome with its Start button, one heritage line and the data-use sentence, no unauthorized-domain screen, no data-error overlay, a clean console; served `gasUrl` is blank, the draft-policy notice and preview wording are served. Preview deployment only: no showroom use, no live email, Spanish provisional. The gate moves 🔨 → ✅; Slice 5 (draft PR #53, `6decbef`) is next and must update from `main` at `d4049cb`, re-run the conflict forecast against that actual `main` — which now also carries the validator and test-manifest changes from the external-review fixes — resolve keep-both, rebuild the demo bundle with the canonical tool and re-run the complete suite and sweep on the combined tree; #53's pre-integration CI is not post-gate evidence. The reconciliation baseline is re-pointed from `4a76503` to `d4049cb`.)* The previous revision, 2026-08-22, recorded the owner's 2026-08-21 product-direction
+**Last updated:** 2026-08-23 *(later the same day, on the Slice 5 branch: item 1.7 records the `466a474` integration, the owner-attested manual pass and the five owner rulings of 2026-08-23 — forced-colors waived for the preview merge only and required before showroom; native Spanish deferred; ready-for-review authorized; merge not yet; showroom no. Earlier on 2026-08-23 this revision closed out the Trust integrity gate: PR #54 merged 2026-08-23 00:13Z as merge commit `d4049cb` (parents `4a76503` + `084f2f0`; merge, not squash; branch kept). Post-merge CI run 32607312520 and Pages run 32607311802 both succeeded at exactly `d4049cb`; the public preview `https://beford782.github.io/LacksFurniture/` serves `index.html` with SHA-256 `B0981E11F9065FA69DBD8BCD31EE100C7044E1FFB58C56AC87241E525D412321` — the bytes physically tested at `f748f59` and owner-reviewed at `9f27680` — and `store-config`, `quiz`, both dictionaries, `mattresses` and `allowed-hosts` hash-identical to `main`; a headless render showed Welcome with its Start button, one heritage line and the data-use sentence, no unauthorized-domain screen, no data-error overlay, a clean console; served `gasUrl` is blank, the draft-policy notice and preview wording are served. Preview deployment only: no showroom use, no live email, Spanish provisional. The gate moves 🔨 → ✅; Slice 5 (draft PR #53, `6decbef`) is next and must update from `main` at `d4049cb`, re-run the conflict forecast against that actual `main` — which now also carries the validator and test-manifest changes from the external-review fixes — resolve keep-both, rebuild the demo bundle with the canonical tool and re-run the complete suite and sweep on the combined tree; #53's pre-integration CI is not post-gate evidence. The reconciliation baseline is re-pointed from `4a76503` to `d4049cb`.)* The previous revision, 2026-08-22, recorded the owner's 2026-08-21 product-direction
 rulings on the Trust integrity gate — R1 merge order: draft PR #54 (the gate)
 merges before draft PR #53 (Slice 5), which then integrates the resulting
 `main` and proves the combined behaviour; R2 heritage stays Welcome-only this
@@ -96,7 +96,10 @@ cross-cutting gate — Trust integrity and transparency** is `✅` — PR #54 me
 as `d4049cb` on 2026-08-23 (branch `claude/phase1-trust-integrity`, cut from
 `4a76503`, kept); it is placed in the approved order after Slice 4 and before
 Slice 5, and its block sits after item 1.7. One branch remains in progress: **(5) Slice 5 — the Sleep Plan screen (D5 / item 1.7)** is `🔨` on
-`claude/nocturne-slice5-sleep-plan` (commits C0–C7, draft PR #53, unmerged).
+`claude/nocturne-slice5-sleep-plan` (commits C0–C7 plus the 2026-08-23 merge of
+`main` `ed9374b` as `466a474`; draft PR #53, unmerged; manual pass
+owner-attested and ready-for-review authorized 2026-08-23, merge not yet
+authorized — see the 1.7 block).
 *(An earlier revision of this paragraph said Slice 5 was `⬜`, approved to build
 and not started; it began on its own branch — draft PR #53, head `6decbef` —
 before 2026-08-21. The gate is Slice 5's prerequisite in the approved order,
@@ -2087,7 +2090,7 @@ distinct: UI implementation, payload capability, GAS activation, and verified
 delivery — `gasUrl` is blank today, so no email change is "live" merely because the
 template exists.
 
-### 1.7 — Sleep Plan ⬜
+### 1.7 — Sleep Plan 🔨 (draft PR #53 at `466a474`; manual pass owner-attested 2026-08-23; ready-for-review authorized; merge NOT yet authorized)
 
 **Commissioned 2026-08-14 (D5a — added by the Nocturne owner review; this item
 did not exist in earlier revisions).** A new screen between comparison and the
@@ -2101,6 +2104,37 @@ ruling 2026-08-21). Slice 5 began on `claude/nocturne-slice5-sleep-plan`
 merges it integrates the resulting `main` and proves the combined behaviour;
 the gate adds nothing to this item's scope or exit. The `⬜` above is stale — Slice 5 is `🔨` — and is Slice 5's branch to
 move, per the 1.1 precedent.)*
+
+*(2026-08-23 — integration, manual pass and owner rulings. The gate merged as
+`d4049cb` and its docs close-out as `ed9374b`; Slice 5 integrated that `main`
+via merge commit `466a474` (parents `6decbef` + `ed9374b`; five keep-both
+conflicts — both dictionaries' `privacy.data_use_*` keys beside this branch's
+blank-line removal, `SESSION_CONTENT_IDS`' four `sleepSystem*` and five
+`sleepPlan*` ids, the sweep's `TRUST`/`TRUST_CONTRAST` and `PLAN*` observer
+constants, and the generated demo index rebuilt with the canonical tool);
+combined tree green locally and in CI run 32609261432 — validator 1153/0,
+session safety 560/0, sleep plan 145/0, trust integrity 122/122, payment
+choice 439/439, phase 1 output regression 77/0 with the fixture byte-identical,
+mutation sweep 404/404. **Manual pass:** Blake Ford walked the eight-item
+compact checklist (desktop keyboard journey and 200% zoom; mounted iPad Pro
+11-inch portrait 834×1108 and landscape 1194×748 in English; Spanish rendering
+in both orientations; the Plan screen, Sleep System anchor, vocabulary, drawer
+label and Compare title; Restart from the Plan; idle timeout from the Plan with
+Continue then Start new customer; owner live review) on the retained dry-run
+mirror `df-phase1-dryrun@062bf21`, whose served `index.html` was verified
+byte-identical to the `466a474` blob (SHA-256 `df744bb7…c29f54`) before and
+after the walk, and attested **"done, everything passed"** — owner attestation
+only, no export or device versions supplied or requested. **Owner rulings
+2026-08-23 (given in conversation):** (a) the rendered Windows forced-colors
+check is **waived for this preview merge only** and **remains required before
+showroom authorization**; (b) native-Spanish review is **deferred to the
+consolidated end-of-development language pass** — Spanish remains provisional;
+(c) marking draft PR #53 **ready for review is authorized**, to be done only
+after green CI at the reviewed head, with any automatic external-review
+findings evaluated and resolved; (d) **merge is NOT yet authorized**; (e)
+**showroom authorization: no.** This paragraph records rulings; it changes no
+application byte, so the attestation carries forward on byte identity. The
+exit below is unchanged.)*
 
 What it carries, per the approved direction: an explicit finalist block —
 either the customer-chosen **Finalist**, or the engine's top pick honestly

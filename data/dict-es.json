@@ -114,6 +114,7 @@
   "hf2.saved_picks_label": "Tus selecciones guardadas",
   "hf2.compare_saved": "Comparar selecciones guardadas",
   "hf2.add_to_saved": "Agregar a selecciones guardadas",
+  "hf2.saved_picks_hint": "Las selecciones guardadas se envían; las sugerencias son opciones para comparar.",
   "screen.sleep_plan": "Tu Plan de Sueño",
   "plan.eyebrow": "Tu plan para la prueba en la tienda",
   "plan.title": "Tu Plan de Sueño",

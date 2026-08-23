@@ -69,7 +69,16 @@ const DICTS = {
 // hash moved in the same reviewed diff. The final section below pins the
 // ruled pair as literals, so the fixture and the source must agree with the
 // ruling independently — a regeneration cannot move the label silently.
-const BASELINE_SHA256 = "75b4d244c18b2d2fc966982f03e24917af2ef1bc3bfc4830bff8d02e42a387e1";
+// 2026-08-23 amendment (owner-authorized Sleep Brief copy change, Slice 5
+// C10): the "Comfortable elevation" testing prose — "Try the finalist flat,
+// ..." / "Prueba el finalista plano ..." — was hand-edited to "Try the mattress
+// flat, ..." / "Prueba el colchón plano ..." in its eight occurrences (the four
+// `test` fields and the four `prioritiesHtml` strings of fixtures C and I,
+// EN and ES), not regenerated; every other byte remains the executed 572d405
+// output, and this hash moved in the same reviewed diff. The final section
+// pins the ruled wording as literals so fixture and source must agree with the
+// ruling independently.
+const BASELINE_SHA256 = "0dbd354c2fb7e64237e18f1c7b75a0cd5795f980e9ae1c58a6ba4d1e835170c4";
 
 let passed = 0, failed = 0;
 function check(label, cond) {
@@ -657,6 +666,40 @@ section("Sleep Brief CTA: ruled label, unchanged handler, honesty invariant");
     !routesToResults || !/compar/i.test(enLabel));
   check("HONESTY: a results-routing CTA claims no comparison (ES)",
     !routesToResults || !/compar/i.test(esLabel));
+}
+
+// 2026-08-23 owner ruling (Slice 5 C10): the trial priorities are written
+// BEFORE any finalist exists and are shown on the Sleep Plan in the
+// no-finalist state beside "Recommended starting point / No finalist selected
+// yet", so their prose may not call the mattress under test "the finalist".
+// Three pins: the ruled wording as literals (on top of the fixture's test
+// fields, so neither a source revert nor a fixture regeneration can move it
+// alone), and a vocabulary invariant over every priority the engine emits.
+section("trial priorities: ruled neutral wording, no 'finalist' vocabulary");
+{
+  const EN_RULED = "Try the mattress flat, then with the head gently raised on an adjustable base.";
+  const ES_RULED = "Prueba el colchón plano y luego con la cabeza ligeramente elevada en una base ajustable.";
+  const elevEn = runProfile(FIXTURES.C, "en").analytics.trialFocus.find((t) => t.en === "Comfortable elevation");
+  const elevEs = runProfile(FIXTURES.C, "es").analytics.trialFocus.find((t) => t.en === "Comfortable elevation");
+  check("the 'Comfortable elevation' testing prose is exactly the ruled EN wording",
+    !!elevEn && elevEn.test.en === EN_RULED);
+  check("...and exactly the ruled provisional ES wording",
+    !!elevEs && elevEs.test.es === ES_RULED);
+  check("the fixture carries the ruled wording too (source and oracle agree independently)",
+    BASELINE.C.en.priorities.some((p) => p.test === EN_RULED) && BASELINE.C.es.priorities.some((p) => p.test === ES_RULED));
+  check("the retired wording is gone from the producer source", !/the finalist flat/.test(html) && !/el finalista plano/.test(html));
+  let violations = [];
+  for (const f of Object.keys(FIXTURES)) {
+    for (const lang of ["en", "es"]) {
+      for (const t of runProfile(FIXTURES[f], lang).analytics.trialFocus) {
+        for (const s of [t.en, t.es, t.why && t.why.en, t.why && t.why.es, t.test && t.test.en, t.test && t.test.es]) {
+          if (typeof s === "string" && /\bfinalist(a|as|s)?\b/i.test(s)) violations.push(`${f}/${lang}: ${s}`);
+        }
+      }
+    }
+  }
+  check("VOCABULARY: no emitted priority name, reason or testing prose calls the mattress 'the finalist' (EN or ES), across every fixture",
+    violations.length === 0, violations.join(" | "));
 }
 
 // ===========================================================================

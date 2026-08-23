@@ -79,7 +79,17 @@ const ACCESSORIES = JSON.parse(readFileSync(join(root, "data", "accessories.json
 // were removed from calculateScores(). Generated from the engine as changed on
 // top of 31a7e79; supersedes phase1_output_baseline_85c5c10.json.
 const BASELINE_PATH = join(root, "tests", "fixtures", "phase1_output_baseline_daybreak_pr1.json");
-const BASELINE_SHA256 = "4aa0e7adf94d5ddc4b2c5a033934cf30b579b8368a58d7ab7fa1985f732eaad7";
+// 2026-08-23 amendment (owner-authorized Sleep Brief copy change, Slice 5
+// C10): the "Comfortable elevation" testing prose changed from "Try the
+// finalist flat, ..." to "Try the mattress flat, ..." (ES "el finalista" ->
+// "el colchón", provisional). The fixture's TWO prose strings — and ONLY those
+// — moved (s3_family_combo_cold_plush_reflux_plus.profile.trialFocus[0].test
+// .en/.es). Evidence: the established tool (--write-baseline) was run on the
+// post-change tree and its output equals this fixture minus the obsolete
+// feelWord field, which stays in the pinned bytes per the 2026-08-15
+// amendment; no score, rank, pct, threshold or resolved-firmness byte moved.
+// Hash moved in the same reviewed diff.
+const BASELINE_SHA256 = "e7e5c27df363a936052003f325e6e54a9452b4dea8336052afa195dd4f04cfb2";
 
 const WRITE_MODE = process.argv.includes("--write-baseline");
 

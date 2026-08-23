@@ -114,6 +114,7 @@
   "hf2.saved_picks_label": "Your saved picks",
   "hf2.compare_saved": "Compare saved picks",
   "hf2.add_to_saved": "Add to saved picks",
+  "hf2.saved_picks_hint": "Saved picks are sent; suggestions remain comparison options.",
   "screen.sleep_plan": "Your Sleep Plan",
   "plan.eyebrow": "Your plan for the in-store trial",
   "plan.title": "Your Sleep Plan",

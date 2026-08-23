@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#633c28">
-  <title>PR #53 Owner / Device Check</title>
+  <title>PR #53 Focused Retest</title>
   <style>
     :root { color-scheme: light; --ink:#251a15; --muted:#735d51; --paper:#fffaf3; --card:#fff; --line:#dfd1c6; --brand:#633c28; --brand2:#8d5d43; --pass:#166534; --pass-bg:#e9f8ee; --fail:#9f1239; --fail-bg:#fff0f3; --skip:#6b5b53; --skip-bg:#f2ece8; --warn:#8a4b08; --warn-bg:#fff7df; }
     * { box-sizing: border-box; }
@@ -65,14 +65,14 @@
 </head>
 <body>
   <header>
-    <p class="eyebrow">Owner / device review · Draft PR #53 · Slice 5 Sleep Plan</p>
-    <h1>Compact check — 8 items</h1>
-    <p>Reviewed candidate <strong>466a474</strong> (Slice 5 + trust gate, on main ed9374b). Nothing on this page marks a gate passed, makes the PR ready, merges it, or authorizes showroom use.</p>
+    <p class="eyebrow">Owner retest · PR #53 · Slice 5 Sleep Plan · PLAN-01 at the fix head</p>
+    <h1>Focused retest — 3 items</h1>
+    <p>Build <strong>cd1f1ef</strong> (466a474 + the C8/C9/C10 fixes, on main ed9374b). Only the three surfaces the fixes touched. Nothing here merges the PR or authorizes showroom use.</p>
   </header>
 
   <main>
     <section class="panel warning">
-      <strong>Real devices only.</strong> Items 2–4 and 6–7 on the mounted iPad Pro 11-inch; item 1 on a desktop with a keyboard. Tap PASS or FAIL per item; a note is only needed for a FAIL or anything odd. No screenshots or paperwork unless a failure needs evidence.
+      <strong>Mounted iPad, either orientation, English is enough</strong> (a quick ES glance at item 2 is welcome, not required). Start with Restart → Start new customer, run the quiz with <em>snoring</em> or <em>reflux</em> ticked so the “Comfortable elevation” priority exists, and do NOT choose a finalist until item 3. Tap PASS or FAIL; a note only if something is off.
     </section>
 
     <section class="panel">
@@ -87,64 +87,42 @@
         <a class="button" href="./" target="_blank" rel="noopener">Open test build ↗</a>
         <a class="button secondary" href="https://github.com/beford782/LacksFurniture/pull/53" target="_blank" rel="noopener">Open PR #53 ↗</a>
       </div>
-      <p><small>Path to the Plan: finish the quiz → Results → tap <strong>Review with customer →</strong>. Or from the Sleep System screen tap <strong>Review Sleep Plan</strong>. Results save automatically in Safari on this iPad.</small></p>
+      <p><small>Path: quiz (tick snoring or reflux) → Results → <strong>Review with customer →</strong> opens the Plan. Results save automatically in Safari on this iPad.</small></p>
     </section>
 
     <div class="progress-wrap">
       <div class="progress-card">
-        <progress id="progress" max="8" value="0"></progress>
-        <span id="progressText">0 / 8</span>
+        <progress id="progress" max="3" value="0"></progress>
+        <span id="progressText">0 / 3</span>
       </div>
     </div>
 
-    <section class="section-title"><h2>Desktop</h2></section>
-    <article class="test" data-id="DESK-01">
-      <div class="test-head"><span class="id">DESK-01</span><div><h3>Keyboard journey and 200% zoom</h3><p class="expected">Keyboard only (Tab / Shift-Tab / Enter / Space / Escape): Welcome → quiz → Results → <em>Review with customer →</em> → the Plan → <em>Continue to your consultation summary →</em>. A visible focus ring on every stop; Escape closes the drawer and the compare dialog and returns focus to the opener; no focus trap and no focus lost off-screen. Then at browser zoom 200% the Plan reads top to bottom without horizontal scrolling or clipped controls.</p></div></div>
+    <section class="section-title"><h2>On the Plan, before any finalist is chosen</h2></section>
+    <article class="test" data-id="RT-01">
+      <div class="test-head"><span class="id">RT-01</span><div><h3>Recommended starting point shows its tier-and-position line</h3><p class="expected">The finalist card is labelled <em>Recommended starting point</em> and, under the mattress name, shows a tier-and-position line such as <em>Gold · Best match</em> (a tier word plus a position) — not a blank line. <em>No finalist selected yet</em> and <em>Choose a finalist</em> appear beneath it.</p></div></div>
     </article>
-
-    <section class="section-title"><h2>Mounted iPad Pro 11-inch</h2><p>Start each run with Restart → Start new customer so nothing carries over.</p></section>
-    <article class="test" data-id="IPAD-P-EN">
-      <div class="test-head"><span class="id">IPAD-P-EN</span><div><h3>Portrait (834×1108), English</h3><p class="expected">Full journey: quiz with a partner, Results, save two picks from the drawer, Sleep System, the Plan, consultation summary. Every screen fits the width, nothing clipped, every tap lands once (no double-fire), scrolling is smooth.</p></div></div>
+    <article class="test" data-id="RT-02">
+      <div class="test-head"><span class="id">RT-02</span><div><h3>The priority line says “mattress”, not “finalist”</h3><p class="expected">Under <em>What we will test together</em>, the <em>Comfortable elevation</em> item’s “Try this:” line reads <em>Try the mattress flat, then with the head gently raised on an adjustable base.</em> The word “finalist” appears nowhere in the priorities. (ES, if glanced: <em>Prueba el colchón plano y luego…</em>)</p></div></div>
     </article>
-    <article class="test" data-id="IPAD-L-EN">
-      <div class="test-head"><span class="id">IPAD-L-EN</span><div><h3>Landscape (1194×748), English</h3><p class="expected">Same journey as IPAD-P-EN in landscape, including rotating portrait ↔ landscape while on the Plan: the layout re-flows, nothing is cut off, the Plan's sections stay in order (finalist, priorities, compared mattresses, Sleep System, payment choice, Continue).</p></div></div>
-    </article>
-    <article class="test" data-id="IPAD-ES">
-      <div class="test-head"><span class="id">IPAD-ES</span><div><h3>Spanish rendering, portrait and landscape</h3><p class="expected">Switch ES on Welcome; walk to the Plan in both orientations. Expect <em>Tu Plan de Sueño</em>, <em>Lo que probaremos juntos</em>, <em>Colchones comparados</em>, <em>Tu Sistema de Sueño</em>, <em>Continuar al resumen de tu consulta →</em>; drawer button <em>Guardar</em> / <em>Guardado ✓</em>; compare title <em>Compara tus selecciones</em>; summary title <em>Tu resumen de consulta</em>. Accents render, nothing truncated, no English leaks. <strong>Rendering only — this is not a native-Spanish wording review.</strong></p></div></div>
-    </article>
-
-    <section class="section-title"><h2>The new screen and its vocabulary</h2></section>
-    <article class="test" data-id="PLAN-01">
-      <div class="test-head"><span class="id">PLAN-01</span><div><h3>Plan screen, anchors, vocabulary, drawer, compare title</h3><p class="expected">Results button reads <em>Review with customer →</em> and opens the Plan (eyebrow <em>Your plan for the in-store trial</em>, title <em>Your Sleep Plan</em>, <em>← Back to matches</em>). With no pick chosen the finalist card says <em>Recommended starting point</em> (or <em>No finalist selected yet</em>); <em>Choose as finalist</em> turns into <em>Chosen ✓</em> and the label becomes <em>Finalist ✓</em>. Priorities list under <em>What we will test together</em>. Sleep System screen shows the anchor <em>Building around your finalist</em> (or <em>…a recommended starting point</em>) and a <em>Review Sleep Plan</em> button that opens the Plan. Drawer button reads <em>Save for later</em> → <em>Saved ✓</em>. Compare dialog title reads <em>Compare your selections</em>; the summary's button reads <em>Compare saved picks</em> and its title <em>Your consultation summary</em>. Plan items show <em>Added to your plan</em> / <em>Not added</em>.</p></div></div>
-    </article>
-
-    <section class="section-title"><h2>Leaving the Plan</h2><p>Timers are real: the idle warning needs 5 minutes untouched, and expiry a further 5 minutes. No accelerator exists on this host.</p></section>
-    <article class="test" data-id="PLAN-RESTART">
-      <div class="test-head"><span class="id">PLAN-RESTART</span><div><h3>Restart from the Plan</h3><p class="expected">On the Plan, tap Restart. Dialog: <em>Start a new customer?</em> / <em>This clears the current answers, mattress selections, and Sleep Plan.</em> <em>Keep this session</em> returns to the Plan unchanged. <em>Start new customer</em> lands on English Welcome; a new quiz shows none of the previous customer's picks, finalist, priorities, compared mattresses, Sleep System items or payment choice.</p></div></div>
-    </article>
-    <article class="test" data-id="PLAN-IDLE">
-      <div class="test-head"><span class="id">PLAN-IDLE</span><div><h3>Idle timeout from the Plan — Continue, then Start new customer</h3><p class="expected">Leave the Plan untouched 5 min (time it on a phone): <em>Still comparing?</em> / <em>Session paused. Continue this session where you left off, or start a new customer to clear it.</em> with a countdown. Tap <em>Continue this session</em>: the Plan is exactly as left (finalist, priorities, items, language). Repeat the wait; this time tap <em>Start new customer</em>: English Welcome, nothing carried over. Optional third pass: let the countdown expire untouched — same clean Welcome.</p></div></div>
-    </article>
-
-    <section class="section-title"><h2>Owner</h2></section>
-    <article class="test" data-id="OWNER-01">
-      <div class="test-head"><span class="id">OWNER-01</span><div><h3>Owner live review</h3><p class="expected">Walk the whole customer journey on this build as a salesperson would and judge the Plan's copy, order and emphasis. PASS means the wording and layout are acceptable for the preview as built; anything to change goes in the note and is a FAIL for this item.</p></div></div>
+    <section class="section-title"><h2>Then choose a finalist and open the Consultation Summary</h2></section>
+    <article class="test" data-id="RT-03">
+      <div class="test-head"><span class="id">RT-03</span><div><h3>“Chosen ✓” again does not unset or replace the finalist</h3><p class="expected">Save two mattresses, choose one as finalist (its button reads <em>Chosen ✓</em>). Go to the Plan → <em>Continue to your consultation summary →</em>. In <em>Your saved picks</em>, tap the finalist’s <em>Chosen ✓</em> button <strong>twice</strong>: it stays <em>Chosen ✓</em>, the other pick still reads <em>Choose as finalist</em>, both remain saved. Tap <em>← Back</em> to the Plan: the card is still labelled <em>Finalist ✓</em> with the same mattress — not “Recommended starting point”.</p></div></div>
     </article>
 
     <section class="panel" id="summaryPanel">
       <h2>Run summary</h2>
-      <p id="overallStatus" class="status partial">PARTIAL — 8 checks not run.</p>
-      <label>Failures / observations<textarea data-meta="risks" placeholder="Example: PLAN-IDLE FAIL — Continue lost the finalist"></textarea></label>
-      <p><small>A full PASS records only these manual checks for build 466a474. It does not decide any gate on the card below.</small></p>
+      <p id="overallStatus" class="status partial">PARTIAL — 3 checks not run.</p>
+      <label>Failures / observations<textarea data-meta="risks" placeholder="Example: RT-03 FAIL — second tap cleared the finalist"></textarea></label>
+      <p><small>A full PASS closes only the PLAN-01 retest at build cd1f1ef. The policy gates below stay as ruled.</small></p>
     </section>
 
     <section class="decision">
-      <h2>Decision card — policy gates (owner only, all OPEN)</h2>
+      <h2>Decision card — owner rulings 2026-08-23</h2>
       <table>
-        <tr><th>Showroom authorization</th><td><span class="pill">OPEN</span> Kiosk hardening still blocks independently. Nothing here grants it.</td></tr>
-        <tr><th>Native-Spanish review</th><td><span class="pill">OPEN</span> Strings are provisional. Ruling needed: native review now, or explicit deferral to the consolidated end-of-development pass.</td></tr>
-        <tr><th>Mark PR #53 ready for review</th><td><span class="pill">OPEN</span> Requires the 8 checks above recorded and your explicit word. Leaving draft may trigger an external review whose findings are handled before any merge.</td></tr>
-        <tr><th>Merge PR #53</th><td><span class="pill">OPEN</span> Separate explicit authorization, after ready + green CI + zero unresolved threads. Merge commit, branch kept.</td></tr>
+        <tr><th>Showroom authorization</th><td><span class="pill">NO</span> Kiosk hardening blocks; the rendered forced-colors check is still required before it.</td></tr>
+        <tr><th>Native-Spanish review</th><td><span class="pill">DEFERRED</span> To the end-of-development language pass; Spanish remains provisional.</td></tr>
+        <tr><th>PR #53 ready for review</th><td><span class="pill">DONE</span> Authorized and executed; external-review findings fixed (C8/C9/C10).</td></tr>
+        <tr><th>Merge PR #53</th><td><span class="pill">NOT YET</span> Needs this retest recorded and your explicit merge word. Merge commit, branch kept.</td></tr>
       </table>
     </section>
   </main>
@@ -157,7 +135,7 @@
   <script>
     (() => {
       'use strict';
-      const KEY = 'df-pr53-compact-gate-v1';
+      const KEY = 'df-pr53-focused-retest-v1';
       const tests = [...document.querySelectorAll('.test')];
       const metas = [...document.querySelectorAll('[data-meta]')];
       let saved = {};
@@ -200,10 +178,10 @@
         document.querySelector('#progressText').textContent = `${done} / ${tests.length}`;
         const status = document.querySelector('#overallStatus');
         status.className = 'status ' + (fails ? 'fail' : missing ? 'partial' : 'pass');
-        status.textContent = fails ? `FAIL — ${fails} failed; ${missing} not passed.` : missing ? `PARTIAL — ${missing} checks not passed.` : 'PASS — all 8 manual checks recorded as passed (policy gates still open).';
+        status.textContent = fails ? `FAIL — ${fails} failed; ${missing} not passed.` : missing ? `PARTIAL — ${missing} checks not passed.` : 'PASS — all 3 retest items recorded as passed (PLAN-01 retest closed for this build).';
       }
       function resultText() {
-        const lines = ['PR #53 owner/device check', 'Build: 466a474', `Tester: ${saved.meta.tester || ''}`, `Date: ${saved.meta.date || ''}`, `Device: ${saved.meta.device || ''}`, ''];
+        const lines = ['PR #53 focused retest (PLAN-01)', 'Build: cd1f1ef', `Tester: ${saved.meta.tester || ''}`, `Date: ${saved.meta.date || ''}`, `Device: ${saved.meta.device || ''}`, ''];
         for (const test of tests) {
           const id = test.dataset.id;
           lines.push(`${id}: ${(saved.states[id] || 'NOT RECORDED').toUpperCase()} — ${test.querySelector('h3').textContent}`);
@@ -222,7 +200,7 @@
       document.querySelector('#shareBtn').addEventListener('click', async () => {
         const text = resultText();
         try {
-          if (navigator.share) await navigator.share({ title: 'PR #53 device check', text });
+          if (navigator.share) await navigator.share({ title: 'PR #53 focused retest', text });
           else { await navigator.clipboard.writeText(text); alert('Results copied.'); }
         } catch (error) { if (error && error.name !== 'AbortError') prompt('Copy results:', text); }
       });

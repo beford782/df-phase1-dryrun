@@ -223,7 +223,8 @@ section("contract / chooseFinalist() producer + atomic clears (R-1)");
 const CHOOSE_SRC = extractFunction("window.chooseFinalist = function(mattressId)");
 const TOGGLE_SAVE_SRC = extractFunction("window._toggleSavePick = function(mattressId)");
 const REMOVE_SRC = extractFunction("window.removeReviewMattress = function(mattressId)");
-if (gate("chooseFinalist", !!CHOOSE_SRC && !!TOGGLE_SAVE_SRC && !!REMOVE_SRC)) {
+const HF2_TOGGLE_SRC = extractFunction("window.toggleFavoriteMattress = function(mattressId)");
+if (gate("chooseFinalist", !!CHOOSE_SRC && !!TOGGLE_SAVE_SRC && !!REMOVE_SRC && !!HF2_TOGGLE_SRC)) {
   // Minimal executable environment: a results state with two gold mattresses,
   // a DOM stub that records button repaints, an analytics recorder.
   const mk = () => {
@@ -251,7 +252,8 @@ if (gate("chooseFinalist", !!CHOOSE_SRC && !!TOGGLE_SAVE_SRC && !!REMOVE_SRC)) {
            btn.classList.toggle('chosen', on); btn.setAttribute('aria-pressed', on ? 'true' : 'false'); btn.textContent = finalistButtonLabel(on);
          });
        };
-       ${REMOVE_SRC}`)(
+       ${REMOVE_SRC}
+       ${HF2_TOGGLE_SRC}`)(
       win, doc, resultsState, { log: (e, d) => events.push({ e, d }) }, (k) => k, (s) => (s ? "SAVED" : "SAVE"), () => "FEEL", () => {}, () => {});
     return { win, events, buttons };
   };
@@ -266,6 +268,24 @@ if (gate("chooseFinalist", !!CHOOSE_SRC && !!TOGGLE_SAVE_SRC && !!REMOVE_SRC)) {
     const before = win._favoriteMattressId;
     win.chooseFinalist("g6");
     check("re-choosing the current finalist is an idempotent no-op (never a toggle off)", win._favoriteMattressId === before && before === "g6");
+  }
+  {
+    // The Consultation Summary's control carries the SAME "Chosen ✓" label as
+    // the Results producer (finalistButtonLabel) and must mean the same thing:
+    // activating it on the current finalist keeps the finalist and keeps the
+    // pick saved. Unsetting belongs to the adjacent Remove control. (External
+    // review P2 at eb7b124: the hf2 control toggled the finalist OFF, so the
+    // next Plan render silently fell back to the recommended starting point.)
+    const { win } = mk();
+    win.toggleFavoriteMattress("g5");
+    check("hf2 control on an unchosen saved pick SETS it as finalist through the producer (saves + chooses)",
+      win._favoriteMattressId === "g5" && win._savedPicks.some((p) => p.id === "g5"));
+    win.toggleFavoriteMattress("g5");
+    check("hf2 control on the CURRENT finalist is idempotent — finalist kept, pick still saved (never a toggle off)",
+      win._favoriteMattressId === "g5" && win._savedPicks.some((p) => p.id === "g5"));
+    win.toggleFavoriteMattress("g6");
+    check("hf2 control on another pick REPLACES the finalist (single finalist), both picks stay saved",
+      win._favoriteMattressId === "g6" && win._savedPicks.some((p) => p.id === "g5") && win._savedPicks.some((p) => p.id === "g6"));
   }
   {
     const { win } = mk();
@@ -318,10 +338,17 @@ if (gate("chooseFinalist", !!CHOOSE_SRC && !!TOGGLE_SAVE_SRC && !!REMOVE_SRC)) {
     /t\('finalist\.building_around_finalist'\)/.test(norm) && /t\('finalist\.building_around_recommended'\)/.test(norm)
     && !/'Building around your finalist'/.test(norm));
   for (const k of ["finalist.chosen", "finalist.recommended", "finalist.none", "finalist.choose", "finalist.choose_as", "finalist.chosen_btn",
-    "finalist.building_around_finalist", "finalist.building_around_recommended", "compare.modal_title", "hf2.saved_picks_label", "hf2.compare_saved", "hf2.add_to_saved"]) {
+    "finalist.building_around_finalist", "finalist.building_around_recommended", "compare.modal_title", "hf2.saved_picks_label", "hf2.compare_saved", "hf2.add_to_saved",
+    "hf2.saved_picks_hint"]) {
     check(`dict key ${k} present in both languages and translated`,
       typeof dictEn[k] === "string" && dictEn[k].length > 0 && typeof dictEs[k] === "string" && dictEs[k].length > 0 && dictEn[k] !== dictEs[k]);
   }
+  // The hint paired with "Your saved picks" must not call every saved pick a
+  // finalist (saving and choosing are separate actions). External review P2
+  // at 0613805: the renamed label still sat beside "Saved finalists are sent".
+  check("the saved-picks hint is dictionary-driven and uses saved-pick terminology in BOTH languages (no 'finalist')",
+    /hf2FinalistsHint:\s*t\('hf2\.saved_picks_hint'\)/.test(norm) && !/Saved finalists are sent/.test(norm) && !/Los finalistas guardados se env/.test(norm)
+    && !/finalist/i.test(dictEn["hf2.saved_picks_hint"]) && !/finalista/i.test(dictEs["hf2.saved_picks_hint"]));
   check("the governed EN strings are exact", dictEn["finalist.chosen"] === "Finalist ✓" && dictEn["finalist.recommended"] === "Recommended starting point"
     && dictEn["finalist.none"] === "No finalist selected yet" && dictEn["finalist.choose"] === "Choose a finalist"
     && dictEn["finalist.choose_as"] === "Choose as finalist" && dictEn["finalist.chosen_btn"] === "Chosen ✓");
@@ -542,6 +569,50 @@ if (gate("renderSleepPlan", RENDER_SRCS.every(Boolean) && !!FALLBACK_SRC && !!RE
   { const env = makePlanEnv({ results: RESULTS, savedPicks: [{ id: "g2", name: "Gold Two", tier: "gold" }], favorite: "g9" }); env.api.render();
     check("stale favorite ('g9' unsaved): recommended state, never a promotion of saved[0]",
       env.els.sleepPlanFinalistLabel.textContent === "EN:finalist.recommended" && !/Gold Two/.test(env.els.sleepPlanFinalist.innerHTML)); }
+  { // PRODUCTION SHAPE: showResults() maps MATTRESSES[tier] entries with score/pct/
+    // meetsMatchThreshold and NO `tier` property (the tier is the bucket key only).
+    // The recommended starting point is read from that bucket, so its tier-and-
+    // position line must still resolve to Gold · lead. (External review P2 at
+    // eb7b124: the fallback returned the raw entry and the line rendered blank.)
+    const PROD = { tierData: { gold: [{ id: "g1", name: "Gold One", score: 90, pct: 100, meetsMatchThreshold: true },
+                                      { id: "g2", name: "Gold Two", score: 80, pct: 89, meetsMatchThreshold: true }], silver: [], bronze: [] } };
+    const env = makePlanEnv({ results: PROD, savedPicks: [], favorite: "" }); env.api.render();
+    const html = env.els.sleepPlanFinalist.innerHTML;
+    check("recommended starting point from PRODUCTION-shaped tierData (no tier stamp) still renders Gold One",
+      env.els.sleepPlanFinalistLabel.textContent === "EN:finalist.recommended" && /Gold One/.test(html));
+    check("…and its model line carries the GOLD tier label (results.tier_gold), not a blank tier",
+      /results\.tier_gold/.test(html) && !/results\.tier_(?![a-z])/.test(html));
+    check("…and the lead position within Gold (results.match_lead)", /results\.match_lead/.test(html));
+    check("the fallback does not mutate the engine's tierData entry (no tier stamped onto the shared object)",
+      !("tier" in PROD.tierData.gold[0])); }
+  { // NO-FINALIST HONESTY (owner ruling 2026-08-23, Slice 5 C10). The Plan's
+    // priorities are the stored Sleep Brief prose; in the no-finalist state they
+    // sit beside "Recommended starting point / No finalist selected yet", so the
+    // real producer prose may not call the recommendation "the finalist". The
+    // trialFocus used here is built from the REAL priority strings in the
+    // producer source (every quoted argument of every addPriority(...) call),
+    // not a hand-written fixture — so a regression in the source is what fails.
+    const producer = (norm.match(/addPriority\(([\s\S]*?)\);/g) || []);
+    const strings = producer.flatMap((call) => [...call.matchAll(/'((?:[^'\\]|\\.)*)'/g)].map((m) => m[1]));
+    check("the producer source exposes its priority strings (harness sanity)", producer.length >= 5 && strings.length >= 20);
+    check("no producer priority string says 'the finalist' / 'el finalista' (source)",
+      !strings.some((s) => /\bfinalist(a|as|s)?\b/i.test(s)), strings.filter((s) => /finalist/i.test(s)).join(" | "));
+    const PROD2 = { tierData: { gold: [{ id: "g1", name: "Gold One", score: 90, pct: 100, meetsMatchThreshold: true }], silver: [], bronze: [] } };
+    const realFocus = [{ en: "Comfortable elevation", es: "Elevación cómoda",
+      why: { en: strings.find((s) => /raised upper body/i.test(s)) || "", es: strings.find((s) => /posición elevada/i.test(s)) || "" },
+      test: { en: strings.find((s) => /^Try the .* flat, then with the head/i.test(s)) || "", es: strings.find((s) => /^Prueba el .* plano y luego/i.test(s)) || "" } }];
+    check("the real 'Comfortable elevation' prose was located in the producer source", !!realFocus[0].test.en && !!realFocus[0].test.es && !!realFocus[0].why.en);
+    for (const lang of ["en", "es"]) {
+      const env = makePlanEnv({ results: PROD2, savedPicks: [], favorite: "", trialFocus: realFocus, lang }); env.api.render();
+      const plain = (env.els.sleepPlanPriorities.innerHTML + " " + env.els.sleepPlanFinalist.innerHTML).replace(/(EN|ES):[a-z_.]+/g, "");
+      check(`[${lang}] no-finalist Plan: the finalist block is the RECOMMENDED state (not a finalist)`,
+        env.els.sleepPlanFinalistLabel.textContent === (lang === "es" ? "ES:" : "EN:") + "finalist.recommended");
+      check(`[${lang}] no-finalist Plan: the rendered priority and finalist markup never calls the recommendation 'the finalist' (dictionary keys excluded)`,
+        !/\bfinalist(a|as|s)?\b/i.test(plain), plain.slice(0, 200));
+      check(`[${lang}] no-finalist Plan: the testing line says 'mattress' / 'colchón'`,
+        lang === "es" ? /colchón plano/.test(env.els.sleepPlanPriorities.innerHTML) : /mattress flat/.test(env.els.sleepPlanPriorities.innerHTML));
+    }
+  }
   { const env = makePlanEnv({ results: { tierData: { gold: [], silver: [], bronze: [] } } }); env.api.render();
     check("no engine pick and no favorite: label is finalist.none, nothing rendered as a mattress, route-back offered",
       env.els.sleepPlanFinalistLabel.textContent === "EN:finalist.none" && !/hf2-pick__name/.test(env.els.sleepPlanFinalist.innerHTML) && /sleepPlanChooseFinalist/.test(env.els.sleepPlanFinalist.innerHTML)); }

@@ -76,7 +76,7 @@ function buildGas() {
 const PRIORITIES_EN = [
   { name: "Comfortable elevation",
     reason: "A raised upper body may be worth experiencing as part of the complete sleep setup.",
-    test: "Try the finalist flat, then with the head gently raised on an adjustable base." },
+    test: "Try the mattress flat, then with the head gently raised on an adjustable base." },
   { name: "Motion control",
     reason: "Movement on the other side is already affecting your sleep.",
     test: "Have the other sleeper change positions and notice how much movement reaches your side." },

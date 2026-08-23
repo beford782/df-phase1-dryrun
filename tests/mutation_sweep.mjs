@@ -1575,6 +1575,30 @@ const MUTATIONS = [
   ["plan: the announcement region for the Plan is never live",
     "      if (regionId === 'sleepPlanFinancingStatus') return finPlanVisible();",
     "      if (regionId === 'sleepPlanFinancingStatus') return false;", PAY],
+  // External review at eb7b124 (two P2s, both fixed): the recommended starting
+  // point lost its tier (showResults() never stamps one on the bucket entries),
+  // and the Consultation Summary's "Chosen" control toggled the finalist OFF.
+  ["plan: the recommended fallback returns the raw bucket entry again (no tier -> blank tier-and-position line)",
+    "        return Object.assign({}, _resultsState.tierData.gold[0], { tier: 'gold' });",
+    "        return _resultsState.tierData.gold[0];", PLAN],
+  ["plan: the recommended fallback stamps the tier onto the engine's shared entry (mutates tierData)",
+    "        return Object.assign({}, _resultsState.tierData.gold[0], { tier: 'gold' });",
+    "        _resultsState.tierData.gold[0].tier = 'gold'; return _resultsState.tierData.gold[0];", PLAN],
+  ["plan: the Consultation Summary's finalist control toggles the current finalist OFF again",
+    "    window.toggleFavoriteMattress = function(mattressId) {\n      window.chooseFinalist(mattressId);",
+    "    window.toggleFavoriteMattress = function(mattressId) {\n      if (window._favoriteMattressId === mattressId) { window._favoriteMattressId = ''; } else window.chooseFinalist(mattressId);", PLAN],
+  // Owner ruling 2026-08-23 (C10): neutral trial-priority prose. Observed by the
+  // Plan suite's no-finalist honesty checks, the Sleep Brief pin and the Phase 1
+  // output fixture (the prose is engine output).
+  ["plan: the 'Comfortable elevation' testing prose calls the mattress 'the finalist' again (EN)",
+    "          'Try the mattress flat, then with the head gently raised on an adjustable base.',",
+    "          'Try the finalist flat, then with the head gently raised on an adjustable base.',", PLAN_WITH_PHASE1.concat(["tests/consultation_priorities_check.mjs"])],
+  ["plan: the 'Comfortable elevation' testing prose calls the mattress 'el finalista' again (ES)",
+    "          'Prueba el colchón plano y luego con la cabeza ligeramente elevada en una base ajustable.'",
+    "          'Prueba el finalista plano y luego con la cabeza ligeramente elevada en una base ajustable.'", PLAN_WITH_PHASE1.concat(["tests/consultation_priorities_check.mjs"])],
+  ["plan: the Consultation Summary's saved-picks hint calls every saved pick a finalist again (inline literal restored)",
+    "        hf2FinalistsHint: t('hf2.saved_picks_hint'),",
+    "        hf2FinalistsHint: es ? 'Los finalistas guardados se envían; las sugerencias son opciones para comparar.' : 'Saved finalists are sent; suggestions remain comparison options.',", PLAN],
 
 ];
 

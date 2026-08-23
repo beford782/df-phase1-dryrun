@@ -14913,8 +14913,8 @@
           'Comfortable elevation', 'Elevación cómoda',
           'A raised upper body may be worth experiencing as part of the complete sleep setup.',
           'Puede valer la pena probar una posición elevada como parte del sistema de descanso completo.',
-          'Try the finalist flat, then with the head gently raised on an adjustable base.',
-          'Prueba el finalista plano y luego con la cabeza ligeramente elevada en una base ajustable.'
+          'Try the mattress flat, then with the head gently raised on an adjustable base.',
+          'Prueba el colchón plano y luego con la cabeza ligeramente elevada en una base ajustable.'
         );
       }
 
@@ -18089,10 +18089,14 @@
     // The engine's top pick, read ONCE here for the recommended-starting-point
     // presentation. This is a consume-only read of existing engine output
     // (Phase 1 constraint 2): tierData.gold[0] at its index, never re-ranked.
+    // showResults() keeps the tier as the bucket key only — the entries carry
+    // score/pct/meetsMatchThreshold but no `tier` property — so the known
+    // tier is attached to a shallow copy here (the tier-and-position line
+    // reads m.tier); the engine's own entry is never mutated.
     function finalistRecommendedFallback() {
       if (_resultsState && _resultsState.tierData && Array.isArray(_resultsState.tierData.gold)
           && _resultsState.tierData.gold[0]) {
-        return _resultsState.tierData.gold[0];
+        return Object.assign({}, _resultsState.tierData.gold[0], { tier: 'gold' });
       }
       return null;
     }
@@ -19359,7 +19363,10 @@
         // content, same name, zero invented copy (0.5).
         hf2PrioritiesLabel: es ? 'Lo que probaremos juntos' : 'What we will test together',
         hf2FinalistsLabel: t('hf2.saved_picks_label'),
-        hf2FinalistsHint: es ? 'Los finalistas guardados se envían; las sugerencias son opciones para comparar.' : 'Saved finalists are sent; suggestions remain comparison options.',
+        // Saved-pick terminology, paired with hf2.saved_picks_label: saving and
+        // choosing are separate actions, so saved mattresses are never all
+        // "finalists". (External review P2 at 0613805.)
+        hf2FinalistsHint: t('hf2.saved_picks_hint'),
         hf2SystemLabel: es ? 'Sistema de Sueño seleccionado' : 'Selected Sleep System',
         hf2SystemHint: es ? 'Solo las piezas que ya se agregaron al plan.' : 'Only the pieces already added to the plan.',
         hf2PassLabel: es ? 'Tu consulta está lista para guardar' : 'Your consultation is ready to save',
@@ -19882,13 +19889,14 @@
       });
     };
 
+    // The Consultation Summary's finalist control carries the same label as
+    // the Results producer ("Choose as finalist" / "Chosen ✓") and means the
+    // same thing: it SETS the finalist through chooseFinalist(), which is
+    // idempotent on the current finalist. Unsetting is the adjacent Remove
+    // control's job — a toggle-off here left the pick saved and made the next
+    // Plan render fall back to the recommended starting point unannounced.
     window.toggleFavoriteMattress = function(mattressId) {
-      if (window._favoriteMattressId === mattressId) {
-        window._favoriteMattressId = '';
-        if (typeof window._repaintFinalistControls === 'function') window._repaintFinalistControls();
-      } else {
-        window.chooseFinalist(mattressId);
-      }
+      window.chooseFinalist(mattressId);
       renderHf2();
     };
 
