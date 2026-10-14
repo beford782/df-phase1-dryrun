@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Right Shoulder Routine</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f6f78'/%3E%3Ccircle cx='32' cy='18' r='7' fill='%23fff'/%3E%3Cpath d='M32 25v16M32 31l-12 8M32 31l12-8' stroke='%23fff' stroke-width='5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231f6f78'/%3E%3Ccircle cx='32' cy='18' r='7' fill='%23fff'/%3E%3Cpath d='M32 25v16M32 31l-12 8M32 31l12-8' stroke='%23fff' stroke-width='5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Shoulder">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700&family=Nunito+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: one-screen stepper. Sticky progress header, one stretch card at a time, fixed controls at the bottom. */
+:root{
+  --bg:#f6f4ee; --card:#ffffff; --fg:#1f2a2e; --muted:#5f6c72; --line:#dcd8cc;
+  --accent:#1f6f78; --accent-fg:#ffffff; --soft:#e3efef; --warn:#b6541c; --warn-soft:#fbeadf; --ok:#2e7d4f;
+  --display:"Sora",system-ui,sans-serif; --body:"Nunito Sans",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141a1c; --card:#1d2528; --fg:#e8ebe9; --muted:#9aa6a8; --line:#2f3a3e;
+  --accent:#5fb7c1; --accent-fg:#0d1416; --soft:#1f3236; --warn:#f0a06c; --warn-soft:#3a2418; --ok:#7fcf9c; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#141a1c; --card:#1d2528; --fg:#e8ebe9; --muted:#9aa6a8; --line:#2f3a3e;
+  --accent:#5fb7c1; --accent-fg:#0d1416; --soft:#1f3236; --warn:#f0a06c; --warn-soft:#3a2418; --ok:#7fcf9c; color-scheme:dark }
+
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.5;
+  -webkit-text-size-adjust:100%;display:flex;flex-direction:column}
+*{box-sizing:border-box}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.2}
+button{font:inherit;cursor:pointer}
+a{color:var(--accent)}
+
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
+  padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:640px;margin:0 auto}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.hrow h1{font-size:18px}
+.progress{display:flex;gap:4px;max-width:640px;margin:8px auto 0}
+.progress span{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.progress span.done{background:var(--ok)}
+.progress span.now{background:var(--accent)}
+.linkbtn{background:none;border:1px solid var(--line);border-radius:999px;padding:6px 12px;color:var(--fg);font-size:14px;font-weight:600}
+
+main{flex:1;overflow-y:auto;padding-block:16px 24px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.stepnum{display:inline-block;background:var(--soft);color:var(--accent);font-family:var(--display);font-weight:700;font-size:13px;
+  padding:3px 10px;border-radius:999px;margin-bottom:8px}
+.card h2{font-size:24px}
+.dose{color:var(--muted);font-weight:600;margin-top:4px}
+.fig{margin:14px 0 6px;display:flex;justify-content:center}
+.fig svg{width:100%;max-width:340px;height:auto;color:var(--fg)}
+.fig .acc{color:var(--accent)}
+ul.cues{margin:10px 0 0;padding-left:20px}
+ul.cues li{margin-bottom:5px}
+.why{font-style:italic;color:var(--muted);margin-top:10px}
+.video{margin-top:14px;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:16/9;max-width:100%}
+.video iframe{width:100%;height:100%;border:0;display:block}
+.vlabel{font-size:13px;color:var(--muted);margin-top:6px}
+.demo{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.demo a{display:inline-flex;align-items:center;gap:6px;background:var(--soft);color:var(--accent);text-decoration:none;
+  padding:9px 14px;border-radius:999px;font-weight:700;font-size:15px}
+.demo a svg{width:16px;height:16px}
+
+.timer{display:flex;align-items:center;gap:14px;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);flex-wrap:wrap}
+.clock{font-family:var(--display);font-weight:700;font-size:38px;font-variant-numeric:tabular-nums;min-width:96px}
+.timer button{border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:16px}
+.tstart{background:var(--accent);color:var(--accent-fg)}
+.treset{background:transparent;border:1px solid var(--line) !important;color:var(--fg)}
+.tlabel{flex-basis:100%;color:var(--muted);font-size:14px}
+
+.rules{background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);border-radius:14px;padding:16px}
+.rules h3{font-size:16px;color:var(--warn);margin-bottom:6px}
+.rules ul{margin:0;padding-left:20px}
+
+.overview .item{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.overview .item:last-child{border-bottom:none}
+.overview .n{width:28px;height:28px;border-radius:50%;background:var(--soft);color:var(--accent);display:grid;place-items:center;
+  font-family:var(--display);font-weight:700;font-size:13px;flex-shrink:0}
+.overview .n.done{background:var(--ok);color:#fff}
+.overview .t{flex:1;min-width:0}
+.overview .t small{display:block;color:var(--muted)}
+.overview button{background:none;border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:var(--fg);font-weight:600;font-size:14px}
+
+.install{font-size:15px;color:var(--muted)}
+.install ol{padding-left:20px;margin:6px 0 0}
+
+footer{position:sticky;bottom:0;background:var(--bg);border-top:1px solid var(--line);
+  padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+.frow{display:flex;gap:10px;max-width:640px;margin:0 auto}
+.frow button{flex:1;border:none;border-radius:12px;padding:14px;font-weight:700;font-size:17px}
+.prev{background:transparent;border:1px solid var(--line) !important;color:var(--fg);flex:0 0 auto;padding-inline:18px !important}
+.next{background:var(--accent);color:var(--accent-fg)}
+.done-card{text-align:center}
+.done-card .big{font-size:56px;line-height:1}
+.streak{color:var(--muted)}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:no-preference){ .card{animation:in .25s ease} @keyframes in{from{opacity:.4;transform:translateY(6px)}} }
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow">
+    <div><div class="eyebrow">Right shoulder · until PT starts</div><h1 id="htitle">Stretch routine</h1></div>
+    <button class="linkbtn" id="toggleView" type="button">All steps</button>
+  </div>
+  <div class="progress" id="progress"></div>
+</header>
+
+<main><div class="wrap" id="content"></div></main>
+
+<footer><div class="frow">
+  <button class="prev" id="prevBtn" type="button">Back</button>
+  <button class="next" id="nextBtn" type="button">Start</button>
+</div></footer>
+
+<!-- Illustrations: simple line figures, currentColor strokes. Accent marks show the motion. -->
+<svg hidden xmlns="http://www.w3.org/2000/svg">
+ <symbol id="f-pendulum" viewBox="0 0 320 200">
+  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+   <rect x="20" y="118" width="110" height="8" fill="currentColor" stroke="none" opacity=".35"/>
+   <line x1="40" y1="126" x2="40" y2="180"/><line x1="110" y1="126" x2="110" y2="180"/>
+   <circle cx="232" cy="52" r="16"/>
+   <path d="M218 64 L160 96 L120 118"/>            <!-- torso bent, support arm to table -->
+   <path d="M160 96 L200 130 L196 182"/>           <!-- legs -->
+   <path d="M160 96 L140 134 L146 182"/>
+   <path d="M188 80 L186 150" class="acc" stroke="var(--accent)"/> <!-- hanging arm -->
+   <circle cx="186" cy="150" r="6" fill="var(--accent)" stroke="none"/>
+  </g>
+  <g fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="6 6">
+   <ellipse cx="186" cy="150" rx="46" ry="16"/>
+  </g>
+  <path d="M232 150 l8 -8 l2 10" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+  <text x="20" y="40" font-size="13" fill="currentColor" opacity=".7" font-family="system-ui">Arm hangs loose · body makes the circles</text>
+ </symbol>
+
+ <symbol id="f-chin" viewBox="0 0 320 200">
+  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+   <path d="M110 160 C110 120 140 110 150 110" opacity=".35"/>
+   <path d="M150 110 C150 90 160 60 190 60 C218 60 226 84 222 100 C220 112 212 118 212 126 L200 134 L190 134 L186 122" opacity=".35"/>
+   <path d="M90 160 C90 120 120 110 130 110"/>
+   <path d="M130 110 C130 90 140 60 170 60 C198 60 206 84 202 100 C200 112 192 118 192 126 L180 134 L170 134 L166 122"/>
+   <path d="M166 122 L150 140 L100 160"/>
+   <path d="M62 180 L200 180"/>
+  </g>
+  <path d="M250 100 L212 100" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M222 92 L212 100 L222 108" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <text x="18" y="40" font-size="13" fill="currentColor" opacity=".7" font-family="system-ui">Glide straight back · chin level · make a double chin</text>
+ </symbol>
+
+ <symbol id="f-scap" viewBox="0 0 320 200">
+  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+   <circle cx="160" cy="42" r="16"/>
+   <path d="M160 58 L160 72"/>
+   <path d="M98 78 L222 78 L212 180 L108 180 Z"/>        <!-- back view torso -->
+   <path d="M98 78 L72 150"/><path d="M222 78 L248 150"/> <!-- arms down -->
+   <path d="M132 92 L118 130 L140 136 Z" fill="var(--soft)" stroke="var(--accent)"/>  <!-- left blade -->
+   <path d="M188 92 L202 130 L180 136 Z" fill="var(--soft)" stroke="var(--accent)"/>  <!-- right blade -->
+  </g>
+  <g stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none">
+   <path d="M108 112 L150 112"/><path d="M140 104 L150 112 L140 120"/>
+   <path d="M212 112 L170 112"/><path d="M180 104 L170 112 L180 120"/>
+  </g>
+  <text x="18" y="24" font-size="13" fill="currentColor" opacity=".7" font-family="system-ui">Seen from behind · blades back and down, not shrugged</text>
+ </symbol>
+
+ <symbol id="f-thor" viewBox="0 0 320 200">
+  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+   <path d="M120 112 L120 182"/><path d="M120 112 L190 112 L190 182"/><path d="M120 112 L120 58"/> <!-- chair side view: seat + back -->
+   <path d="M120 58 L128 58" opacity=".4"/>
+   <circle cx="196" cy="52" r="16"/>
+   <path d="M150 112 C150 90 166 78 190 66" class="acc" stroke="var(--accent)"/>   <!-- arched upper back over chair top -->
+   <path d="M150 112 L220 112 L222 182"/>   <!-- thigh + shin -->
+   <path d="M196 68 L200 62"/>
+   <path d="M190 66 L212 50 L226 54 L220 66" />  <!-- hands behind head, elbow forward -->
+  </g>
+  <path d="M100 70 C96 54 112 44 120 40" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M112 38 L121 40 L118 49" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <text x="18" y="24" font-size="13" fill="currentColor" opacity=".7" font-family="system-ui">Upper back arches over the chair top · low back stays still</text>
+ </symbol>
+
+ <symbol id="f-cross" viewBox="0 0 320 200">
+  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+   <circle cx="160" cy="40" r="16"/>
+   <path d="M160 56 L160 70"/>
+   <path d="M112 72 L208 72 L200 182 L120 182 Z"/>
+   <path d="M208 72 L232 110 L212 150"/>  <!-- helper (left) arm... drawn on viewer's right since front view -->
+   <path d="M112 72 L90 120 L150 110" stroke="var(--accent)"/>  <!-- right arm pulled across chest at chest height -->
+   <path d="M150 110 L196 106" stroke="var(--accent)"/>
+   <circle cx="196" cy="106" r="6" fill="var(--accent)" stroke="none"/>
+   <path d="M232 110 L205 104" />  <!-- left hand hooks above right elbow -->
+  </g>
+  <path d="M60 120 L84 120" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M76 112 L84 120 L76 128" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <text x="18" y="24" font-size="13" fill="currentColor" opacity=".7" font-family="system-ui">Right arm across at chest height · shoulder stays down</text>
+ </symbol>
+
+ <symbol id="f-door" viewBox="0 0 320 200">
+  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+   <rect x="196" y="20" width="12" height="170" fill="currentColor" stroke="none" opacity=".3"/>  <!-- door frame -->
+   <circle cx="130" cy="48" r="16"/>
+   <path d="M130 64 L140 110 L150 182"/>   <!-- torso + front leg stepping through -->
+   <path d="M140 110 L112 182"/>
+   <path d="M136 80 L178 100 L196 94" stroke="var(--accent)"/>  <!-- arm: elbow below shoulder, forearm on frame -->
+   <path d="M196 94 L196 78" stroke="var(--accent)"/>
+   <path d="M136 80 L96 100"/>
+  </g>
+  <path d="M60 140 L110 140" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M102 132 L110 140 L102 148" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M80 80 L190 80" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 5"/>
+  <text x="18" y="24" font-size="13" fill="currentColor" opacity=".7" font-family="system-ui">Elbow below the dotted shoulder line · step gently forward</text>
+ </symbol>
+
+ <symbol id="f-table" viewBox="0 0 320 200">
+  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+   <rect x="150" y="104" width="150" height="8" fill="currentColor" stroke="none" opacity=".35"/>
+   <line x1="166" y1="112" x2="166" y2="182"/><line x1="284" y1="112" x2="284" y2="182"/>
+   <path d="M60 126 L60 182"/><path d="M60 126 L112 126 L112 182"/>  <!-- chair -->
+   <circle cx="104" cy="56" r="16"/>
+   <path d="M98 70 L86 126"/>  <!-- torso leaning forward -->
+   <path d="M86 126 L140 126 L142 182"/>
+   <path d="M100 84 L150 100 L228 100" stroke="var(--accent)"/>   <!-- arm sliding forward on towel -->
+   <rect x="208" y="94" width="36" height="8" rx="3" fill="var(--soft)" stroke="var(--accent)" stroke-width="2"/>
+  </g>
+  <path d="M236 128 L276 128" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M268 120 L276 128 L268 136" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <text x="18" y="24" font-size="13" fill="currentColor" opacity=".7" font-family="system-ui">Lean the body forward · towel slides · arm stays relaxed</text>
+ </symbol>
+</svg>
+
+<script>
+const yt = q => 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q);
+const STEPS = [
+ {video:'QF_ubbr_RUE', name:'Pendulum swings', dose:'30–60 sec each: circles both ways, then front-to-back, then side-to-side', timer:60, tlabel:'One direction',
+  fig:'f-pendulum', cues:['Lean on a table with your left hand, let the right arm hang.','Rock your body so the arm swings. The shoulder does nothing.','Small circles first; make them bigger only if it stays comfortable.'],
+  why:'Unloads the joint and gently opens the space under the acromion. Standard first-line move for impingement.',
+  demo:[['Codman Pendulum Circles · Ask Doctor Jo', yt('Codman Pendulum Circles Ask Doctor Jo')],['Pendulum front to back', yt('Codman Pendulum Front to Back Ask Doctor Jo')]]},
+ {video:'ekJzJTnd43s', name:'Chin tucks', dose:'10 reps · hold 3 sec', timer:3, tlabel:'One hold', reps:10,
+  fig:'f-chin', cues:['Sit tall, eyes level with the horizon.','Glide the head straight back, like making a double chin.','Don\'t tilt the chin down and don\'t jam the head back.'],
+  why:'Head-forward posture rounds the shoulders and narrows the impingement space. This resets it.',
+  demo:[['How to do a chin tuck · PT Progress', yt('chin tuck exercise correctly physical therapist')]]},
+ {video:'QN1oZVMMRjE', name:'Shoulder-blade squeezes', dose:'10–15 reps · hold 5 sec', timer:5, tlabel:'One hold', reps:12,
+  fig:'f-scap', cues:['Arms relaxed at your sides or hands on thighs.','Draw both shoulder blades back and down, as if tucking them into your back pockets.','No shrugging toward the ears; no arching the low back.'],
+  why:'The biggest lever you have. Retracted, depressed shoulder blades make more room for the tendons.',
+  demo:[['Scapular squeeze · Hinge Health', 'https://www.hingehealth.com/resources/articles/scapular-squeezes'],['Bob & Brad impingement moves', yt('Bob and Brad shoulder impingement shoulder squeezes')]]},
+ {video:'kCoTeRB8c-g', name:'Thoracic extension over chair', dose:'10 slow reps', timer:0, reps:10,
+  fig:'f-thor', cues:['Sit in a chair with a low back; chair top should hit mid–upper back.','Hands behind head, elbows forward (less stress on the shoulder).','Arch your upper back over the chair top, exhale, return. Keep the low back quiet.'],
+  why:'A stiff upper back forces the shoulder to make up the range overhead. Loosening it takes load off the cuff.',
+  demo:[['Seated thoracic extension demo', yt('seated thoracic extension chair physical therapy')]]},
+ {video:'TCDA6qCp1FU', name:'Cross-body stretch', dose:'3 × 30 sec', timer:30, tlabel:'One hold', reps:3,
+  fig:'f-cross', cues:['Bring the right arm across your chest at chest height or lower.','Hook the left hand above the right elbow and pull gently.','Keep the right shoulder blade still and down; don\'t twist the body.'],
+  why:'Stretches the posterior capsule, a common driver of impingement. Better evidence than the sleeper stretch and safer for the biceps tendon.',
+  demo:[['Cross body stretch · Prehab Guys', 'https://library.theprehabguys.com/vimeo-video/standing-shoulder-cross-body-stretch-posterior-cuff-2/'],['YouTube demo', yt('cross body shoulder stretch posterior capsule physical therapy')]]},
+ {video:'069o76BafTk', name:'Low doorway chest stretch', dose:'3 × 30 sec', timer:30, tlabel:'One hold', reps:3,
+  fig:'f-door', cues:['Right forearm on the door frame with the elbow BELOW shoulder height.','Step the right foot through until you feel a stretch below the collarbone.','Any tingling in the hand: ease off.'],
+  why:'Tight pec minor tips the shoulder blade forward and down, closing the subacromial space. Keeping the elbow low protects the biceps tendon.',
+  demo:[['Pec minor doorway stretch · Prehab Guys', 'https://library.theprehabguys.com/vimeo-video/pec-minor-stretch-doorway/'],['YouTube demo', yt('pec minor doorway stretch elbow below shoulder')]]},
+ {video:'pgsPQ1_5e0w', name:'Table slides', dose:'10 reps · pause 3 sec at the end', timer:3, tlabel:'End pause', reps:10,
+  fig:'f-table', cues:['Sit at a table, right forearm on a towel, thumb up.','Lean your body forward so the towel slides; the arm just rides along.','Stop before pain. Pause, then sit back up.'],
+  why:'Rebuilds forward reach without the arm lifting its own weight. Gentle on the biceps tendon.',
+  demo:[['Shoulder Flexion Table Slides · Ask Doctor Jo', yt('Shoulder Flexion Table Slides Ask Doctor Jo')]]},
+];
+
+const KEY='shoulder-routine-v1';
+let state={step:-1, done:[], log:[]};
+try{const s=JSON.parse(localStorage.getItem(KEY)); if(s) state=Object.assign(state,s, {step:-1});}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+
+let view='step';
+const content=document.getElementById('content'), prevBtn=document.getElementById('prevBtn'), nextBtn=document.getElementById('nextBtn');
+const toggle=document.getElementById('toggleView');
+let timer=null, remaining=0;
+
+function stopTimer(){ if(timer){clearInterval(timer);timer=null;} }
+function fmt(s){return s>=60? Math.floor(s/60)+':'+String(s%60).padStart(2,'0') : String(s);}
+function beep(){ try{const ac=new (window.AudioContext||window.webkitAudioContext)(); const o=ac.createOscillator(), g=ac.createGain(); o.connect(g); g.connect(ac.destination); o.frequency.value=880; g.gain.value=.15; o.start(); o.stop(ac.currentTime+.25);}catch(e){} }
+
+function renderProgress(){
+  const p=document.getElementById('progress'); p.innerHTML='';
+  STEPS.forEach((_,i)=>{const s=document.createElement('span'); if(state.done.includes(i)) s.className='done'; if(i===state.step) s.className='now'; p.appendChild(s);});
+}
+
+function intro(){
+  const today=state.log.filter(d=>d===new Date().toDateString()).length;
+  return `<div class="card">
+    <div class="eyebrow">About 10 minutes · 1–2× a day</div>
+    <h2 style="margin-top:6px">Seven stretches, in order</h2>
+    <p>For right-shoulder impingement with biceps and calcific tendonitis. Warm up first: a warm shower or 5 minutes of walking.</p>
+    <p class="streak">Completed today: <strong>${today}</strong> · total sessions logged: <strong>${state.log.length}</strong></p>
+  </div>
+  <div class="rules"><h3>Ground rules</h3><ul>
+    <li>Pain stays at 3/10 or lower, and no worse an hour later.</li>
+    <li>Arm stays below shoulder height. Overhead is what pinches.</li>
+    <li>Skip: behind-the-back stretches, straight-arm-behind-you biceps stretches, sleeper stretch, weights, sleeping on the right side.</li>
+    <li>Sudden severe pain (often at night) can be a calcific flare. Drop to pendulums only and call Dr. Lanzi's office: <strong>713-441-9000</strong>.</li>
+  </ul></div>
+  <div class="card install"><strong style="color:var(--fg)">Save as an app on iPhone</strong>
+    <ol><li>Open this page in Safari.</li><li>Tap the Share button (square with arrow).</li><li>Tap <em>Add to Home Screen</em>, then <em>Add</em>.</li></ol>
+  </div>`;
+}
+
+function stepCard(i){
+  const s=STEPS[i];
+  const demos=s.demo.map(([t,u])=>`<a href="${u}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>${t}</a>`).join('');
+  const timerHtml = s.timer? `<div class="timer"><div class="clock" id="clock">${fmt(s.timer)}</div>
+      <button class="tstart" id="tstart" type="button">Start</button><button class="treset" id="treset" type="button">Reset</button>
+      <div class="tlabel">${s.tlabel}${s.reps?` · ${s.reps} reps`:''}. Tap Start for each hold.</div></div>` : '';
+  return `<div class="card">
+    <span class="stepnum">Step ${i+1} of ${STEPS.length}</span>
+    <h2>${s.name}</h2>
+    <div class="dose">${s.dose}</div>
+    <div class="fig"><svg><use href="#${s.fig}"/></svg></div>
+    <ul class="cues">${s.cues.map(c=>`<li>${c}</li>`).join('')}</ul>
+    <p class="why">${s.why}</p>
+    <div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${s.video}?rel=0&modestbranding=1&playsinline=1" title="${s.name} demo" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>
+    <div class="vlabel">Demo video · more options below</div>
+    <div class="demo">${demos}</div>
+    ${timerHtml}
+  </div>`;
+}
+
+function doneCard(){
+  return `<div class="card done-card"><div class="big">✓</div><h2>Routine complete</h2>
+    <p>Logged for today. Ice for 10–15 minutes if the shoulder feels warm afterward.</p>
+    <p class="streak">Sessions logged: <strong>${state.log.length}</strong></p></div>`;
+}
+
+function overview(){
+  return `<div class="card overview"><h2 style="font-size:20px;margin-bottom:6px">All steps</h2>` +
+    STEPS.map((s,i)=>`<div class="item"><div class="n ${state.done.includes(i)?'done':''}">${i+1}</div>
+      <div class="t"><strong>${s.name}</strong><small>${s.dose}</small></div>
+      <button type="button" data-go="${i}">Open</button></div>`).join('') + `</div>`;
+}
+
+function render(){
+  stopTimer();
+  renderProgress();
+  if(view==='list'){ content.innerHTML=overview(); toggle.textContent='Back to routine'; prevBtn.hidden=true; nextBtn.textContent='Close list';
+    content.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{state.step=+b.dataset.go; view='step'; render();}); return; }
+  toggle.textContent='All steps'; prevBtn.hidden=false;
+  if(state.step<0){ content.innerHTML=intro(); prevBtn.hidden=true; nextBtn.textContent=state.done.length? 'Continue':'Start'; }
+  else if(state.step>=STEPS.length){ content.innerHTML=doneCard(); nextBtn.textContent='Start over'; }
+  else {
+    content.innerHTML=stepCard(state.step);
+    nextBtn.textContent= state.step===STEPS.length-1 ? 'Finish' : 'Done, next';
+    const s=STEPS[state.step];
+    if(s.timer){
+      const clock=document.getElementById('clock'), st=document.getElementById('tstart'), rs=document.getElementById('treset');
+      remaining=s.timer;
+      st.onclick=()=>{
+        if(timer){stopTimer(); st.textContent='Resume'; return;}
+        if(remaining<=0) remaining=s.timer;
+        st.textContent='Pause';
+        timer=setInterval(()=>{remaining--; clock.textContent=fmt(remaining); if(remaining<=0){stopTimer(); beep(); st.textContent='Start'; remaining=s.timer; clock.textContent=fmt(s.timer);} },1000);
+      };
+      rs.onclick=()=>{stopTimer(); remaining=s.timer; clock.textContent=fmt(s.timer); st.textContent='Start';};
+    }
+  }
+  document.querySelector('main').scrollTop=0;
+}
+
+nextBtn.onclick=()=>{
+  if(view==='list'){view='step'; render(); return;}
+  if(state.step<0){ state.step=0; }
+  else if(state.step>=STEPS.length){ state.step=-1; state.done=[]; }
+  else { if(!state.done.includes(state.step)) state.done.push(state.step); state.step++;
+         if(state.step>=STEPS.length){ state.log.push(new Date().toDateString()); state.done=[]; } }
+  save(); render();
+};
+prevBtn.onclick=()=>{ if(state.step>=0){ state.step--; render(); } };
+toggle.onclick=()=>{ view = view==='list'?'step':'list'; render(); };
+render();
+</script>
+</body>
+</html>
