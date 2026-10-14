@@ -52,12 +52,10 @@ main{flex:1;overflow-y:auto;padding-block:16px 24px;
   padding:3px 10px;border-radius:999px;margin-bottom:8px}
 .card h2{font-size:24px}
 .dose{color:var(--muted);font-weight:600;margin-top:4px}
-.fig{margin:14px 0 6px;display:flex;justify-content:center}
-.fig svg{width:100%;max-width:340px;height:auto;color:var(--fg)}
-.fig .acc{color:var(--accent)}
-ul.cues{margin:10px 0 0;padding-left:20px}
-ul.cues li{margin-bottom:5px}
-.why{font-style:italic;color:var(--muted);margin-top:10px}
+.guide{display:grid;grid-template-columns:auto 1fr;gap:10px 14px;margin:14px 0 0}
+.guide dt{font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);padding-top:3px;white-space:nowrap}
+.guide dt.no{color:var(--warn)}
+.guide dd{margin:0;min-width:0}
 .video{margin-top:14px;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:16/9;max-width:100%}
 .video iframe{width:100%;height:100%;border:0;display:block}
 .vlabel{font-size:13px;color:var(--muted);margin-top:6px}
@@ -119,150 +117,51 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-off
   <button class="next" id="nextBtn" type="button">Start</button>
 </div></footer>
 
-<!-- Illustrations: simple line figures, currentColor strokes. Accent marks show the motion. -->
-<svg hidden xmlns="http://www.w3.org/2000/svg">
- <symbol id="f-pendulum" viewBox="0 0 320 200">
-  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-   <rect x="20" y="118" width="110" height="8" fill="currentColor" stroke="none" opacity=".35"/>
-   <line x1="40" y1="126" x2="40" y2="180"/><line x1="110" y1="126" x2="110" y2="180"/>
-   <circle cx="232" cy="52" r="16"/>
-   <path d="M218 64 L160 96 L120 118"/>            <!-- torso bent, support arm to table -->
-   <path d="M160 96 L200 130 L196 182"/>           <!-- legs -->
-   <path d="M160 96 L140 134 L146 182"/>
-   <path d="M188 80 L186 150" class="acc" stroke="var(--accent)"/> <!-- hanging arm -->
-   <circle cx="186" cy="150" r="6" fill="var(--accent)" stroke="none"/>
-  </g>
-  <g fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="6 6">
-   <ellipse cx="186" cy="150" rx="46" ry="16"/>
-  </g>
-  <path d="M232 150 l8 -8 l2 10" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
-  <text x="20" y="40" font-size="13" fill="currentColor" opacity=".7" font-family="system-ui">Arm hangs loose · body makes the circles</text>
- </symbol>
-
- <symbol id="f-chin" viewBox="0 0 320 200">
-  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-   <path d="M110 160 C110 120 140 110 150 110" opacity=".35"/>
-   <path d="M150 110 C150 90 160 60 190 60 C218 60 226 84 222 100 C220 112 212 118 212 126 L200 134 L190 134 L186 122" opacity=".35"/>
-   <path d="M90 160 C90 120 120 110 130 110"/>
-   <path d="M130 110 C130 90 140 60 170 60 C198 60 206 84 202 100 C200 112 192 118 192 126 L180 134 L170 134 L166 122"/>
-   <path d="M166 122 L150 140 L100 160"/>
-   <path d="M62 180 L200 180"/>
-  </g>
-  <path d="M250 100 L212 100" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
-  <path d="M222 92 L212 100 L222 108" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
-  <text x="18" y="40" font-size="13" fill="currentColor" opacity=".7" font-family="system-ui">Glide straight back · chin level · make a double chin</text>
- </symbol>
-
- <symbol id="f-scap" viewBox="0 0 320 200">
-  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-   <circle cx="160" cy="42" r="16"/>
-   <path d="M160 58 L160 72"/>
-   <path d="M98 78 L222 78 L212 180 L108 180 Z"/>        <!-- back view torso -->
-   <path d="M98 78 L72 150"/><path d="M222 78 L248 150"/> <!-- arms down -->
-   <path d="M132 92 L118 130 L140 136 Z" fill="var(--soft)" stroke="var(--accent)"/>  <!-- left blade -->
-   <path d="M188 92 L202 130 L180 136 Z" fill="var(--soft)" stroke="var(--accent)"/>  <!-- right blade -->
-  </g>
-  <g stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none">
-   <path d="M108 112 L150 112"/><path d="M140 104 L150 112 L140 120"/>
-   <path d="M212 112 L170 112"/><path d="M180 104 L170 112 L180 120"/>
-  </g>
-  <text x="18" y="24" font-size="13" fill="currentColor" opacity=".7" font-family="system-ui">Seen from behind · blades back and down, not shrugged</text>
- </symbol>
-
- <symbol id="f-thor" viewBox="0 0 320 200">
-  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-   <path d="M120 112 L120 182"/><path d="M120 112 L190 112 L190 182"/><path d="M120 112 L120 58"/> <!-- chair side view: seat + back -->
-   <path d="M120 58 L128 58" opacity=".4"/>
-   <circle cx="196" cy="52" r="16"/>
-   <path d="M150 112 C150 90 166 78 190 66" class="acc" stroke="var(--accent)"/>   <!-- arched upper back over chair top -->
-   <path d="M150 112 L220 112 L222 182"/>   <!-- thigh + shin -->
-   <path d="M196 68 L200 62"/>
-   <path d="M190 66 L212 50 L226 54 L220 66" />  <!-- hands behind head, elbow forward -->
-  </g>
-  <path d="M100 70 C96 54 112 44 120 40" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
-  <path d="M112 38 L121 40 L118 49" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
-  <text x="18" y="24" font-size="13" fill="currentColor" opacity=".7" font-family="system-ui">Upper back arches over the chair top · low back stays still</text>
- </symbol>
-
- <symbol id="f-cross" viewBox="0 0 320 200">
-  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-   <circle cx="160" cy="40" r="16"/>
-   <path d="M160 56 L160 70"/>
-   <path d="M112 72 L208 72 L200 182 L120 182 Z"/>
-   <path d="M208 72 L232 110 L212 150"/>  <!-- helper (left) arm... drawn on viewer's right since front view -->
-   <path d="M112 72 L90 120 L150 110" stroke="var(--accent)"/>  <!-- right arm pulled across chest at chest height -->
-   <path d="M150 110 L196 106" stroke="var(--accent)"/>
-   <circle cx="196" cy="106" r="6" fill="var(--accent)" stroke="none"/>
-   <path d="M232 110 L205 104" />  <!-- left hand hooks above right elbow -->
-  </g>
-  <path d="M60 120 L84 120" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
-  <path d="M76 112 L84 120 L76 128" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
-  <text x="18" y="24" font-size="13" fill="currentColor" opacity=".7" font-family="system-ui">Right arm across at chest height · shoulder stays down</text>
- </symbol>
-
- <symbol id="f-door" viewBox="0 0 320 200">
-  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-   <rect x="196" y="20" width="12" height="170" fill="currentColor" stroke="none" opacity=".3"/>  <!-- door frame -->
-   <circle cx="130" cy="48" r="16"/>
-   <path d="M130 64 L140 110 L150 182"/>   <!-- torso + front leg stepping through -->
-   <path d="M140 110 L112 182"/>
-   <path d="M136 80 L178 100 L196 94" stroke="var(--accent)"/>  <!-- arm: elbow below shoulder, forearm on frame -->
-   <path d="M196 94 L196 78" stroke="var(--accent)"/>
-   <path d="M136 80 L96 100"/>
-  </g>
-  <path d="M60 140 L110 140" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
-  <path d="M102 132 L110 140 L102 148" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
-  <path d="M80 80 L190 80" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 5"/>
-  <text x="18" y="24" font-size="13" fill="currentColor" opacity=".7" font-family="system-ui">Elbow below the dotted shoulder line · step gently forward</text>
- </symbol>
-
- <symbol id="f-table" viewBox="0 0 320 200">
-  <g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-   <rect x="150" y="104" width="150" height="8" fill="currentColor" stroke="none" opacity=".35"/>
-   <line x1="166" y1="112" x2="166" y2="182"/><line x1="284" y1="112" x2="284" y2="182"/>
-   <path d="M60 126 L60 182"/><path d="M60 126 L112 126 L112 182"/>  <!-- chair -->
-   <circle cx="104" cy="56" r="16"/>
-   <path d="M98 70 L86 126"/>  <!-- torso leaning forward -->
-   <path d="M86 126 L140 126 L142 182"/>
-   <path d="M100 84 L150 100 L228 100" stroke="var(--accent)"/>   <!-- arm sliding forward on towel -->
-   <rect x="208" y="94" width="36" height="8" rx="3" fill="var(--soft)" stroke="var(--accent)" stroke-width="2"/>
-  </g>
-  <path d="M236 128 L276 128" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
-  <path d="M268 120 L276 128 L268 136" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" fill="none"/>
-  <text x="18" y="24" font-size="13" fill="currentColor" opacity=".7" font-family="system-ui">Lean the body forward · towel slides · arm stays relaxed</text>
- </symbol>
-</svg>
 
 <script>
 const yt = q => 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q);
 const STEPS = [
  {video:'QF_ubbr_RUE', name:'Pendulum swings', dose:'30–60 sec each: circles both ways, then front-to-back, then side-to-side', timer:60, tlabel:'One direction',
-  fig:'f-pendulum', cues:['Lean on a table with your left hand, let the right arm hang.','Rock your body so the arm swings. The shoulder does nothing.','Small circles first; make them bigger only if it stays comfortable.'],
-  why:'Unloads the joint and gently opens the space under the acromion. Standard first-line move for impingement.',
+  setup:"Stand beside a table or counter. Put your LEFT hand on it and lean forward so your torso is roughly 45°. Let the right arm hang straight down, completely relaxed.",
+  move:"Shift your weight between your feet so the hanging arm swings on its own. Circles clockwise, then counter-clockwise, then front-to-back, then side-to-side. 30–60 seconds each.",
+  feel:"A light pull or 'opening' in the shoulder. The arm should feel heavy.",
+  avoid:"Using the shoulder muscles to make the circles. Swinging big and fast. Any pinch at the top of the shoulder.",
   demo:[['Codman Pendulum Circles · Ask Doctor Jo', yt('Codman Pendulum Circles Ask Doctor Jo')],['Pendulum front to back', yt('Codman Pendulum Front to Back Ask Doctor Jo')]]},
  {video:'ekJzJTnd43s', name:'Chin tucks', dose:'10 reps · hold 3 sec', timer:3, tlabel:'One hold', reps:10,
-  fig:'f-chin', cues:['Sit tall, eyes level with the horizon.','Glide the head straight back, like making a double chin.','Don\'t tilt the chin down and don\'t jam the head back.'],
-  why:'Head-forward posture rounds the shoulders and narrows the impingement space. This resets it.',
+  setup:"Sit tall on a firm chair, feet flat, shoulders relaxed, eyes looking straight ahead.",
+  move:"Glide the head straight back on the neck (make a double chin) without tipping the chin up or down. Hold 3 seconds, release. 10 reps.",
+  feel:"A gentle stretch at the base of the skull and work in the front of the neck.",
+  avoid:"Nodding the chin to the chest. Jamming the head back hard. Rocking the upper body.",
   demo:[['How to do a chin tuck · PT Progress', yt('chin tuck exercise correctly physical therapist')]]},
  {video:'QN1oZVMMRjE', name:'Shoulder-blade squeezes', dose:'10–15 reps · hold 5 sec', timer:5, tlabel:'One hold', reps:12,
-  fig:'f-scap', cues:['Arms relaxed at your sides or hands on thighs.','Draw both shoulder blades back and down, as if tucking them into your back pockets.','No shrugging toward the ears; no arching the low back.'],
-  why:'The biggest lever you have. Retracted, depressed shoulder blades make more room for the tendons.',
+  setup:"Sit or stand tall, arms relaxed at your sides, palms facing forward.",
+  move:"Draw both shoulder blades back and DOWN, as if tucking them into your back pockets. Hold 5 seconds, relax fully. 10–15 reps.",
+  feel:"Muscles working between the shoulder blades and a slight opening across the chest.",
+  avoid:"Shrugging toward the ears. Arching the low back. Holding your breath.",
   demo:[['Scapular squeeze · Hinge Health', 'https://www.hingehealth.com/resources/articles/scapular-squeezes'],['Bob & Brad impingement moves', yt('Bob and Brad shoulder impingement shoulder squeezes')]]},
  {video:'kCoTeRB8c-g', name:'Thoracic extension over chair', dose:'10 slow reps', timer:0, reps:10,
-  fig:'f-thor', cues:['Sit in a chair with a low back; chair top should hit mid–upper back.','Hands behind head, elbows forward (less stress on the shoulder).','Arch your upper back over the chair top, exhale, return. Keep the low back quiet.'],
-  why:'A stiff upper back forces the shoulder to make up the range overhead. Loosening it takes load off the cuff.',
+  setup:"Sit in a chair whose back ends around mid-shoulder-blade height. Interlace fingers behind your head, elbows pointing forward (this keeps the right shoulder safe).",
+  move:"Lean back so your upper back arches over the top edge of the chair. Exhale as you go, pause 2 seconds, return. 10 slow reps. Scoot up or down a little to hit different levels.",
+  feel:"A stretch across the upper back and front of the chest.",
+  avoid:"Arching from the low back. Letting the head drop back. Pushing into any shoulder pain.",
   demo:[['Seated thoracic extension demo', yt('seated thoracic extension chair physical therapy')]]},
  {video:'TCDA6qCp1FU', name:'Cross-body stretch', dose:'3 × 30 sec', timer:30, tlabel:'One hold', reps:3,
-  fig:'f-cross', cues:['Bring the right arm across your chest at chest height or lower.','Hook the left hand above the right elbow and pull gently.','Keep the right shoulder blade still and down; don\'t twist the body.'],
-  why:'Stretches the posterior capsule, a common driver of impingement. Better evidence than the sleeper stretch and safer for the biceps tendon.',
+  setup:"Stand or sit tall. Set your shoulder blades back and down first and keep them there.",
+  move:"Bring the right arm across your chest at chest height or lower. Hook the left hand just above the right elbow and pull gently toward the chest. Hold 30 seconds, 3 times.",
+  feel:"A stretch in the BACK of the right shoulder.",
+  avoid:"Letting the right shoulder hike up or roll forward. Twisting the trunk. Pulling the arm above shoulder height. Any pinch in the front of the shoulder.",
   demo:[['Cross body stretch · Prehab Guys', 'https://library.theprehabguys.com/vimeo-video/standing-shoulder-cross-body-stretch-posterior-cuff-2/'],['YouTube demo', yt('cross body shoulder stretch posterior capsule physical therapy')]]},
  {video:'069o76BafTk', name:'Low doorway chest stretch', dose:'3 × 30 sec', timer:30, tlabel:'One hold', reps:3,
-  fig:'f-door', cues:['Right forearm on the door frame with the elbow BELOW shoulder height.','Step the right foot through until you feel a stretch below the collarbone.','Any tingling in the hand: ease off.'],
-  why:'Tight pec minor tips the shoulder blade forward and down, closing the subacromial space. Keeping the elbow low protects the biceps tendon.',
+  setup:"Stand in a doorway. Place the right forearm on the frame with the elbow BELOW shoulder height (hand about chest height). Right foot slightly forward.",
+  move:"Shift your weight onto the front foot and turn your chest slightly away from the frame until you feel the stretch. Hold 30 seconds, 3 times.",
+  feel:"A stretch under the collarbone and in the front of the shoulder.",
+  avoid:"Raising the elbow to or above the shoulder. Leaning so far the shoulder rolls forward. Any tingling in the hand (ease off).",
   demo:[['Pec minor doorway stretch · Prehab Guys', 'https://library.theprehabguys.com/vimeo-video/pec-minor-stretch-doorway/'],['YouTube demo', yt('pec minor doorway stretch elbow below shoulder')]]},
  {video:'pgsPQ1_5e0w', name:'Table slides', dose:'10 reps · pause 3 sec at the end', timer:3, tlabel:'End pause', reps:10,
-  fig:'f-table', cues:['Sit at a table, right forearm on a towel, thumb up.','Lean your body forward so the towel slides; the arm just rides along.','Stop before pain. Pause, then sit back up.'],
-  why:'Rebuilds forward reach without the arm lifting its own weight. Gentle on the biceps tendon.',
+  setup:"Sit facing a table or sideways to it. Rest the right forearm on a towel, elbow bent, thumb pointing up. Chair height so the shoulder sits level and relaxed.",
+  move:"Lean your trunk forward from the hips so the towel slides away from you; the arm just rides along. Pause 3 seconds at the end, then sit back up. 10 reps.",
+  feel:"A gentle stretch at the end of the reach, mostly in the front and top of the shoulder. Mild discomfort is okay; sharp pain is not.",
+  avoid:"Lifting the arm off the table. Pushing through pain. Shrugging the shoulder.",
   demo:[['Shoulder Flexion Table Slides · Ask Doctor Jo', yt('Shoulder Flexion Table Slides Ask Doctor Jo')]]},
 ];
 
@@ -314,11 +213,14 @@ function stepCard(i){
     <span class="stepnum">Step ${i+1} of ${STEPS.length}</span>
     <h2>${s.name}</h2>
     <div class="dose">${s.dose}</div>
-    <div class="fig"><svg><use href="#${s.fig}"/></svg></div>
-    <ul class="cues">${s.cues.map(c=>`<li>${c}</li>`).join('')}</ul>
-    <p class="why">${s.why}</p>
     <div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${s.video}?rel=0&modestbranding=1&playsinline=1" title="${s.name} demo" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>
-    <div class="vlabel">Demo video · more options below</div>
+    <div class="vlabel">Watch once, then follow the steps below</div>
+    <dl class="guide">
+      <dt>Set up</dt><dd>${s.setup}</dd>
+      <dt>Movement</dt><dd>${s.move}</dd>
+      <dt>Feel</dt><dd>${s.feel}</dd>
+      <dt class="no">Don't</dt><dd>${s.avoid}</dd>
+    </dl>
     <div class="demo">${demos}</div>
     ${timerHtml}
   </div>`;
