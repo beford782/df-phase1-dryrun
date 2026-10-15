@@ -177,10 +177,10 @@
     if(a==='reset-timer'){pause();state.current.timer=null;ensureTimer();save();paintTimer();announce('Timer reset.');}
     if(a==='hurt'){pause();state.current.hurt=true;save();paintTimer();announce('Timer paused. Stop this exercise.');$('hurt-message').scrollIntoView({block:'nearest'});}
     if(a==='complete')outcome('completed');if(a==='skip')outcome('skipped');if(a==='stopped')outcome('stopped');
-    if(a==='remove-plan'){undo={type:'plan',value:clone(state.plan)};state.plan=state.plan.filter(p=>p.id!==b.dataset.id);save();render();}
+    if(a==='remove-plan'){undo={type:'plan',value:clone(state.plan.find(p=>p.id===b.dataset.id))};state.plan=state.plan.filter(p=>p.id!==b.dataset.id);save();render();}
     if(a==='delete-day'){undo={type:'day',day:b.dataset.day,value:clone(state.days[b.dataset.day])};delete state.days[b.dataset.day];save();render();}
-    if(a==='delete-session'){undo={type:'sessions',value:clone(state.sessions)};state.sessions=state.sessions.filter(s=>s.id!==b.dataset.id);save();render();}
-    if(a==='undo'&&undo){if(undo.type==='day')state.days[undo.day]=undo.value;else if(undo.type==='plan')state.plan=undo.value;else state.sessions=undo.value;undo=null;save();render();announce('Record restored.');}
+    if(a==='delete-session'){undo={type:'sessions',value:clone(state.sessions.find(s=>s.id===b.dataset.id))};state.sessions=state.sessions.filter(s=>s.id!==b.dataset.id);save();render();}
+    if(a==='undo'&&undo){if(undo.type==='day'){if(!state.days[undo.day])state.days[undo.day]=undo.value;}else if(undo.type==='plan'){if(!state.plan.some(p=>p.id===undo.value.id||p.exercise===undo.value.exercise))state.plan.push(undo.value);}else if(!state.sessions.some(s=>s.id===undo.value.id)){state.sessions.push(undo.value);state.sessions.sort((a,b)=>(a.started||0)-(b.started||0));}undo=null;save();render();announce('Record restored.');}
     if(a==='download')download(summaryText(),'shoulder-pt-summary-'+M.dateKey()+'.txt');
     if(a==='backup'){let raw=state;if(storageCorrupt){try{raw={unreadable:localStorage.getItem(KEY),older:localStorage.getItem('shoulder-routine-v2')};}catch(e){}}download(JSON.stringify(raw,null,2),'shoulder-notes-'+M.dateKey()+'.json','application/json');}
     if(a==='copy'){try{await navigator.clipboard.writeText(summaryText());$('copy-status').textContent='Copied to clipboard.';}catch(e){$('copy-status').textContent='Copy was unavailable. Select the summary below and copy it, or choose Download.';const range=document.createRange();range.selectNodeContents($('summary-text'));const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);}}
