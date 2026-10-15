@@ -4,279 +4,437 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Right Shoulder Routine</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f6f78'/%3E%3Ccircle cx='32' cy='18' r='7' fill='%23fff'/%3E%3Cpath d='M32 25v16M32 31l-12 8M32 31l12-8' stroke='%23fff' stroke-width='5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231f6f78'/%3E%3Ccircle cx='32' cy='18' r='7' fill='%23fff'/%3E%3Cpath d='M32 25v16M32 31l-12 8M32 31l12-8' stroke='%23fff' stroke-width='5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Shoulder">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f4ee">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#141a1c">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700&family=Nunito+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap">
 <style>
-/* Layout: one-screen stepper. Sticky progress header, one stretch card at a time, fixed controls at the bottom. */
+/* Layout: one-screen stepper. Sticky header with progress; guide card scrolls; the timer lives in the fixed footer so it is always visible and large. */
 :root{
   --bg:#f6f4ee; --card:#ffffff; --fg:#1f2a2e; --muted:#5f6c72; --line:#dcd8cc;
-  --accent:#1f6f78; --accent-fg:#ffffff; --soft:#e3efef; --warn:#b6541c; --warn-soft:#fbeadf; --ok:#2e7d4f;
+  --accent:#1f6f78; --accent-fg:#ffffff; --soft:#e3efef; --warn:#b6541c; --warn-soft:#fbeadf; --ok:#2e7d4f; --ok-fg:#ffffff;
   --display:"Sora",system-ui,sans-serif; --body:"Nunito Sans",system-ui,sans-serif;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#141a1c; --card:#1d2528; --fg:#e8ebe9; --muted:#9aa6a8; --line:#2f3a3e;
-  --accent:#5fb7c1; --accent-fg:#0d1416; --soft:#1f3236; --warn:#f0a06c; --warn-soft:#3a2418; --ok:#7fcf9c; color-scheme:dark } }
+  --accent:#5fb7c1; --accent-fg:#0d1416; --soft:#1f3236; --warn:#f0a06c; --warn-soft:#3a2418; --ok:#7fcf9c; --ok-fg:#0d1416; color-scheme:dark } }
 :root[data-theme="dark"]{
   --bg:#141a1c; --card:#1d2528; --fg:#e8ebe9; --muted:#9aa6a8; --line:#2f3a3e;
-  --accent:#5fb7c1; --accent-fg:#0d1416; --soft:#1f3236; --warn:#f0a06c; --warn-soft:#3a2418; --ok:#7fcf9c; color-scheme:dark }
+  --accent:#5fb7c1; --accent-fg:#0d1416; --soft:#1f3236; --warn:#f0a06c; --warn-soft:#3a2418; --ok:#7fcf9c; --ok-fg:#0d1416; color-scheme:dark }
 
-html,body{height:100%}
+html,body{height:100%;overscroll-behavior:none}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.5;
   -webkit-text-size-adjust:100%;display:flex;flex-direction:column}
 *{box-sizing:border-box}
 h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.2}
-button{font:inherit;cursor:pointer}
+button{font:inherit;cursor:pointer;touch-action:manipulation;min-height:44px}
 a{color:var(--accent)}
+[hidden]{display:none!important}
 
-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
-  padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
+  padding-top:calc(10px + env(safe-area-inset-top,0px));padding-bottom:10px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .hrow{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:640px;margin:0 auto}
-.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .hrow h1{font-size:18px}
 .progress{display:flex;gap:4px;max-width:640px;margin:8px auto 0}
 .progress span{flex:1;height:5px;border-radius:3px;background:var(--line)}
 .progress span.done{background:var(--ok)}
+.progress span.flag{background:var(--warn)}
 .progress span.now{background:var(--accent)}
-.linkbtn{background:none;border:1px solid var(--line);border-radius:999px;padding:6px 12px;color:var(--fg);font-size:14px;font-weight:600}
+.linkbtn{background:none;border:1px solid var(--line);border-radius:999px;padding:8px 14px;color:var(--fg);font-size:15px;font-weight:600}
 
-main{flex:1;overflow-y:auto;padding-block:16px 24px;
+main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-block:16px 24px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
 
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
 .stepnum{display:inline-block;background:var(--soft);color:var(--accent);font-family:var(--display);font-weight:700;font-size:13px;
   padding:3px 10px;border-radius:999px;margin-bottom:8px}
-.card h2{font-size:24px}
-.dose{color:var(--muted);font-weight:600;margin-top:4px}
-.guide{display:grid;grid-template-columns:auto 1fr;gap:10px 14px;margin:14px 0 0}
-.guide dt{font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);padding-top:3px;white-space:nowrap}
-.guide dt.no{color:var(--warn)}
+.card h2{font-size:24px;outline:none}
+.dose{font-size:19px;font-weight:700;margin-top:4px}
+.guide{display:grid;grid-template-columns:auto 1fr;gap:12px 14px;margin:16px 0 0}
+.guide dt{font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);padding-top:4px;white-space:nowrap}
 .guide dd{margin:0;min-width:0}
-.video{margin-top:14px;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:16/9;max-width:100%}
+.guide dd.move{font-size:19px;font-weight:600}
+.guide .no{grid-column:1/-1;background:var(--warn-soft);border-radius:10px;padding:10px 12px;display:grid;grid-template-columns:auto 1fr;gap:12px 14px}
+.guide .no dt{color:var(--warn)}
+details.vid{margin-top:16px;border-top:1px dashed var(--line);padding-top:12px}
+details.vid summary{cursor:pointer;font-weight:700;color:var(--accent);list-style:none;display:flex;align-items:center;gap:8px;min-height:44px}
+details.vid summary::-webkit-details-marker{display:none}
+details.vid summary svg{width:18px;height:18px;flex-shrink:0}
+.video{margin-top:10px;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:16/9;max-width:100%}
 .video iframe{width:100%;height:100%;border:0;display:block}
-.vlabel{font-size:13px;color:var(--muted);margin-top:6px}
-.demo{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.demo a{display:inline-flex;align-items:center;gap:6px;background:var(--soft);color:var(--accent);text-decoration:none;
-  padding:9px 14px;border-radius:999px;font-weight:700;font-size:15px}
-.demo a svg{width:16px;height:16px}
-
-.timer{display:flex;align-items:center;gap:14px;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line);flex-wrap:wrap}
-.clock{font-family:var(--display);font-weight:700;font-size:38px;font-variant-numeric:tabular-nums;min-width:96px}
-.timer button{border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:16px}
-.tstart{background:var(--accent);color:var(--accent-fg)}
-.treset{background:transparent;border:1px solid var(--line) !important;color:var(--fg)}
-.tlabel{flex-basis:100%;color:var(--muted);font-size:14px}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.links a{display:inline-flex;align-items:center;background:var(--soft);color:var(--accent);text-decoration:none;padding:9px 14px;border-radius:999px;font-weight:700;font-size:14px;min-height:36px}
+.flagrow{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.flagrow button{flex:1;background:transparent;border:1px solid var(--line);border-radius:10px;padding:10px;color:var(--fg);font-weight:600;font-size:15px}
+.flagrow button.on{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
 
 .rules{background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);border-radius:14px;padding:16px}
 .rules h3{font-size:16px;color:var(--warn);margin-bottom:6px}
 .rules ul{margin:0;padding-left:20px}
+.rules li{margin-bottom:6px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stat{background:var(--soft);border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font-family:var(--display);font-size:24px;font-variant-numeric:tabular-nums}
+.stat small{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.cal{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;margin-top:12px}
+.cal span{aspect-ratio:1;border-radius:4px;background:var(--line);display:grid;place-items:center;font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
+.cal span.d1{background:var(--ok);color:var(--ok-fg)}
+.cal span.d2{background:var(--accent);color:var(--accent-fg)}
+.cal span.pain{box-shadow:inset 0 0 0 2px var(--warn)}
+.cal span.today{outline:2px solid var(--fg);outline-offset:1px}
+.callabel{font-size:13px;color:var(--muted);margin-top:6px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btnrow button{flex:1;background:transparent;border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--fg);font-weight:700;font-size:15px}
+.btnrow button.warn{border-color:var(--warn);color:var(--warn)}
+.phone{font-family:var(--display);font-size:22px;letter-spacing:.02em}
 
-.overview .item{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.pain{margin-top:10px}
+.pain .scale{display:grid;grid-template-columns:repeat(11,1fr);gap:4px;margin-top:8px}
+.pain .scale button{min-height:44px;border:1px solid var(--line);background:var(--card);border-radius:8px;font-weight:700;font-variant-numeric:tabular-nums;padding:0;color:var(--fg)}
+.pain .scale button.sel{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.pain .scale button.sel.hi{background:var(--warn);color:#fff;border-color:var(--warn)}
+.pain label.chk{display:flex;align-items:center;gap:10px;margin-top:12px;min-height:44px}
+.pain input[type=checkbox]{width:24px;height:24px;accent-color:var(--accent)}
+.hint{font-size:14px;color:var(--muted)}
+.hint.bad{color:var(--warn);font-weight:700}
+
+.overview .item{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
 .overview .item:last-child{border-bottom:none}
-.overview .n{width:28px;height:28px;border-radius:50%;background:var(--soft);color:var(--accent);display:grid;place-items:center;
-  font-family:var(--display);font-weight:700;font-size:13px;flex-shrink:0}
-.overview .n.done{background:var(--ok);color:#fff}
+.overview .n{width:30px;height:30px;border-radius:50%;background:var(--soft);color:var(--accent);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:13px;flex-shrink:0}
+.overview .n.done{background:var(--ok);color:var(--ok-fg)}
+.overview .n.flag{background:var(--warn-soft);color:var(--warn)}
 .overview .t{flex:1;min-width:0}
 .overview .t small{display:block;color:var(--muted)}
-.overview button{background:none;border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:var(--fg);font-weight:600;font-size:14px}
+.overview button{background:none;border:1px solid var(--line);border-radius:10px;padding:8px 14px;color:var(--fg);font-weight:600;font-size:15px}
 
 .install{font-size:15px;color:var(--muted)}
 .install ol{padding-left:20px;margin:6px 0 0}
+.export{width:100%;min-height:120px;font:13px/1.4 ui-monospace,Menlo,monospace;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:10px}
 
-footer{position:sticky;bottom:0;background:var(--bg);border-top:1px solid var(--line);
-  padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+footer{position:sticky;bottom:0;z-index:5;background:var(--bg);border-top:1px solid var(--line);
+  padding-top:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
   padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
-.frow{display:flex;gap:10px;max-width:640px;margin:0 auto}
+.fwrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.timer{display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"clock meta reset" "clock start reset";align-items:center;column-gap:14px;row-gap:6px}
+.clock{grid-area:clock;font-family:var(--display);font-weight:700;font-size:64px;line-height:1;font-variant-numeric:tabular-nums;min-width:2.2ch;text-align:center}
+.clock.rest{color:var(--muted)}
+.clock.fin{color:var(--ok)}
+.tmeta{grid-area:meta;min-width:0}
+.tmeta b{display:block;font-family:var(--display);font-size:18px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tmeta small{display:block;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.timer button{border:none;border-radius:12px;padding:10px 16px;font-weight:700;font-size:16px}
+.tstart{grid-area:start;background:var(--accent);color:var(--accent-fg);justify-self:start;min-width:110px}
+.tstart.live{background:var(--warn-soft);color:var(--warn)}
+.treset{grid-area:reset;background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1px var(--line);font-size:22px;padding:10px 14px}
+.frow{display:flex;gap:10px}
 .frow button{flex:1;border:none;border-radius:12px;padding:14px;font-weight:700;font-size:17px}
-.prev{background:transparent;border:1px solid var(--line) !important;color:var(--fg);flex:0 0 auto;padding-inline:18px !important}
-.next{background:var(--accent);color:var(--accent-fg)}
+.frow .prev{background:transparent;box-shadow:inset 0 0 0 1px var(--line);color:var(--fg);flex:0 0 auto;padding-inline:18px}
+.frow .next{background:var(--accent);color:var(--accent-fg)}
+.frow .next.ok{background:var(--ok);color:var(--ok-fg)}
 .done-card{text-align:center}
-.done-card .big{font-size:56px;line-height:1}
-.streak{color:var(--muted)}
-button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-@media (prefers-reduced-motion:no-preference){ .card{animation:in .25s ease} @keyframes in{from{opacity:.4;transform:translateY(6px)}} }
+.done-card .big{font-size:56px;line-height:1;color:var(--ok)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:no-preference){ .stepcard{animation:in .25s ease} @keyframes in{from{opacity:.4;transform:translateY(6px)}} }
+@media (max-width:380px){ .clock{font-size:52px} .tstart{min-width:90px;padding-inline:12px} }
 </style>
 </head>
 <body>
 <header>
   <div class="hrow">
-    <div><div class="eyebrow">Right shoulder · until PT starts</div><h1 id="htitle">Stretch routine</h1></div>
-    <button class="linkbtn" id="toggleView" type="button">All steps</button>
+    <div><div class="eyebrow" id="heyebrow"></div><h1 id="htitle"></h1></div>
+    <button class="linkbtn" id="toggleView" type="button" aria-pressed="false">All steps</button>
   </div>
-  <div class="progress" id="progress"></div>
+  <div class="progress" id="progress" role="progressbar" aria-valuemin="0" aria-valuenow="0"></div>
 </header>
 
-<main><div class="wrap" id="content"></div></main>
+<main id="main"><div class="wrap" id="content"></div></main>
+<div class="sr" aria-live="polite" id="live"></div>
 
-<footer><div class="frow">
-  <button class="prev" id="prevBtn" type="button">Back</button>
-  <button class="next" id="nextBtn" type="button">Start</button>
+<footer><div class="fwrap">
+  <div class="timer" id="timer" hidden>
+    <div class="clock" id="clock">0</div>
+    <div class="tmeta"><b id="tlabel"></b><small id="tsub"></small></div>
+    <button class="tstart" id="tstart" type="button">Start</button>
+    <button class="treset" id="treset" type="button" aria-label="Reset timer">↺</button>
+  </div>
+  <div class="frow">
+    <button class="prev" id="prevBtn" type="button">Back</button>
+    <button class="next" id="nextBtn" type="button">Start</button>
+  </div>
 </div></footer>
 
-
+<script src="routine.js"></script>
 <script>
-const yt = q => 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q);
-const STEPS = [
- {video:'QF_ubbr_RUE', name:'Pendulum swings', dose:'30–60 sec each: circles both ways, then front-to-back, then side-to-side', timer:60, tlabel:'One direction',
-  setup:"Stand beside a table or counter. Put your LEFT hand on it and lean forward so your torso is roughly 45°. Let the right arm hang straight down, completely relaxed.",
-  move:"Shift your weight between your feet so the hanging arm swings on its own. Circles clockwise, then counter-clockwise, then front-to-back, then side-to-side. 30–60 seconds each.",
-  feel:"A light pull or 'opening' in the shoulder. The arm should feel heavy.",
-  avoid:"Using the shoulder muscles to make the circles. Swinging big and fast. Any pinch at the top of the shoulder.",
-  demo:[['Codman Pendulum Circles · Ask Doctor Jo', yt('Codman Pendulum Circles Ask Doctor Jo')],['Pendulum front to back', yt('Codman Pendulum Front to Back Ask Doctor Jo')]]},
- {video:'ekJzJTnd43s', name:'Chin tucks', dose:'10 reps · hold 3 sec', timer:3, tlabel:'One hold', reps:10,
-  setup:"Sit tall on a firm chair, feet flat, shoulders relaxed, eyes looking straight ahead.",
-  move:"Glide the head straight back on the neck (make a double chin) without tipping the chin up or down. Hold 3 seconds, release. 10 reps.",
-  feel:"A gentle stretch at the base of the skull and work in the front of the neck.",
-  avoid:"Nodding the chin to the chest. Jamming the head back hard. Rocking the upper body.",
-  demo:[['How to do a chin tuck · PT Progress', yt('chin tuck exercise correctly physical therapist')]]},
- {video:'QN1oZVMMRjE', name:'Shoulder-blade squeezes', dose:'10–15 reps · hold 5 sec', timer:5, tlabel:'One hold', reps:12,
-  setup:"Sit or stand tall, arms relaxed at your sides, palms facing forward.",
-  move:"Draw both shoulder blades back and DOWN, as if tucking them into your back pockets. Hold 5 seconds, relax fully. 10–15 reps.",
-  feel:"Muscles working between the shoulder blades and a slight opening across the chest.",
-  avoid:"Shrugging toward the ears. Arching the low back. Holding your breath.",
-  demo:[['Scapular squeeze · Hinge Health', 'https://www.hingehealth.com/resources/articles/scapular-squeezes'],['Bob & Brad impingement moves', yt('Bob and Brad shoulder impingement shoulder squeezes')]]},
- {video:'kCoTeRB8c-g', name:'Thoracic extension over chair', dose:'10 slow reps', timer:0, reps:10,
-  setup:"Sit in a chair whose back ends around mid-shoulder-blade height. Interlace fingers behind your head, elbows pointing forward (this keeps the right shoulder safe).",
-  move:"Lean back so your upper back arches over the top edge of the chair. Exhale as you go, pause 2 seconds, return. 10 slow reps. Scoot up or down a little to hit different levels.",
-  feel:"A stretch across the upper back and front of the chest.",
-  avoid:"Arching from the low back. Letting the head drop back. Pushing into any shoulder pain.",
-  demo:[['Seated thoracic extension demo', yt('seated thoracic extension chair physical therapy')]]},
- {video:'TCDA6qCp1FU', name:'Cross-body stretch', dose:'3 × 30 sec', timer:30, tlabel:'One hold', reps:3,
-  setup:"Stand or sit tall. Set your shoulder blades back and down first and keep them there.",
-  move:"Bring the right arm across your chest at chest height or lower. Hook the left hand just above the right elbow and pull gently toward the chest. Hold 30 seconds, 3 times.",
-  feel:"A stretch in the BACK of the right shoulder.",
-  avoid:"Letting the right shoulder hike up or roll forward. Twisting the trunk. Pulling the arm above shoulder height. Any pinch in the front of the shoulder.",
-  demo:[['Cross body stretch · Prehab Guys', 'https://library.theprehabguys.com/vimeo-video/standing-shoulder-cross-body-stretch-posterior-cuff-2/'],['YouTube demo', yt('cross body shoulder stretch posterior capsule physical therapy')]]},
- {video:'069o76BafTk', name:'Low doorway chest stretch', dose:'3 × 30 sec', timer:30, tlabel:'One hold', reps:3,
-  setup:"Stand in a doorway. Place the right forearm on the frame with the elbow BELOW shoulder height (hand about chest height). Right foot slightly forward.",
-  move:"Shift your weight onto the front foot and turn your chest slightly away from the frame until you feel the stretch. Hold 30 seconds, 3 times.",
-  feel:"A stretch under the collarbone and in the front of the shoulder.",
-  avoid:"Raising the elbow to or above the shoulder. Leaning so far the shoulder rolls forward. Any tingling in the hand (ease off).",
-  demo:[['Pec minor doorway stretch · Prehab Guys', 'https://library.theprehabguys.com/vimeo-video/pec-minor-stretch-doorway/'],['YouTube demo', yt('pec minor doorway stretch elbow below shoulder')]]},
- {video:'pgsPQ1_5e0w', name:'Table slides', dose:'10 reps · pause 3 sec at the end', timer:3, tlabel:'End pause', reps:10,
-  setup:"Sit facing a table or sideways to it. Rest the right forearm on a towel, elbow bent, thumb pointing up. Chair height so the shoulder sits level and relaxed.",
-  move:"Lean your trunk forward from the hips so the towel slides away from you; the arm just rides along. Pause 3 seconds at the end, then sit back up. 10 reps.",
-  feel:"A gentle stretch at the end of the reach, mostly in the front and top of the shoulder. Mild discomfort is okay; sharp pain is not.",
-  avoid:"Lifting the arm off the table. Pushing through pain. Shrugging the shoulder.",
-  demo:[['Shoulder Flexion Table Slides · Ask Doctor Jo', yt('Shoulder Flexion Table Slides Ask Doctor Jo')]]},
-];
+const R = window.ROUTINE, STEPS = R.steps;
+const KEY = 'shoulder-routine-v2';
+const $ = id => document.getElementById(id);
+const todayKey = () => { const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
 
-const KEY='shoulder-routine-v1';
-let state={step:-1, done:[], log:[]};
-try{const s=JSON.parse(localStorage.getItem(KEY)); if(s) state=Object.assign(state,s, {step:-1});}catch(e){}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+/* ---------- state ---------- */
+let state = { done:[], flags:{}, sessions:[], seenVideo:[], flare:false, cur:null };
+// cur = in-progress session {start, prePain, painNight}
+try {
+  const raw = localStorage.getItem(KEY);
+  if (raw) Object.assign(state, JSON.parse(raw));
+  else { // migrate v1: only session count/dates
+    const v1 = JSON.parse(localStorage.getItem('shoulder-routine-v1')||'null');
+    if (v1 && Array.isArray(v1.log)) state.sessions = v1.log.map(d=>({date:toKey(new Date(d)), migrated:true}));
+  }
+} catch(e){}
+if (!Array.isArray(state.done)) state.done=[];
+if (!Array.isArray(state.sessions)) state.sessions=[];
+if (!Array.isArray(state.seenVideo)) state.seenVideo=[];
+if (typeof state.flags!=='object'||!state.flags) state.flags={};
+function toKey(d){ return isNaN(d)? todayKey() : d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
 
-let view='step';
-const content=document.getElementById('content'), prevBtn=document.getElementById('prevBtn'), nextBtn=document.getElementById('nextBtn');
-const toggle=document.getElementById('toggleView');
-let timer=null, remaining=0;
+let step = -1;          // -1 intro, 0..n steps, n = pain log, n+1 = done
+let view = 'step';      // 'step' | 'list' | 'history' | 'export'
+const N = STEPS.length;
+const activeSteps = () => state.flare ? [STEPS[0]] : STEPS;
 
-function stopTimer(){ if(timer){clearInterval(timer);timer=null;} }
-function fmt(s){return s>=60? Math.floor(s/60)+':'+String(s%60).padStart(2,'0') : String(s);}
-function beep(){ try{const ac=new (window.AudioContext||window.webkitAudioContext)(); const o=ac.createOscillator(), g=ac.createGain(); o.connect(g); g.connect(ac.destination); o.frequency.value=880; g.gain.value=.15; o.start(); o.stop(ac.currentTime+.25);}catch(e){} }
-
-function renderProgress(){
-  const p=document.getElementById('progress'); p.innerHTML='';
-  STEPS.forEach((_,i)=>{const s=document.createElement('span'); if(state.done.includes(i)) s.className='done'; if(i===state.step) s.className='now'; p.appendChild(s);});
+/* ---------- audio (unlocked on first tap) ---------- */
+let ac = null;
+function unlockAudio(){ try{ if(!ac) ac=new (window.AudioContext||window.webkitAudioContext)(); if(ac.state==='suspended') ac.resume(); }catch(e){} }
+function beep(n=1, freq=880){
+  try{ if(!ac) return; for(let i=0;i<n;i++){ const o=ac.createOscillator(), g=ac.createGain(); o.connect(g); g.connect(ac.destination);
+    o.frequency.value=freq; const t=ac.currentTime+i*0.3; g.gain.setValueAtTime(0.18,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.22); o.start(t); o.stop(t+0.25);} }catch(e){}
+  try{ navigator.vibrate && navigator.vibrate(n===1?80:[80,80,80]); }catch(e){}
 }
 
+/* ---------- wake lock ---------- */
+let lock=null;
+async function keepAwake(on){ try{ if(on&&!lock&&navigator.wakeLock){ lock=await navigator.wakeLock.request('screen'); lock.addEventListener('release',()=>{lock=null;}); } else if(!on&&lock){ await lock.release(); lock=null; } }catch(e){ lock=null; } }
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'){ if(T.running) keepAwake(true); tick(); } });
+
+/* ---------- timer (deadline based, auto-cycling) ---------- */
+const T = { running:false, phase:'idle', rep:0, deadline:0, left:0, iv:null, step:null, finished:false };
+function fmt(s){ return s>=60 ? Math.floor(s/60)+':'+String(s%60).padStart(2,'0') : String(s); }
+function tSetup(s){
+  tStop(); T.step=s; T.rep=0; T.phase='idle'; T.finished=false; T.left=s.hold;
+  $('timer').hidden=false; tPaint();
+}
+function tLabel(){
+  const s=T.step; if(!s) return ['',''];
+  const total=s.reps;
+  if(T.finished) return ['Done', `${total} of ${total} complete`];
+  const n=Math.min(T.rep+(T.phase==='hold'||T.phase==='idle'?1:0), total);
+  if(s.mode==='rounds'){ const name=(s.roundNames||[])[Math.max(0,n-1)]||`Round ${n}`; return [name, `Round ${n} of ${total}`]; }
+  if(T.phase==='rest') return ['Release', `Next: rep ${T.rep+1} of ${total}`];
+  return [T.phase==='idle'?'Ready':'Hold', `Rep ${n} of ${total} · ${s.hold}s hold`];
+}
+function tPaint(){
+  const c=$('clock'); c.textContent=fmt(Math.max(0,T.left)); c.className='clock'+(T.phase==='rest'?' rest':'')+(T.finished?' fin':'');
+  const [a,b]=tLabel(); $('tlabel').textContent=a; $('tsub').textContent=b;
+  const st=$('tstart'); st.textContent=T.running?'Pause':(T.finished?'Again':(T.rep>0||T.phase==='rest'?'Resume':'Start')); st.className='tstart'+(T.running?' live':'');
+}
+function tStart(){
+  unlockAudio(); if(T.finished){ T.rep=0; T.finished=false; T.phase='idle'; T.left=T.step.hold; }
+  if(T.phase==='idle'){ T.phase='hold'; T.left=T.step.hold; beep(1,660); }
+  T.deadline=Date.now()+T.left*1000; T.running=true; keepAwake(true);
+  clearInterval(T.iv); T.iv=setInterval(tick,250); tPaint();
+}
+function tPause(){ T.running=false; clearInterval(T.iv); T.left=Math.max(0,Math.ceil((T.deadline-Date.now())/1000)); keepAwake(false); tPaint(); }
+function tStop(){ T.running=false; clearInterval(T.iv); keepAwake(false); }
+function tick(){
+  if(!T.running) return;
+  const left=Math.ceil((T.deadline-Date.now())/1000);
+  if(left>0){ if(left!==T.left){ T.left=left; tPaint(); } return; }
+  const s=T.step;
+  if(T.phase==='hold'){
+    T.rep++;
+    if(T.rep>=s.reps){ T.finished=true; T.left=0; tStop(); beep(3,880); $('live').textContent=s.name+' complete'; tPaint(); return; }
+    beep(1,880);
+    if(s.mode==='rounds'||!s.rest){ T.phase='hold'; T.left=s.hold; }
+    else { T.phase='rest'; T.left=s.rest; }
+  } else { T.phase='hold'; T.left=s.hold; beep(1,660); }
+  T.deadline=Date.now()+T.left*1000; tPaint();
+}
+$('tstart').onclick=()=>{ T.running? tPause(): tStart(); };
+$('treset').onclick=()=>{ tStop(); T.rep=0; T.phase='idle'; T.finished=false; T.left=T.step?T.step.hold:0; tPaint(); };
+
+/* ---------- views ---------- */
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function sessionsOn(k){ return state.sessions.filter(s=>s.date===k); }
+function streak(){ let n=0; const d=new Date(); for(;;){ const k=toKey(d); if(sessionsOn(k).length){ n++; d.setDate(d.getDate()-1);} else if(k===todayKey()){ d.setDate(d.getDate()-1);} else break; if(n>365) break; } return n; }
+function lastPain(){ const s=[...state.sessions].reverse().find(x=>x.postPain!=null); return s?s.postPain:null; }
+
 function intro(){
-  const today=state.log.filter(d=>d===new Date().toDateString()).length;
+  const today=sessionsOn(todayKey()).length;
+  const lp=lastPain();
   return `<div class="card">
-    <div class="eyebrow">About 10 minutes · 1–2× a day</div>
-    <h2 style="margin-top:6px">Seven stretches, in order</h2>
-    <p>For right-shoulder impingement with biceps and calcific tendonitis. Warm up first: a warm shower or 5 minutes of walking.</p>
-    <p class="streak">Completed today: <strong>${today}</strong> · total sessions logged: <strong>${state.log.length}</strong></p>
+    <div class="eyebrow">About ${R.minutes} minutes · ${esc(R.perDay)}</div>
+    <h2 style="margin-top:6px">${state.flare?'Flare mode: pendulums only':'Seven stretches, in order'}</h2>
+    <p>${esc(R.intro)}</p>
+    <div class="stats"><div class="stat"><b>${today}</b><small>Today</small></div><div class="stat"><b>${streak()}</b><small>Day streak</small></div><div class="stat"><b>${lp==null?'–':lp}</b><small>Last pain</small></div></div>
+    <div class="btnrow"><button type="button" data-view="history">History</button><button type="button" data-view="export">PT summary</button>
+      <button type="button" class="${state.flare?'':'warn'}" id="flareBtn">${state.flare?'End flare mode':'Flare mode'}</button></div>
   </div>
-  <div class="rules"><h3>Ground rules</h3><ul>
-    <li>Pain stays at 3/10 or lower, and no worse an hour later.</li>
-    <li>Arm stays below shoulder height. Overhead is what pinches.</li>
-    <li>Skip: behind-the-back stretches, straight-arm-behind-you biceps stretches, sleeper stretch, weights, sleeping on the right side.</li>
-    <li>Sudden severe pain (often at night) can be a calcific flare. Drop to pendulums only and call Dr. Lanzi's office: <strong>713-441-9000</strong>.</li>
-  </ul></div>
-  <div class="card install"><strong style="color:var(--fg)">Save as an app on iPhone</strong>
-    <ol><li>Open this page in Safari.</li><li>Tap the Share button (square with arrow).</li><li>Tap <em>Add to Home Screen</em>, then <em>Add</em>.</li></ol>
-  </div>`;
+  <div class="rules"><h3>Ground rules</h3><ul>${R.rules.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div>
+  <div class="rules"><h3>Stop and call the clinic</h3><ul>${R.stopRules.map(r=>`<li>${esc(r)}</li>`).join('')}</ul>
+    <p style="margin:10px 0 0">${esc(R.clinic.name)}<br><a class="phone" href="tel:${R.clinic.phone.replace(/\D/g,'')}">${esc(R.clinic.phone)}</a></p></div>
+  <div class="card"><strong>${esc(R.optional.name)}</strong><p class="hint" style="margin:4px 0 8px">${esc(R.optional.note)}</p><p style="margin:0">${esc(R.optional.text)}</p></div>
+  <div class="card install" id="installCard"><strong style="color:var(--fg)">Save as an app on iPhone</strong>
+    <ol><li>Open this page in Safari.</li><li>Tap the Share button (square with arrow).</li><li>Tap <em>Add to Home Screen</em>, then <em>Add</em>.</li></ol></div>`;
 }
 
 function stepCard(i){
-  const s=STEPS[i];
-  const demos=s.demo.map(([t,u])=>`<a href="${u}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>${t}</a>`).join('');
-  const timerHtml = s.timer? `<div class="timer"><div class="clock" id="clock">${fmt(s.timer)}</div>
-      <button class="tstart" id="tstart" type="button">Start</button><button class="treset" id="treset" type="button">Reset</button>
-      <div class="tlabel">${s.tlabel}${s.reps?` · ${s.reps} reps`:''}. Tap Start for each hold.</div></div>` : '';
-  return `<div class="card">
-    <span class="stepnum">Step ${i+1} of ${STEPS.length}</span>
-    <h2>${s.name}</h2>
-    <div class="dose">${s.dose}</div>
-    <div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${s.video}?rel=0&modestbranding=1&playsinline=1" title="${s.name} demo" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>
-    <div class="vlabel">Watch once, then follow the steps below</div>
+  const s=activeSteps()[i], idx=STEPS.indexOf(s);
+  const seen=state.seenVideo.includes(s.id);
+  const links=(s.links||[]).map(([t,u])=>`<a href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`).join('');
+  const flagged=!!state.flags[s.id];
+  return `<div class="card stepcard">
+    <span class="stepnum">Step ${i+1} of ${activeSteps().length}</span>
+    <h2 id="steph" tabindex="-1">${esc(s.name)}</h2>
+    <div class="dose">${esc(s.dose)}</div>
     <dl class="guide">
-      <dt>Set up</dt><dd>${s.setup}</dd>
-      <dt>Movement</dt><dd>${s.move}</dd>
-      <dt>Feel</dt><dd>${s.feel}</dd>
-      <dt class="no">Don't</dt><dd>${s.avoid}</dd>
+      <dt>Set up</dt><dd>${esc(s.setup)}</dd>
+      <dt>Movement</dt><dd class="move">${esc(s.move)}</dd>
+      <dt>Feel</dt><dd>${esc(s.feel)}</dd>
+      <div class="no"><dt>Don't</dt><dd>${esc(s.avoid)}</dd></div>
     </dl>
-    <div class="demo">${demos}</div>
-    ${timerHtml}
+    <details class="vid" id="vid" ${seen?'':'open'}>
+      <summary><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>${seen?'Watch demo again':'Watch the demo once'}</summary>
+      <div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${s.video}?rel=0&playsinline=1" title="${esc(s.name)} demo" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen loading="lazy"></iframe></div>
+      ${links?`<div class="links">${links}</div>`:''}
+    </details>
+    <div class="flagrow"><button type="button" id="flagPain" class="${flagged?'on':''}" aria-pressed="${flagged}">${flagged?'Flagged: provoked pain':'Flag: this one hurt'}</button></div>
+  </div>`;
+}
+
+function painCard(){
+  const c=state.cur||{};
+  const scale=(name,val)=>`<div class="scale" data-scale="${name}">${Array.from({length:11},(_,n)=>`<button type="button" data-v="${n}" class="${val===n?'sel'+(n>3?' hi':''):''}" aria-pressed="${val===n}">${n}</button>`).join('')}</div>`;
+  return `<div class="card pain">
+    <span class="stepnum">Log</span><h2 id="steph" tabindex="-1">How did it go?</h2>
+    <p style="margin:6px 0 0"><strong>Pain right now (0–10)</strong></p>${scale('postPain',c.postPain)}
+    <p class="hint ${c.postPain>3?'bad':''}" id="painHint">${c.postPain>3?'Above 3/10. Drop back to pendulums only tomorrow; if it is still above 3 in an hour, call the clinic.':'Rule: 3 or lower, and no worse an hour from now.'}</p>
+    <label class="chk"><input type="checkbox" id="nightPain" ${c.painNight?'checked':''}> Shoulder pain woke me last night</label>
+    <p class="hint" style="margin-top:12px">Flagged this session: ${Object.keys(state.flags).filter(k=>state.flags[k]).map(k=>esc((STEPS.find(s=>s.id===k)||{}).name||k)).join(', ')||'none'}</p>
   </div>`;
 }
 
 function doneCard(){
+  const last=state.sessions[state.sessions.length-1]||{};
   return `<div class="card done-card"><div class="big">✓</div><h2>Routine complete</h2>
-    <p>Logged for today. Ice for 10–15 minutes if the shoulder feels warm afterward.</p>
-    <p class="streak">Sessions logged: <strong>${state.log.length}</strong></p></div>`;
+    <p>Logged for today${last.postPain!=null?` at ${last.postPain}/10`:''}. Ice for 10–15 minutes if the shoulder feels warm. Heat only before a session.</p>
+    <p class="hint">Sessions logged: <strong>${state.sessions.length}</strong> · day streak: <strong>${streak()}</strong></p>
+    <div class="btnrow"><button type="button" data-view="history">History</button><button type="button" data-view="export">PT summary</button></div></div>`;
 }
 
 function overview(){
+  const list=activeSteps();
   return `<div class="card overview"><h2 style="font-size:20px;margin-bottom:6px">All steps</h2>` +
-    STEPS.map((s,i)=>`<div class="item"><div class="n ${state.done.includes(i)?'done':''}">${i+1}</div>
-      <div class="t"><strong>${s.name}</strong><small>${s.dose}</small></div>
+    list.map((s,i)=>`<div class="item"><div class="n ${state.done.includes(s.id)?'done':''} ${state.flags[s.id]?'flag':''}">${i+1}</div>
+      <div class="t"><strong>${esc(s.name)}</strong><small>${esc(s.dose)}</small></div>
       <button type="button" data-go="${i}">Open</button></div>`).join('') + `</div>`;
 }
 
+function history(){
+  const days=[]; const d=new Date(); d.setDate(d.getDate()-13);
+  for(let i=0;i<14;i++){ const k=toKey(d); const ss=sessionsOn(k); const pain=ss.some(s=>s.painNight||s.postPain>3);
+    days.push(`<span class="${ss.length>=2?'d2':ss.length===1?'d1':''}${pain?' pain':''}${k===todayKey()?' today':''}" title="${k}">${d.getDate()}</span>`); d.setDate(d.getDate()+1); }
+  const recent=[...state.sessions].reverse().slice(0,10).map(s=>`<div class="item"><div class="t"><strong>${s.date}</strong><small>${s.migrated?'logged (older version)':`post-pain ${s.postPain??'–'}/10${s.painNight?' · night pain':''}${(s.flags||[]).length?' · hurt: '+s.flags.map(f=>esc((STEPS.find(x=>x.id===f)||{}).name||f)).join(', '):''}${s.flare?' · flare mode':''}`}</small></div></div>`).join('');
+  return `<div class="card"><h2 style="font-size:20px">Last 14 days</h2><div class="cal">${days.join('')}</div>
+    <p class="callabel">Green: 1 session · teal: 2+ · orange ring: pain above 3 or night pain</p></div>
+    <div class="card overview"><h2 style="font-size:20px;margin-bottom:6px">Recent sessions</h2>${recent||'<p class="hint">Nothing logged yet.</p>'}</div>`;
+}
+
+function exportText(){
+  const byDay={}; state.sessions.forEach(s=>{ (byDay[s.date]=byDay[s.date]||[]).push(s); });
+  const days=Object.keys(byDay).sort();
+  const pains=state.sessions.filter(s=>s.postPain!=null).map(s=>s.postPain);
+  const flagCount={}; state.sessions.forEach(s=>(s.flags||[]).forEach(f=>flagCount[f]=(flagCount[f]||0)+1));
+  const lines=[`Home stretch program summary — generated ${todayKey()}`,
+    `Program: ${STEPS.map(s=>s.name).join('; ')}`,
+    `Sessions: ${state.sessions.length} over ${days.length} days (${days[0]||'–'} to ${days[days.length-1]||'–'})`,
+    `Post-session pain: ${pains.length?`avg ${(pains.reduce((a,b)=>a+b,0)/pains.length).toFixed(1)}/10, last ${pains[pains.length-1]}/10, sessions above 3: ${pains.filter(p=>p>3).length}`:'not logged'}`,
+    `Night pain reported: ${state.sessions.filter(s=>s.painNight).length} sessions`,
+    `Exercises that provoked pain: ${Object.keys(flagCount).length?Object.entries(flagCount).map(([k,v])=>`${(STEPS.find(s=>s.id===k)||{}).name||k} (${v}×)`).join(', '):'none flagged'}`,
+    `Flare-mode sessions: ${state.sessions.filter(s=>s.flare).length}`,'',
+    'Date        Pain  Night  Flagged'];
+  state.sessions.forEach(s=>lines.push(`${s.date}  ${String(s.postPain??'–').padStart(4)}  ${s.painNight?'yes ':'no  '}  ${(s.flags||[]).map(f=>(STEPS.find(x=>x.id===f)||{}).name||f).join(', ')}`));
+  return lines.join('\n');
+}
+function exportView(){
+  return `<div class="card"><h2 style="font-size:20px">Summary for your PT</h2><p class="hint">Copy and paste into a note or message, or show this screen at the first visit.</p>
+    <textarea class="export" id="exportTxt" readonly>${esc(exportText())}</textarea>
+    <div class="btnrow"><button type="button" id="copyBtn">Copy</button></div></div>`;
+}
+
+/* ---------- render ---------- */
+const content=$('content'), prevBtn=$('prevBtn'), nextBtn=$('nextBtn'), toggle=$('toggleView');
+function renderProgress(){
+  const list=activeSteps(); const p=$('progress'); p.innerHTML='';
+  list.forEach((s,i)=>{ const el=document.createElement('span'); if(state.done.includes(s.id)) el.className='done'; if(state.flags[s.id]) el.className='flag'; if(i===step) el.className='now'; p.appendChild(el); });
+  p.setAttribute('aria-valuemax',list.length); p.setAttribute('aria-valuenow',list.filter(s=>state.done.includes(s.id)).length);
+}
+function wire(){
+  content.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{ view=b.dataset.view; render(); });
+  content.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ step=+b.dataset.go; view='step'; render(); });
+  const f=$('flareBtn'); if(f) f.onclick=()=>{ state.flare=!state.flare; state.done=[]; save(); render(); };
+  const fl=$('flagPain'); if(fl) fl.onclick=()=>{ const s=activeSteps()[step]; state.flags[s.id]=!state.flags[s.id]; save(); render(); };
+  const v=$('vid'); if(v){ v.addEventListener('toggle',()=>{ const s=activeSteps()[step]; if(!state.seenVideo.includes(s.id)){ state.seenVideo.push(s.id); save(); } }); if(v.open){ const s=activeSteps()[step]; if(!state.seenVideo.includes(s.id)){ state.seenVideo.push(s.id); save(); } } }
+  content.querySelectorAll('[data-scale]').forEach(sc=>sc.querySelectorAll('button').forEach(b=>b.onclick=()=>{ state.cur=state.cur||{}; state.cur[sc.dataset.scale]=+b.dataset.v; save(); render(); }));
+  const np=$('nightPain'); if(np) np.onchange=()=>{ state.cur=state.cur||{}; state.cur.painNight=np.checked; save(); };
+  const cp=$('copyBtn'); if(cp) cp.onclick=()=>{ const t=$('exportTxt'); const done=()=>{cp.textContent='Copied'; setTimeout(()=>cp.textContent='Copy',1500);}; (navigator.clipboard?navigator.clipboard.writeText(t.value).then(done):Promise.reject()).catch(()=>{ t.focus(); t.select(); done(); }); };
+  const ic=$('installCard'); if(ic && (matchMedia('(display-mode: standalone)').matches || navigator.standalone)) ic.hidden=true;
+}
 function render(){
-  stopTimer();
+  tStop(); $('timer').hidden=true;
+  $('heyebrow').textContent=R.eyebrow; $('htitle').textContent=R.title;
   renderProgress();
-  if(view==='list'){ content.innerHTML=overview(); toggle.textContent='Back to routine'; prevBtn.hidden=true; nextBtn.textContent='Close list';
-    content.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{state.step=+b.dataset.go; view='step'; render();}); return; }
-  toggle.textContent='All steps'; prevBtn.hidden=false;
-  if(state.step<0){ content.innerHTML=intro(); prevBtn.hidden=true; nextBtn.textContent=state.done.length? 'Continue':'Start'; }
-  else if(state.step>=STEPS.length){ content.innerHTML=doneCard(); nextBtn.textContent='Start over'; }
+  const list=activeSteps(); const n=list.length;
+  toggle.textContent = view==='step' ? 'All steps' : 'Back to routine';
+  toggle.setAttribute('aria-pressed', view!=='step');
+  prevBtn.hidden=false;
+  if(view==='list'){ content.innerHTML=overview(); prevBtn.hidden=true; nextBtn.textContent='Close'; nextBtn.className='next'; }
+  else if(view==='history'){ content.innerHTML=history(); prevBtn.hidden=true; nextBtn.textContent='Close'; nextBtn.className='next'; }
+  else if(view==='export'){ content.innerHTML=exportView(); prevBtn.hidden=true; nextBtn.textContent='Close'; nextBtn.className='next'; }
+  else if(step<0){ content.innerHTML=intro(); prevBtn.hidden=true; const resume=list.some(s=>state.done.includes(s.id)); nextBtn.textContent=resume?'Continue':'Start'; nextBtn.className='next'; }
+  else if(step===n){ content.innerHTML=painCard(); nextBtn.textContent='Save & finish'; nextBtn.className='next ok'; }
+  else if(step>n){ content.innerHTML=doneCard(); nextBtn.textContent='Start over'; nextBtn.className='next'; }
   else {
-    content.innerHTML=stepCard(state.step);
-    nextBtn.textContent= state.step===STEPS.length-1 ? 'Finish' : 'Done, next';
-    const s=STEPS[state.step];
-    if(s.timer){
-      const clock=document.getElementById('clock'), st=document.getElementById('tstart'), rs=document.getElementById('treset');
-      remaining=s.timer;
-      st.onclick=()=>{
-        if(timer){stopTimer(); st.textContent='Resume'; return;}
-        if(remaining<=0) remaining=s.timer;
-        st.textContent='Pause';
-        timer=setInterval(()=>{remaining--; clock.textContent=fmt(remaining); if(remaining<=0){stopTimer(); beep(); st.textContent='Start'; remaining=s.timer; clock.textContent=fmt(s.timer);} },1000);
-      };
-      rs.onclick=()=>{stopTimer(); remaining=s.timer; clock.textContent=fmt(s.timer); st.textContent='Start';};
-    }
+    content.innerHTML=stepCard(step);
+    const s=list[step]; tSetup(s);
+    nextBtn.textContent= step===n-1 ? 'Done, log pain' : 'Done, next'; nextBtn.className='next';
+    $('live').textContent=`Step ${step+1} of ${n}: ${s.name}`;
   }
-  document.querySelector('main').scrollTop=0;
+  wire();
+  $('main').scrollTop=0;
+  const h=$('steph'); if(h && view==='step') h.focus({preventScroll:true});
 }
 
 nextBtn.onclick=()=>{
-  if(view==='list'){view='step'; render(); return;}
-  if(state.step<0){ state.step=0; }
-  else if(state.step>=STEPS.length){ state.step=-1; state.done=[]; }
-  else { if(!state.done.includes(state.step)) state.done.push(state.step); state.step++;
-         if(state.step>=STEPS.length){ state.log.push(new Date().toDateString()); state.done=[]; } }
+  unlockAudio();
+  const list=activeSteps(), n=list.length;
+  if(view!=='step'){ view='step'; render(); return; }
+  if(step<0){ const first=list.findIndex(s=>!state.done.includes(s.id)); step=first<0?0:first; state.cur=state.cur||{start:Date.now()}; }
+  else if(step>n){ step=-1; state.done=[]; state.flags={}; state.cur=null; }
+  else if(step===n){
+    const c=state.cur||{};
+    state.sessions.push({date:todayKey(), postPain:c.postPain??null, painNight:!!c.painNight, flags:Object.keys(state.flags).filter(k=>state.flags[k]), flare:state.flare, mins:c.start?Math.round((Date.now()-c.start)/60000):null});
+    state.cur=null; step=n+1;
+  }
+  else { const id=list[step].id; if(!state.done.includes(id)) state.done.push(id); step++; }
   save(); render();
 };
-prevBtn.onclick=()=>{ if(state.step>=0){ state.step--; render(); } };
-toggle.onclick=()=>{ view = view==='list'?'step':'list'; render(); };
+prevBtn.onclick=()=>{ if(step>n()) return; if(step>=0){ step--; render(); } };
+function n(){ return activeSteps().length; }
+toggle.onclick=()=>{ view = view==='step'?'list':'step'; render(); };
 render();
+
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
 </script>
 </body>
 </html>
