@@ -201,7 +201,7 @@ function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e
 let step = -1;          // -1 intro, 0..n steps, n = pain log, n+1 = done
 let view = 'step';      // 'step' | 'list' | 'history' | 'export'
 const N = STEPS.length;
-const activeSteps = () => state.flare ? [STEPS[0]] : STEPS;
+const activeSteps = () => state.flare ? STEPS.filter(s=>!s.skipInFlare) : STEPS;
 
 /* ---------- audio (unlocked on first tap) ---------- */
 let ac = null;
@@ -230,8 +230,9 @@ function tLabel(){
   if(T.finished) return ['Done', `${total} of ${total} complete`];
   const n=Math.min(T.rep+(T.phase==='hold'||T.phase==='idle'?1:0), total);
   if(s.mode==='rounds'){ const name=(s.roundNames||[])[Math.max(0,n-1)]||`Round ${n}`; return [name, `Round ${n} of ${total}`]; }
-  if(T.phase==='rest') return ['Release', `Next: rep ${T.rep+1} of ${total}`];
-  return [T.phase==='idle'?'Ready':'Hold', `Rep ${n} of ${total} · ${s.hold}s hold`];
+  const rn=(s.repNames||[])[Math.max(0,n-1)];
+  if(T.phase==='rest'){ const nn=(s.repNames||[])[T.rep]; return ['Release', `Next: ${nn||('rep '+(T.rep+1))} of ${total}`]; }
+  return [rn||(T.phase==='idle'?'Ready':'Hold'), `Rep ${n} of ${total} · ${s.hold}s${rn?'':' hold'}`];
 }
 function tPaint(){
   const c=$('clock'); c.textContent=fmt(Math.max(0,T.left)); c.className='clock'+(T.phase==='rest'?' rest':'')+(T.finished?' fin':'');
@@ -274,13 +275,15 @@ function intro(){
   const lp=lastPain();
   return `<div class="card">
     <div class="eyebrow">About ${R.minutes} minutes · ${esc(R.perDay)}</div>
-    <h2 style="margin-top:6px">${state.flare?'Flare mode: pendulums only':'Seven stretches, in order'}</h2>
-    <p>${esc(R.intro)}</p>
+    <h2 style="margin-top:6px">${state.flare?esc(R.flare.name):`${STEPS.length} steps, in order`}</h2>
+    <p>${state.flare?esc(R.flare.back):esc(R.intro)}</p>
     <div class="stats"><div class="stat"><b>${today}</b><small>Today</small></div><div class="stat"><b>${streak()}</b><small>Day streak</small></div><div class="stat"><b>${lp==null?'–':lp}</b><small>Last pain</small></div></div>
     <div class="btnrow"><button type="button" data-view="history">History</button><button type="button" data-view="export">PT summary</button>
       <button type="button" class="${state.flare?'':'warn'}" id="flareBtn">${state.flare?'End flare mode':'Flare mode'}</button></div>
   </div>
-  <div class="rules"><h3>Ground rules</h3><ul>${R.rules.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div>
+  ${state.flare
+    ? `<div class="rules"><h3>Do this during the flare</h3><ul>${R.flare.do.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div>`
+    : `<div class="rules"><h3>Ground rules</h3><ul>${R.rules.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div>`}
   <div class="rules"><h3>Stop and call the clinic</h3><ul>${R.stopRules.map(r=>`<li>${esc(r)}</li>`).join('')}</ul>
     <p style="margin:10px 0 0">${esc(R.clinic.name)}<br><a class="phone" href="tel:${R.clinic.phone.replace(/\D/g,'')}">${esc(R.clinic.phone)}</a></p></div>
   <div class="card"><strong>${esc(R.optional.name)}</strong><p class="hint" style="margin:4px 0 8px">${esc(R.optional.note)}</p><p style="margin:0">${esc(R.optional.text)}</p></div>
