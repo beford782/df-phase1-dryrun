@@ -261,6 +261,9 @@ jobs:
       - name: contrast
         run: node tests/contrast_check.mjs
 
+      - name: shoulder guide records and timer
+        run: node tests/shoulder_guide_check.mjs
+
       # Executes the real extracted drawer lifecycle against a DOM shim (same
       # extract-and-execute pattern as the financing renderer suite) rather
       # than grepping for function names. Pins the idle-reset regression:
