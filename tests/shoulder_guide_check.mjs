@@ -101,7 +101,7 @@ function worker() {
   const sandbox = vm.createContext({
     URL, Response,
     self: { registration: { scope: 'https://example.org/app/shoulder/' }, addEventListener(type, fn) { events[type] = fn; }, async skipWaiting() {}, clients: { async claim() { w.claimed = true; } } },
-    caches: { async open() { return cache; }, async keys() { return ['unrelated-app-v1', 'shoulder-v4', 'shoulder-guide-v4', 'shoulder-guide-v5']; }, async delete(key) { deleted.push(key); return true; } },
+    caches: { async open() { return cache; }, async keys() { return ['unrelated-app-v1', 'shoulder-v4', 'shoulder-guide-v5', 'shoulder-guide-v6']; }, async delete(key) { deleted.push(key); return true; } },
     async fetch() { w.networkCalls++; if (w.failNetwork) throw Error('Offline'); return new Response('fresh online file'); }
   });
   vm.runInContext(swSource, sandbox);
@@ -120,7 +120,7 @@ await asyncCheck('worker activation preserves unrelated app caches', async () =>
   const w = worker(); let work;
   w.events.activate({ waitUntil(value) { work = value; } });
   await work;
-  assert.deepEqual(w.deleted.sort(), ['shoulder-guide-v4', 'shoulder-v4']);
+  assert.deepEqual(w.deleted.sort(), ['shoulder-guide-v5', 'shoulder-v4']);
   assert.equal(w.claimed, true);
 });
 await asyncCheck('worker install includes every local script needed offline', async () => {
@@ -158,4 +158,76 @@ await asyncCheck('worker offline home navigation falls back to saved index', asy
   w.saved.set('https://example.org/app/shoulder/index.html', new Response('saved home'));
   assert.equal(await (await w.fetch('./', { mode: 'navigate' })).text(), 'saved home');
 });
-console.log(`${checks} model and offline checks passed${process.exitCode ? '; failures above require repair' : ''}.`);
+function guideRuntime(raw = M.newState()) {
+  const mainHandlers = {}, nodes = new Map(), frames = [], stored = new Map([['shoulder-guide-v3', JSON.stringify(raw)]]);
+  const element = () => ({ hidden: false, textContent: '', classList: { toggle() {} }, addEventListener() {}, querySelectorAll() { return []; } });
+  for (const id of ['main', 'storage-warning', 'announcement', 'network-status']) nodes.set(id, element());
+  nodes.get('main').addEventListener = (type, fn) => mainHandlers[type] = fn;
+  const sandbox = vm.createContext({
+    Date, URL, crypto: { randomUUID: () => 'test-session' }, setTimeout, clearTimeout, setInterval, clearInterval,
+    navigator: { onLine: true }, location: { hash: '#today' },
+    localStorage: { getItem: key => stored.get(key) ?? null, setItem: (key, value) => stored.set(key, value) },
+    document: { getElementById: id => nodes.get(id) || null, querySelector: () => element(), querySelectorAll: () => [], addEventListener() {}, createElement(tag) { const node = element(); node.tagName = tag; if (tag === 'iframe') frames.push(node); return node; } },
+  });
+  vm.runInContext('window = globalThis; window.addEventListener = () => {};', sandbox);
+  vm.runInContext(readFileSync(new URL('../shoulder/model.js', import.meta.url), 'utf8'), sandbox);
+  vm.runInContext(readFileSync(new URL('../shoulder/routine.js', import.meta.url), 'utf8'), sandbox);
+  let source = readFileSync(new URL('../shoulder/guide.js', import.meta.url), 'utf8');
+  // Expose real closure functions in the test VM; replace only the initial DOM render.
+  source = source.replace(/  render\(\);\s*\}\)\(\);\s*$/, '  window.testGuide={notesView,sessionView,finishView,followView,demoView,todayView,summaryText,getState:()=>state};\n})();');
+  vm.runInContext(source, sandbox);
+  return { api: sandbox.testGuide, data: sandbox.SHOULDER_GUIDE, mainHandlers, frames, stored };
+}
+check('nine exercises have unique, valid video metadata', () => {
+  const g = guideRuntime();
+  assert.equal(g.data.exercises.length, 9);
+  assert.equal(new Set(g.data.exercises.map(e => e.id)).size, 9);
+  for (const e of g.data.exercises) {
+    assert.match(e.demo.video, /^[a-zA-Z0-9_-]{11}$/);
+    for (const key of ['title', 'provider', 'caption']) assert.ok(e.demo[key].length > 0);
+  }
+});
+check('actual overview and demo renderers do not load an iframe before play', () => {
+  const g = guideRuntime();
+  assert.doesNotMatch(g.api.todayView(), /<iframe/i);
+  for (const e of g.data.exercises) {
+    const html = g.api.demoView(e.id);
+    assert.doesNotMatch(html, /<iframe/i);
+    assert.match(html, /data-action="play-demo"/);
+    assert.ok(html.includes('https://www.youtube.com/watch?v=' + e.demo.video));
+  }
+  assert.equal(g.frames.length, 0);
+});
+await asyncCheck('actual play handler creates only the selected privacy-enhanced video', async () => {
+  const g = guideRuntime(); let inserted;
+  const button = { dataset: { action: 'play-demo', exercise: 'pendulum' }, closest() { return { replaceChildren(frame) { inserted = frame; } }; } };
+  await g.mainHandlers.click({ target: { closest() { return button; } } });
+  assert.equal(g.frames.length, 1);
+  assert.equal(inserted, g.frames[0]);
+  assert.match(inserted.src, /^https:\/\/www\.youtube-nocookie\.com\/embed\/QF_ubbr_RUE\?/);
+  assert.match(inserted.title, /Pendulum/);
+});
+check('actual note page contains exactly one writing box including follow-up route', () => {
+  const g = guideRuntime();
+  for (const html of [g.api.notesView(), g.api.followView()]) {
+    assert.equal((html.match(/<textarea\b/g) || []).length, 1);
+    assert.match(html, /id="pt-note"/);
+  }
+});
+check('exercise and finish screens contain no extra note boxes', () => {
+  const raw = plain(M.newState());
+  raw.current = { id: 'session-1', date: '2026-10-15', items: [plan], index: 0, results: [], itemNote: 'Older exercise note', note: 'Older session note', timer: null };
+  const g = guideRuntime(raw);
+  assert.doesNotMatch(g.api.sessionView(), /<textarea\b/);
+  assert.doesNotMatch(g.api.finishView(), /<textarea\b/);
+});
+check('existing daily, session, exercise, follow-up and general notes remain in summary', () => {
+  const raw = plain(M.newState());
+  raw.questions = 'General questions kept';
+  raw.days = { '2026-10-15': { pain: 2, sleep: 'yes', note: 'Daily note kept' } };
+  raw.sessions = [{ id: 'session-1', date: '2026-10-15', note: 'Session note kept', followNote: 'Follow-up note kept', results: [{ exercise: 'er', status: 'stopped', note: 'Exercise note kept', dose }] }];
+  const g = guideRuntime(raw), summary = g.api.summaryText();
+  for (const note of ['General questions kept', 'Daily note kept', 'Session note kept', 'Follow-up note kept', 'Exercise note kept']) assert.ok(summary.includes(note), note);
+  assert.equal(g.api.getState().sessions[0].results[0].status, 'stopped');
+});
+console.log(`${checks} model, offline and renderer checks passed${process.exitCode ? '; failures above require repair' : ''}.`);

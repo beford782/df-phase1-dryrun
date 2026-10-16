@@ -1,6 +1,6 @@
 // Keep the guide available offline. Change this version whenever app files change.
 const CACHE_PREFIX = 'shoulder-guide-';
-const CACHE = CACHE_PREFIX + 'v5';
+const CACHE = CACHE_PREFIX + 'v6';
 const ASSETS = ['./', './index.html', './guide.js', './model.js', './guide.css', './routine.js', './manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png'];
 const SCOPE = new URL(self.registration.scope);
 const ASSET_URLS = new Set(ASSETS.map(path => new URL(path, SCOPE).href));
