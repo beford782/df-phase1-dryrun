@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d7a72">
-<meta name="description" content="Bercutt PT home exercise program for the right shoulder: doses, PT notes, hold timers, weekly tracking and a pain log.">
+<meta name="description" content="Bercutt PT home exercise program for the right shoulder: doses, PT notes, demo videos, hold timers, weekly tracking and a pain log.">
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-180.png">
 <title>Shoulder HEP</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -72,6 +72,9 @@ header.top .who{color:var(--muted);font-size:.92rem}
 .chip.dose{font-family:var(--f-data);font-size:.76rem;color:var(--ink)}
 .chip.daily{border-color:var(--accent);color:var(--accent)}
 .chip.unset{border-style:dashed}
+.vid{border-radius:10px;overflow:hidden;background:var(--line);aspect-ratio:16/9;max-width:100%}
+.vid video{width:100%;height:100%;display:block;object-fit:contain;background:#000}
+.vid-fallback{display:flex;flex-direction:column;gap:6px;justify-content:center;align-items:flex-start;height:100%;padding:12px;font-size:.92rem}
 .note{background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:.95rem}
 .note b{display:block;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
 .steps{margin:0;padding-left:1.15rem;display:flex;flex-direction:column;gap:4px;color:var(--ink);font-size:.95rem}
@@ -119,7 +122,7 @@ footer{color:var(--muted);font-size:.82rem}
   <header class="top">
     <span class="eyebrow">Bercutt PT · Care Plan 1 · from Oct 27</span>
     <h1>Shoulder home program</h1>
-    <p class="who">Prescribed by Elizabeth Ford, PT, DPT. Doses and comments below are copied from her plan. Videos are in StriveHub.</p>
+    <p class="who">Prescribed by Elizabeth Ford, PT, DPT. Doses and comments below are copied from her plan. Her demo video is on each card.</p>
     <div class="actions">
       <a class="btn" href="https://portal.strivehub.com/app/2400556" target="_blank" rel="noopener">Open videos in StriveHub ↗</a>
     </div>
@@ -195,37 +198,37 @@ footer{color:var(--muted);font-size:.82rem}
 
 <script>
 const EX = [
-  {id:"foam", name:"Foam roll series", dose:"10–12 reps · hold 5 sec", freq:"daily", hold:5, holdLabel:"5-sec hold",
+  {id:"foam", video:"3664.mp4", yt:"foam roller supine pec stretch T arms scapular punches", name:"Foam roll series", dose:"10–12 reps · hold 5 sec", freq:"daily", hold:5, holdLabel:"5-sec hold",
    steps:["Lie lengthwise on the foam roller so your head and spine are supported, feet flat.",
           "Pec stretch: arms straight out to the sides in a T, palms up. Relax into it.",
           "Scapular punches: fists toward the ceiling, elbows locked. Punch up so only your shoulder blades lift off the roller, then let them sink back."],
    note:null},
-  {id:"thoracic", name:"Thoracic extension on foam roll (neck supported)", dose:"Hold 1–2 min", freq:"unset", hold:90, holdLabel:"90-sec hold",
+  {id:"thoracic", video:"1794_1653673533.mp4", yt:"thoracic extension over foam roller hands behind head", name:"Thoracic extension on foam roll (neck supported)", dose:"Hold 1–2 min", freq:"unset", hold:90, holdLabel:"90-sec hold",
    steps:["Lie on your back, feet flat, foam roller across your mid back.",
           "Hands behind your neck for support.",
           "Let your shoulders drop back over the roller and feel the stretch in your upper back. Hold."],
    note:"Hips stay down"},
-  {id:"needle", name:"Thread the needle with sky rotation", dose:"1 × 10–12", freq:"daily", hold:0,
+  {id:"needle", video:"3595_1653697560.mp4", yt:"thread the needle sky rotation thoracic mobility", name:"Thread the needle with sky rotation", dose:"1 × 10–12", freq:"daily", hold:0,
    steps:["Start on hands and knees.",
           "Reach one hand under and across your body; let your head and shoulders follow.",
           "Then reach that hand up toward the ceiling, turning your trunk. Eyes follow your hand the whole time."],
    note:"Glide hand on floor"},
-  {id:"scalene", name:"Anterior scalene / SCM stretch with side bend", dose:"2 × 30 sec", freq:"4-5", hold:30, holdLabel:"30-sec hold",
+  {id:"scalene", video:"3037_1653679204.mp4", yt:"anterior scalene stretch hands on collarbone side bend", name:"Anterior scalene / SCM stretch with side bend", dose:"2 × 30 sec", freq:"4-5", hold:30, holdLabel:"30-sec hold",
    steps:["Sit near the edge of a chair, hips and knees at 90°, feet flat. Lightly brace your lower abs.",
           "Place both hands over your collarbone on the affected side and gently pull down to anchor it.",
           "Lift your chin toward the ceiling and lean your head away from your hands until you feel the stretch along the side of the neck. Hold, then return."],
    note:null},
-  {id:"median", name:"Median nerve glide", dose:"2 × 8", freq:"4-5", hold:0,
+  {id:"median", video:"12723_1653065390.mp4", yt:"median nerve glide slider physical therapy", name:"Median nerve glide", dose:"2 × 8", freq:"4-5", hold:0,
    steps:["Seated or standing, arms at your sides. On the working side, press the shoulder blade down.",
           "Raise the arm out to shoulder height, elbow bent, forearm facing you, wrist bent back, fingers straight.",
           "In a comfortable range, straighten and bend the elbow so the forearm moves away and back. This is a glide, not a hold."],
    note:null, extra:"<b>Nerve tissue rule:</b> mild stretch is fine. Back off if tingling builds or lingers afterward."},
-  {id:"ws", name:"Supine shoulder W's with band", dose:"3 × 12", freq:"4-5", hold:0,
+  {id:"ws", video:"1847.mp4", yt:"supine shoulder external rotation resistance band W", name:"Supine shoulder W's with band", dose:"3 × 12", freq:"4-5", hold:0,
    steps:["Lie on your back, knees bent. Hold a band with elbows at your sides and forearms pointing up.",
           "Rotate your hands out away from each other, keeping elbows bent at 90° and pinned to your sides, like a double hitchhiker.",
           "Return slowly."],
    note:"Pinch shoulder blades together"},
-  {id:"serratus", name:"Shoulder flexion serratus activation (pillowcase)", dose:"2–3 × 6–8", freq:"daily", hold:0,
+  {id:"serratus", video:"2027.mp4", yt:"pillowcase wall slide serratus activation", name:"Shoulder flexion serratus activation (pillowcase)", dose:"2–3 × 6–8", freq:"daily", hold:0,
    steps:["Loop a pillowcase around your forearms and stand close to a wall, forearms on the wall.",
           "Slide your hands up the wall until your elbows reach about shoulder height.",
           "Keep the V shape of your forearms the whole time by pushing your wrists out."],
@@ -245,6 +248,20 @@ function weekCount(id){return weekKeys().filter(k=>state.done[k]&&state.done[k][
 function isDone(id){return !!(state.done[today]&&state.done[today][id])}
 
 const list=document.getElementById("list");
+const VBASE="https://prescribe-assets.strivehub.com/production/videos/";
+const vidEls={};
+function videoFor(ex){
+  if(vidEls[ex.id])return vidEls[ex.id];
+  const box=document.createElement("div");box.className="vid";
+  const v=document.createElement("video");v.controls=true;v.playsInline=true;v.preload="metadata";v.src=VBASE+ex.video+"#t=0.5";
+  v.setAttribute("aria-label","Video: "+ex.name);
+  const fail=()=>{box.innerHTML=`<div class="vid-fallback"><span>Elizabeth's video didn't load here.</span>
+    <a href="${VBASE+ex.video}" target="_blank" rel="noopener">Open her video directly ↗</a>
+    <a href="https://portal.strivehub.com/app/2400556" target="_blank" rel="noopener">Open in StriveHub ↗</a>
+    <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(ex.yt)}" target="_blank" rel="noopener">Search YouTube for this exercise ↗</a></div>`};
+  v.addEventListener("error",fail);
+  box.appendChild(v);vidEls[ex.id]=box;return box;
+}
 let timers={};
 
 function render(){
@@ -265,6 +282,7 @@ function render(){
           </div>
         </div>
       </div>
+      <div class="vid-slot"></div>
       ${ex.note?`<div class="note"><b>Elizabeth's note</b>${ex.note}</div>`:""}
       <ol class="steps">${ex.steps.map(s=>`<li>${s}</li>`).join("")}</ol>
       ${ex.extra?`<div class="extra">${ex.extra}</div>`:""}
@@ -273,6 +291,7 @@ function render(){
         <button class="btn ${done?"done":"primary"}" type="button" data-done="${ex.id}">${done?"Done today ✓":"Mark done"}</button>
         <span class="week">This week: ${wc}${f.target?` of ${ex.freq==="4-5"?"4–5":"7"}`:""}${metWeek?" · goal met":""}</span>
       </div>`;
+    card.querySelector('.vid-slot').replaceWith(videoFor(ex));
     list.appendChild(card);
   });
   const n=EX.filter(e=>isDone(e.id)).length;
