@@ -1,14 +1,343 @@
 <!doctype html>
 <html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f6f4ee"><meta name="description" content="A short bridge to your first physical therapy visit: symptom notes, appointment questions, and your clinician's agreed activity.">
-<title>Shoulder · Before PT</title><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Before PT">
-<link rel="stylesheet" href="guide.css"><script defer src="routine.js"></script><script defer src="model.js"></script><script defer src="guide.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d7a72">
+<meta name="description" content="Bercutt PT home exercise program for the right shoulder: doses, PT notes, hold timers, weekly tracking and a pain log.">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-180.png">
+<title>Shoulder HEP</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Shoulder HEP">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Young+Serif&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+body{margin:0} img{max-width:100%} [hidden]{display:none!important}
+</style>
+<style>
+/* Layout: single-column phone checklist; sticky week strip on top, exercise cards in prescribed order, reference sections below */
+:root{
+  --bg:#eef2f3; --surface:#ffffff; --ink:#15262b; --muted:#5b6f75; --line:#d3dee1;
+  --accent:#0d7a72; --accent-ink:#ffffff; --accent-soft:#d6eeeb;
+  --warn:#9a5b06; --warn-soft:#fbefd9; --stop:#a3281f; --stop-soft:#f8e1de; --done:#2f7d3b;
+  --f-display:"Young Serif", Georgia, serif;
+  --f-body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-data:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1a1d; --surface:#172529; --ink:#e3eef0; --muted:#93a8ad; --line:#2a3d42;
+  --accent:#4cc3b8; --accent-ink:#06211e; --accent-soft:#163a37;
+  --warn:#e6b363; --warn-soft:#3a2c14; --stop:#f08a80; --stop-soft:#3d1a17; --done:#6fcf7e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1a1d; --surface:#172529; --ink:#e3eef0; --muted:#93a8ad; --line:#2a3d42;
+  --accent:#4cc3b8; --accent-ink:#06211e; --accent-soft:#163a37;
+  --warn:#e6b363; --warn-soft:#3a2c14; --stop:#f08a80; --stop-soft:#3d1a17; --done:#6fcf7e; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1,h2{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0}
+h1{font-size:1.9rem;line-height:1.15}
+h2{font-size:1.3rem}
+h3{margin:0;font-size:1.05rem;font-weight:700;line-height:1.3}
+p{margin:0}
+.eyebrow{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+a{color:var(--accent)}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+header.top{padding-top:24px;display:flex;flex-direction:column;gap:8px}
+header.top .who{color:var(--muted);font-size:.92rem}
+
+.strip{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.strip .today{font-weight:700}
+.strip .count{font-family:var(--f-data);font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;flex-basis:100%}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+
+.list{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.card.is-done{border-color:var(--done)}
+.card.not-today{opacity:.82}
+.card-head{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
+.num{font-family:var(--f-data);font-size:.8rem;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.head-text{display:flex;flex-direction:column;gap:6px;min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:.78rem;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);font-variant-numeric:tabular-nums}
+.chip.dose{font-family:var(--f-data);font-size:.76rem;color:var(--ink)}
+.chip.daily{border-color:var(--accent);color:var(--accent)}
+.chip.unset{border-style:dashed}
+.note{background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:.95rem}
+.note b{display:block;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
+.steps{margin:0;padding-left:1.15rem;display:flex;flex-direction:column;gap:4px;color:var(--ink);font-size:.95rem}
+.steps li::marker{color:var(--muted)}
+.extra{background:var(--warn-soft);border-radius:10px;padding:10px 12px;font-size:.93rem}
+.extra b{color:var(--warn)}
+.week{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 14px;font-weight:600;min-height:44px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.done{background:var(--done);border-color:var(--done);color:var(--surface)}
+.timer{font-family:var(--f-data);font-size:1.6rem;font-variant-numeric:tabular-nums;min-width:4.2ch}
+.timer.run{color:var(--accent)}
+.timerbox{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.timerbox small{color:var(--muted)}
+
+section.ref{display:flex;flex-direction:column;gap:12px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.rules{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.rules li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start}
+.rules .tag{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:6px;white-space:nowrap}
+.tag.avoid{background:var(--stop-soft);color:var(--stop)}
+.tag.ok{background:var(--accent-soft);color:var(--accent)}
+.tag.call{background:var(--warn-soft);color:var(--warn)}
+.tag.er{background:var(--stop-soft);color:var(--stop)}
+
+.log{display:flex;flex-direction:column;gap:10px}
+.log-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.log-row label{font-weight:600}
+input[type=range]{flex:1;min-width:160px;accent-color:var(--accent)}
+.pain-val{font-family:var(--f-data);font-size:1.2rem;width:2.5ch;text-align:right}
+textarea{width:100%;font:inherit;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);color:var(--ink);resize:vertical;min-height:60px}
+.hist{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;align-items:end;height:60px}
+.hist span{display:block;background:var(--accent);border-radius:3px 3px 0 0;min-height:2px;opacity:.85}
+.hist span.empty{background:var(--line)}
+.hist-labels{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted)}
+.copyline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.copyline code{font-family:var(--f-data);font-size:.95rem;user-select:all}
+footer{color:var(--muted);font-size:.82rem}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
 </head><body>
-<a class="skip-link" href="#main">Skip to content</a>
-<header class="site-header"><div class="header-inner"><a class="brand" href="#today"><span class="brand-mark" aria-hidden="true">↗</span><span><small>RIGHT SHOULDER</small><strong>Before PT</strong></span></a><span class="local-badge">Saved on this device</span></div></header>
-<div id="storage-warning" class="notice warning" role="alert" hidden></div><div id="update-notice" class="notice" hidden>Update ready. <button id="apply-update" type="button">Open updated guide</button> Your saved notes will stay on this device.</div>
-<nav class="tabs" aria-label="Main navigation"><a href="#today" data-tab="today">Exercises</a><a href="#notes" data-tab="notes">My note</a></nav>
-<main id="main" tabindex="-1"></main><footer class="site-footer"><p>Comfort, useful notes, and a clearer first visit.</p><a href="#about">About this guide &amp; privacy</a><span id="network-status"></span></footer><div id="announcement" class="sr-only" aria-live="polite" role="status"></div>
-<noscript><p class="notice warning">Turn on JavaScript to use this guide. For sudden severe shoulder pain, inability to move the arm, persistent tingling or numbness, or fever with a hot swollen shoulder, seek urgent medical advice.</p></noscript>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">Bercutt PT · Care Plan 1 · from Oct 27</span>
+    <h1>Shoulder home program</h1>
+    <p class="who">Prescribed by Elizabeth Ford, PT, DPT. Doses and comments below are copied from her plan. Videos are in StriveHub.</p>
+    <div class="actions">
+      <a class="btn" href="https://portal.strivehub.com/app/2400556" target="_blank" rel="noopener">Open videos in StriveHub ↗</a>
+    </div>
+  </header>
+
+  <div class="strip" aria-live="polite">
+    <span class="today" id="todayLabel">Today</span>
+    <span class="count" id="todayCount">0 / 0 done</span>
+    <div class="bar"><i id="todayBar"></i></div>
+  </div>
+
+  <div class="list" id="list"></div>
+
+  <section class="ref" aria-labelledby="h-log">
+    <h2 id="h-log">Daily check-in</h2>
+    <div class="panel log">
+      <div class="log-row">
+        <label for="pain">Shoulder pain today</label>
+        <input type="range" id="pain" min="0" max="10" step="1" value="0">
+        <span class="pain-val" id="painVal">0</span>
+      </div>
+      <textarea id="painNote" placeholder="Anything to tell Elizabeth? Tingling, a move that felt off, a gym session…"></textarea>
+      <div>
+        <div class="hist" id="hist" aria-label="Pain scores, last 14 days"></div>
+        <div class="hist-labels"><span>14 days ago</span><span>Today</span></div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="copySummary" type="button">Copy 14-day summary for PT</button>
+        <span class="week" id="copyMsg"></span>
+      </div>
+      <textarea id="summaryFallback" hidden readonly></textarea>
+    </div>
+  </section>
+
+  <section class="ref" aria-labelledby="h-gym">
+    <h2 id="h-gym">Back to the gym, gradually</h2>
+    <div class="panel">
+      <ul class="rules">
+        <li><span class="tag avoid">Skip</span><span>Upright rows</span></li>
+        <li><span class="tag avoid">Skip</span><span>Heavy pressing, including incline</span></li>
+        <li><span class="tag avoid">Skip</span><span>High rows</span></li>
+        <li><span class="tag ok">Focus</span><span>Shoulder blades down and back without shrugging. Let the mid and lower traps do the work, not the upper traps.</span></li>
+        <li><span class="tag ok">Focus</span><span>Move your neck separately from your upper back instead of bracing them together.</span></li>
+      </ul>
+      <p class="week">"Initially" per Elizabeth. Ask her before adding any of these back.</p>
+    </div>
+  </section>
+
+  <section class="ref" aria-labelledby="h-desk">
+    <h2 id="h-desk">At your desk</h2>
+    <div class="panel">
+      <p><b>Lumbar towel roll.</b> Roll a towel and put it behind your low back whenever you sit. It keeps your pelvis from tucking under, which is what drags your upper back and head forward.</p>
+    </div>
+  </section>
+
+  <section class="ref" aria-labelledby="h-stop">
+    <h2 id="h-stop">When to stop</h2>
+    <div class="panel">
+      <ul class="rules">
+        <li><span class="tag call">Call PT</span><span>Thumb or forefinger tingling that gets worse or lasts after the nerve glide or scalene stretch</span></li>
+        <li><span class="tag call">Call PT</span><span>Sharp pain during an exercise, or pain that is worse the next morning</span></li>
+        <li><span class="tag er">ER</span><span>Sudden arm weakness, chest pain, or numbness spreading down the arm with no clear cause</span></li>
+      </ul>
+      <div class="copyline">
+        <span>Bercutt PT:</span><code id="phone">(713) 360-0300</code>
+        <button class="btn" type="button" id="copyPhone">Copy</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>Progress is saved on this device only. Replaces the earlier pre-PT stretch app.</footer>
+</div>
+
+<script>
+const EX = [
+  {id:"foam", name:"Foam roll series", dose:"10–12 reps · hold 5 sec", freq:"daily", hold:5, holdLabel:"5-sec hold",
+   steps:["Lie lengthwise on the foam roller so your head and spine are supported, feet flat.",
+          "Pec stretch: arms straight out to the sides in a T, palms up. Relax into it.",
+          "Scapular punches: fists toward the ceiling, elbows locked. Punch up so only your shoulder blades lift off the roller, then let them sink back."],
+   note:null},
+  {id:"thoracic", name:"Thoracic extension on foam roll (neck supported)", dose:"Hold 1–2 min", freq:"unset", hold:90, holdLabel:"90-sec hold",
+   steps:["Lie on your back, feet flat, foam roller across your mid back.",
+          "Hands behind your neck for support.",
+          "Let your shoulders drop back over the roller and feel the stretch in your upper back. Hold."],
+   note:"Hips stay down"},
+  {id:"needle", name:"Thread the needle with sky rotation", dose:"1 × 10–12", freq:"daily", hold:0,
+   steps:["Start on hands and knees.",
+          "Reach one hand under and across your body; let your head and shoulders follow.",
+          "Then reach that hand up toward the ceiling, turning your trunk. Eyes follow your hand the whole time."],
+   note:"Glide hand on floor"},
+  {id:"scalene", name:"Anterior scalene / SCM stretch with side bend", dose:"2 × 30 sec", freq:"4-5", hold:30, holdLabel:"30-sec hold",
+   steps:["Sit near the edge of a chair, hips and knees at 90°, feet flat. Lightly brace your lower abs.",
+          "Place both hands over your collarbone on the affected side and gently pull down to anchor it.",
+          "Lift your chin toward the ceiling and lean your head away from your hands until you feel the stretch along the side of the neck. Hold, then return."],
+   note:null},
+  {id:"median", name:"Median nerve glide", dose:"2 × 8", freq:"4-5", hold:0,
+   steps:["Seated or standing, arms at your sides. On the working side, press the shoulder blade down.",
+          "Raise the arm out to shoulder height, elbow bent, forearm facing you, wrist bent back, fingers straight.",
+          "In a comfortable range, straighten and bend the elbow so the forearm moves away and back. This is a glide, not a hold."],
+   note:null, extra:"<b>Nerve tissue rule:</b> mild stretch is fine. Back off if tingling builds or lingers afterward."},
+  {id:"ws", name:"Supine shoulder W's with band", dose:"3 × 12", freq:"4-5", hold:0,
+   steps:["Lie on your back, knees bent. Hold a band with elbows at your sides and forearms pointing up.",
+          "Rotate your hands out away from each other, keeping elbows bent at 90° and pinned to your sides, like a double hitchhiker.",
+          "Return slowly."],
+   note:"Pinch shoulder blades together"},
+  {id:"serratus", name:"Shoulder flexion serratus activation (pillowcase)", dose:"2–3 × 6–8", freq:"daily", hold:0,
+   steps:["Loop a pillowcase around your forearms and stand close to a wall, forearms on the wall.",
+          "Slide your hands up the wall until your elbows reach about shoulder height.",
+          "Keep the V shape of your forearms the whole time by pushing your wrists out."],
+   note:null, extra:"<b>If it feels awkward:</b> think of lightly pulling the pillowcase apart rather than shoving the wrists outward. Use just enough tension that it doesn't slip. Stop at shoulder height so the upper traps don't take over."}
+];
+const FREQ = {daily:{label:"Daily", target:7}, "4-5":{label:"4–5× / week", target:4}, unset:{label:"Frequency not set", target:null}};
+
+const KEY="shoulder-hep-v4";
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+let state=load(); state.done=state.done||{}; state.pain=state.pain||{}; state.notes=state.notes||{};
+
+function dkey(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+const today=dkey(new Date());
+function weekKeys(){const d=new Date();const day=(d.getDay()+6)%7;const out=[];for(let i=0;i<7;i++){const x=new Date(d);x.setDate(d.getDate()-day+i);out.push(dkey(x))}return out}
+function weekCount(id){return weekKeys().filter(k=>state.done[k]&&state.done[k][id]).length}
+function isDone(id){return !!(state.done[today]&&state.done[today][id])}
+
+const list=document.getElementById("list");
+let timers={};
+
+function render(){
+  list.innerHTML="";
+  EX.forEach((ex,i)=>{
+    const f=FREQ[ex.freq]; const wc=weekCount(ex.id); const done=isDone(ex.id);
+    const metWeek = f.target && wc>=f.target && !done && ex.freq!=="daily";
+    const card=document.createElement("article");
+    card.className="card"+(done?" is-done":"")+(metWeek?" not-today":"");
+    card.innerHTML=`
+      <div class="card-head">
+        <span class="num">${i+1}</span>
+        <div class="head-text">
+          <h3>${ex.name}</h3>
+          <div class="chips">
+            <span class="chip dose">${ex.dose}</span>
+            <span class="chip ${ex.freq==="daily"?"daily":""} ${ex.freq==="unset"?"unset":""}">${f.label}</span>
+          </div>
+        </div>
+      </div>
+      ${ex.note?`<div class="note"><b>Elizabeth's note</b>${ex.note}</div>`:""}
+      <ol class="steps">${ex.steps.map(s=>`<li>${s}</li>`).join("")}</ol>
+      ${ex.extra?`<div class="extra">${ex.extra}</div>`:""}
+      ${ex.hold?`<div class="timerbox"><span class="timer" id="t-${ex.id}">${fmt(ex.hold)}</span><button class="btn" type="button" data-timer="${ex.id}">Start ${ex.holdLabel}</button><small>${ex.id==="thoracic"?"1–2 min prescribed":""}</small></div>`:""}
+      <div class="actions">
+        <button class="btn ${done?"done":"primary"}" type="button" data-done="${ex.id}">${done?"Done today ✓":"Mark done"}</button>
+        <span class="week">This week: ${wc}${f.target?` of ${ex.freq==="4-5"?"4–5":"7"}`:""}${metWeek?" · goal met":""}</span>
+      </div>`;
+    list.appendChild(card);
+  });
+  const n=EX.filter(e=>isDone(e.id)).length;
+  document.getElementById("todayCount").textContent=`${n} / ${EX.length} done`;
+  document.getElementById("todayBar").style.width=(n/EX.length*100)+"%";
+  document.getElementById("todayLabel").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"});
+}
+function fmt(s){return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+
+let actx=null, wake=null;
+function beep(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=880;g.gain.value=.15;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+.25)}catch(e){}
+  try{navigator.vibrate&&navigator.vibrate(200)}catch(e){}}
+async function lock(){try{wake=await navigator.wakeLock.request("screen")}catch(e){}}
+
+list.addEventListener("click",e=>{
+  const d=e.target.closest("[data-done]");
+  if(d){const id=d.dataset.done;state.done[today]=state.done[today]||{};state.done[today][id]=!state.done[today][id];save();render();return}
+  const t=e.target.closest("[data-timer]");
+  if(t){const id=t.dataset.timer;const ex=EX.find(x=>x.id===id);
+    try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.resume()}catch(_){}
+    if(timers[id]){clearInterval(timers[id].iv);delete timers[id];render();return}
+    const end=Date.now()+ex.hold*1000; lock();
+    t.textContent="Stop";
+    timers[id]={iv:setInterval(()=>{
+      const el=document.getElementById("t-"+id); const left=Math.max(0,Math.round((end-Date.now())/1000));
+      if(el){el.textContent=fmt(left);el.classList.add("run")}
+      if(left<=0){clearInterval(timers[id].iv);delete timers[id];beep();if(el){el.textContent="Done";el.classList.remove("run")}
+        const b=document.querySelector(`[data-timer="${id}"]`);if(b)b.textContent="Start "+ex.holdLabel;
+        try{wake&&wake.release()}catch(_){}}
+    },250)};
+  }
+});
+
+const pain=document.getElementById("pain"), painVal=document.getElementById("painVal"), painNote=document.getElementById("painNote");
+if(state.pain[today]!=null){pain.value=state.pain[today]} painVal.textContent=pain.value;
+painNote.value=state.notes[today]||"";
+pain.addEventListener("input",()=>{painVal.textContent=pain.value;state.pain[today]=+pain.value;save();drawHist()});
+painNote.addEventListener("input",()=>{state.notes[today]=painNote.value;save()});
+
+function last14(){const out=[];for(let i=13;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);out.push(dkey(d))}return out}
+function drawHist(){const h=document.getElementById("hist");h.innerHTML="";
+  last14().forEach(k=>{const s=document.createElement("span");const v=state.pain[k];
+    if(v==null){s.className="empty";s.style.height="2px"}else{s.style.height=Math.max(4,v*10)+"%"}
+    s.title=k+(v!=null?`: ${v}/10`:": no entry");h.appendChild(s)})}
+
+document.getElementById("copySummary").addEventListener("click",()=>{
+  const lines=["Shoulder HEP — last 14 days",""];
+  last14().forEach(k=>{const d=state.done[k]||{};const names=EX.filter(e=>d[e.id]).map(e=>e.name.split(" (")[0]);
+    const p=state.pain[k];const n=(state.notes[k]||"").trim();
+    if(names.length||p!=null||n)lines.push(`${k}: pain ${p!=null?p+"/10":"—"} · ${names.length}/${EX.length} done${n?` · "${n}"`:""}`)});
+  if(lines.length===2)lines.push("No entries yet.");
+  const txt=lines.join("\n"), msg=document.getElementById("copyMsg"), fb=document.getElementById("summaryFallback");
+  const fallback=()=>{fb.hidden=false;fb.value=txt;fb.focus();fb.select();msg.textContent="Select and copy the text below."};
+  try{navigator.clipboard.writeText(txt).then(()=>{msg.textContent="Copied. Paste it into a message to Elizabeth."},fallback)}catch(e){fallback()}
+});
+document.getElementById("copyPhone").addEventListener("click",()=>{
+  const t="(713) 360-0300";try{navigator.clipboard.writeText(t).catch(()=>{})}catch(e){}
+  const r=document.createRange();r.selectNodeContents(document.getElementById("phone"));const s=getSelection();s.removeAllRanges();s.addRange(r);
+});
+
+render(); drawHist();
+</script>
+
+<script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{});
+  let had=!!navigator.serviceWorker.controller;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had)location.reload();had=true});}
+</script>
 </body></html>

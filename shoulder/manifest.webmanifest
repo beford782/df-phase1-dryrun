@@ -1,11 +1,11 @@
 {
-  "name": "Shoulder — Before PT",
-  "short_name": "Shoulder",
+  "name": "Shoulder HEP",
+  "short_name": "Shoulder HEP",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f6f4ee",
-  "theme_color": "#1f6f78",
+  "background_color": "#eef2f3",
+  "theme_color": "#0d7a72",
   "icons": [
     {
       "src": "icon-192.png",
