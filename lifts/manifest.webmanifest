@@ -1,0 +1,14 @@
+{
+  "name": "Shoulder-Safe Lifts",
+  "short_name": "Lifts",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef1f0",
+  "theme_color": "#1d64b8",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}
