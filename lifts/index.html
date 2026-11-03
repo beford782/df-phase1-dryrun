@@ -233,47 +233,47 @@ nav.tabs .in{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%
 const X=(k,n,sets,reps,cue,o={})=>Object.assign({k,n,sets,reps,cue,w:true,step:5},o);
 const SESSIONS=[
  {code:'A',short:'Back',name:'Back + biceps',time:'55 min',load:'Moderate',ex:[
-  X('csrow','Chest-supported DB row, neutral grip',[3,3,4,4],'10','Elbows drive toward the hips, not up toward the ears.'),
-  X('cablerow','Seated cable row, neutral handle',[2,3,3,3],'10','Pull to the lower ribs; shoulder blades back and down first.'),
-  X('dbrow','Single-arm DB row',[2,2,3,3],'10 / side','Brace on the bench; no shrug at the top.'),
+  X('csrow','Chest-supported DB row, neutral grip',[3,3,4,4],'10','Elbows drive toward the hips, not up toward the ears.',{start:30}),
+  X('cablerow','Seated cable row, neutral handle',[2,3,3,3],'10','Pull to the lower ribs; shoulder blades back and down first.',{start:65}),
+  X('dbrow','Single-arm DB row',[2,2,3,3],'10 / side','Brace on the bench; no shrug at the top.',{start:30}),
   X('sapd','Straight-arm band pulldown',[2,2,3,3],'12','From shoulder height to hips. Blade drops into the back pocket.'),
-  X('pronet','Prone T raise, thumbs up',3,'12','No weight to start, then 2–5 lb on a flat bench. Mid-trap, not upper.',{step:1}),
-  X('sler','Side-lying DB external rotation',2,'12–15','Towel under the elbow, elbow pinned to your side. Light. Rotate only as far as is comfortable.',{step:1}),
+  X('pronet','Prone T raise, thumbs up',3,'12','No weight to start, then 2–5 lb on a flat bench. Mid-trap, not upper.',{step:1,start:3}),
+  X('sler','Side-lying DB external rotation',2,'12–15','Towel under the elbow, elbow pinned to your side. Light. Rotate only as far as is comfortable.',{step:1,start:3}),
   X('pup','Push-up plus, hands on a bench',[2,3,3,3],'10','At the top, push the floor away to spread the shoulder blades.',{w:false}),
-  X('hammer','DB hammer curl',2,'10','Elbows pinned at the sides.'),
-  X('cablecurl','Cable curl, light',[0,0,2,2],'12','Weeks 3–4 only. Stop if you feel it in the front of the shoulder.')]},
+  X('hammer','DB hammer curl',2,'10','Elbows pinned at the sides.',{start:15,step:2.5}),
+  X('cablecurl','Cable curl, light',[0,0,2,2],'12','Weeks 3–4 only. Stop if you feel it in the front of the shoulder.',{start:30})]},
  {code:'B',short:'Legs',name:'Legs (squat) + core',time:'50 min',load:'None',ex:[
-  X('goblet','Goblet squat (or safety-bar / belt squat)',4,'8','No straight bar on your back.'),
-  X('bss','Bulgarian split squat, DB at chest',3,'8 / side','Torso tall.'),
-  X('legext','Leg extension',3,'12','2-second lower.'),
-  X('calf','Seated calf raise',3,'15','Pause at the bottom.'),
-  X('pallof','Pallof press, cable at chest height',3,'10 / side','Shoulders stay down.'),
-  X('deadbug','Dead bug',3,'8 / side','Low back flat on the floor.',{w:false})]},
+  X('goblet','Goblet squat (or safety-bar / belt squat)',4,'8','No straight bar on your back.',{start:40}),
+  X('bss','Bulgarian split squat, DB at chest',3,'8 / side','Torso tall.',{start:25}),
+  X('legext','Leg extension',3,'12','2-second lower.',{start:80}),
+  X('hipabd','Hip abduction machine',3,'15','Lean slightly forward, push through the outside of the knees, pause at the widest point. Shoulders relaxed.',{start:80}),
+  X('pallof','Pallof press, cable at chest height',3,'10 / side','Shoulders stay down.',{start:20}),
+  X('cablecrunch','Kneeling cable crunch',3,'12','Rope at the forehead, hips still. Curl the ribs toward the hips; don’t pull with the arms. Shoulders stay down.',{start:50,step:5})]},
  {code:'C',short:'Arms+hinge',name:'Arms + legs (hinge)',time:'60 min',load:'Light',note:'Arms first while you’re fresh, then legs.',ex:[
-  X('rope','Rope triceps pushdown',3,'12','Elbows at the sides; spread the rope at the bottom.'),
-  X('kick','DB triceps kickback',3,'12','Upper arm parallel to the floor; only the forearm moves.',{step:2.5}),
-  X('hammer','DB hammer curl',2,'10','No swinging.'),
-  X('revcurl','EZ-bar reverse curl',2,'15','Forearms and brachialis. Light.'),
-  X('thrust','Barbell or machine hip thrust',3,'8','Hands only steady the bar.',{step:10}),
+  X('rope','Rope triceps pushdown',3,'12','Elbows at the sides; spread the rope at the bottom.',{start:30}),
+  X('kick','DB triceps kickback',3,'12','Upper arm parallel to the floor; only the forearm moves.',{step:2.5,start:12.5}),
+  X('hammer','DB hammer curl',2,'10','No swinging.',{start:15,step:2.5}),
+  X('revcurl','EZ-bar reverse curl',2,'15','Forearms and brachialis. Light.',{start:25}),
+  X('thrust','Barbell or machine hip thrust',3,'8','Hands only steady the bar.',{step:10,start:135}),
   X('backext','45° back extension',3,'12','Arms crossed on the chest, not hanging. Squeeze the glutes at the top. Hold a plate on the chest to load it.'),
-  X('lcurl','Lying leg curl',3,'10','Slow lower.')]},
+  X('lcurl','Lying leg curl',3,'10','Slow lower.',{start:70})]},
  {code:'D',short:'Back+push',name:'Back + light push',time:'55 min',load:'Moderate',ex:[
-  X('mrow','Machine row, neutral grip',[3,3,4,4],'10','Chest stays on the pad.'),
-  X('cablerow','Seated cable row, neutral handle',[2,3,0,0],'10','Weeks 1–2. Pull to the lower ribs.'),
+  X('mrow','Machine row, neutral grip',[3,3,4,4],'10','Chest stays on the pad.',{start:65}),
+  X('cablerow','Seated cable row, neutral handle',[2,3,0,0],'10','Weeks 1–2. Pull to the lower ribs.',{start:65}),
   X('inv','Inverted row at a Smith bar',[0,0,3,3],'8','Weeks 3–4. Feet on floor, bar to lower chest; raise the bar to make it easier.',{w:false}),
-  X('sacr','Single-arm cable row',[2,2,3,3],'12 / side','Let the blade reach forward, then pull it back first.'),
+  X('sacr','Single-arm cable row',[2,2,3,3],'12 / side','Let the blade reach forward, then pull it back first.',{start:35}),
   X('sapd','Straight-arm band pulldown',2,'12','Blade drops into the back pocket.'),
-  X('proneext','Prone shoulder extension',2,'12','Face down, arms by your sides. Lift the arms back, blades down and back. Lower trap, not upper.',{step:1}),
-  X('sler','Side-lying DB external rotation',2,'12–15','Towel under the elbow. Light.',{step:1}),
+  X('proneext','Prone shoulder extension',2,'12','Face down, arms by your sides. Lift the arms back, blades down and back. Lower trap, not upper.',{step:1,start:3}),
+  X('sler','Side-lying DB external rotation',2,'12–15','Towel under the elbow. Light.',{step:1,start:3}),
   X('pup','Push-up plus, hands on a bench',3,'10','At the top, push the floor away.',{w:false}),
-  X('floor','DB floor press, neutral grip, light',3,'10','Elbows about 45°; the floor limits the range.')]},
+  X('floor','DB floor press, neutral grip, light',3,'10','Elbows about 45°; the floor limits the range.',{start:30})]},
  {code:'E',short:'Arms+legs',name:'Arms + legs (machines)',time:'55 min',load:'Light',ex:[
-  X('rgpd','Single-arm reverse-grip pushdown',3,'12 / side','Shoulder stays down.',{step:2.5}),
-  X('rope','Rope triceps pushdown',3,'12','Elbows at the sides.'),
-  X('lpress','Leg press',3,'12','Full depth your low back allows.',{step:10}),
-  X('lunge','Reverse lunge, DB at chest',3,'8 / side','Short step, knee to the floor.'),
-  X('slcurl','Seated leg curl',2,'12','Slow lower.'),
-  X('walk','Incline walk intervals',6,'1 min steep / 1 min flat','10–12% incline. Hands off the rails.',{w:false})]},
+  X('rgpd','Single-arm reverse-grip pushdown',3,'12 / side','Shoulder stays down.',{step:2.5,start:15}),
+  X('rope','Rope triceps pushdown',3,'12','Elbows at the sides.',{start:30}),
+  X('lpress','Leg press',3,'12','Full depth your low back allows.',{step:10,start:220}),
+  X('lunge','Reverse lunge, DB at chest',3,'8 / side','Short step, knee to the floor.',{start:25}),
+  X('slcurl','Seated leg curl',2,'12','Slow lower.',{start:70}),
+  X('walk','Steady incline walk',1,'12–15 min','8–10% incline at a pace you could hold a conversation at. Hands off the rails.',{w:false})]},
  {code:'W',short:'Walk',name:'Zone 2 walk',time:'30–45 min',load:'None',optional:true,note:'Optional extra day. Incline walk at a pace where you can talk in full sentences.',ex:[
   X('zone2','Incline treadmill walk',1,'30–45 min','Easy, steady pace. Hands off the rails.',{w:false,vid:'walk'})]}
 ];
@@ -285,7 +285,7 @@ const WEEKS={
  4:{rir:'2 reps left',back:'Hold loads from week 3.',arms:'Hold loads; +1 set on pushdowns if it feels good.',legs:'Hold.'}
 };
 const WHERE=['Front','Top / side','Back','Neck','Down the arm'];
-const VID={"csrow": {"id": "f0bFCVXB8hc", "t": "Chest Supported DB Row", "c": "Travis Tarrant"}, "cablerow": {"id": "XaHV_8Nbyug", "t": "Seated Close Grip Cable Row", "c": "Team Evolve"}, "dbrow": {"id": "8iMJWCAIV78", "t": "One-Arm Dumbbell Row", "c": "Mind Pump TV"}, "sapd": {"id": "wcVDItawocI", "t": "Straight Arm Pulldown", "c": "Bodybuilding.com"}, "pronet": {"id": "J-TvvTbMkkY", "t": "Prone T Raise", "c": "Alpha Coach"}, "hammer": {"id": "CFBZ4jN1CMI", "t": "Dumbbell Hammer Curl", "c": "NASM"}, "cablecurl": {"id": "OsQupgowb00", "t": "Standing Biceps Cable Curl", "c": "Fitness Arabia"}, "goblet": {"id": "JO7D6GJ98wY", "t": "Goblet Squat", "c": "Jack Hanrahan Fitness"}, "bss": {"id": "-IpkZv8tZYM", "t": "DB Bulgarian Split Squat", "c": "Horton Barbell"}, "legext": {"id": "xAUvXdHu1sI", "t": "Leg Extension", "c": "Tim Bullici"}, "calf": {"id": "pz66Bw6HJ4s", "t": "Seated Calf Raise", "c": "The Gym In The North"}, "pallof": {"id": "Te5VAYXy0wQ", "t": "Pallof Press", "c": "MuscleWiki"}, "deadbug": {"id": "g_BYB0R-4Ws", "t": "Dead Bug", "c": "Children's Hospital Colorado"}, "rope": {"id": "K--j4Qh9d2s", "t": "Rope Triceps Pushdown", "c": "Germain Craddock's EVA"}, "kick": {"id": "ShCYaoHmWmk", "t": "Dumbbell Kickback", "c": "LivestrongWoman"}, "revcurl": {"id": "aIrvcBlNHBA", "t": "EZ Bar Reverse Curl", "c": "FITASTIC"}, "thrust": {"id": "eutQE64svRE", "t": "Barbell Hip Thrust", "c": "Ben Yanes"}, "lcurl": {"id": "SbSNUXPRkc8", "t": "Lying Leg Curl", "c": "PureGym"}, "mrow": {"id": "QpLTp2AJ_cI", "t": "Machine Chest Supported Row", "c": "Fox Body Fitness"}, "inv": {"id": "hXTc1mDnZCw", "t": "Inverted Row", "c": "BarBend"}, "sacr": {"id": "NwyhyKyFgf4", "t": "Single Arm Seated Cable Row", "c": "Rob Riches"}, "pup": {"id": "RR5xJ1mXEV4", "t": "Push-Up Plus", "c": "Matthew Stevens"}, "floor": {"id": "T0Y3OBF1bNI", "t": "Dumbbell Floor Press", "c": "PureGym"}, "rgpd": {"id": "byN9-8JOKD0", "t": "Single Arm Reverse Grip Pushdown", "c": "SET FOR SET"}, "lpress": {"id": "uRFWe2nOUjg", "t": "Leg Press", "c": "Tim Bullici"}, "lunge": {"id": "MpfeGnBFEo8", "t": "Dumbbell Reverse Lunge", "c": "IronmasterPro"}, "slcurl": {"id": "Z5pRnXaCjpM", "t": "Seated Leg Curl", "c": "Hammer Fitness"}, "walk": {"id": "Ii71nAaRc_8", "t": "Incline Treadmill Walking", "c": "Team Evolve"}, "backext": {"id": "OMb1VFQK9Tk", "t": "45 Degree Hip Extension", "c": "Physique Development"}, "sler": {"id": "20v3G-odF5c", "t": "Sidelying Shoulder External Rotation", "c": "Release Physical Therapy"}, "proneext": {"id": "KvY2S9UdDY0", "t": "Prone Shoulder Extensions", "c": "Myokinetix Physical Therapy"}};
+const VID={"csrow": {"id": "f0bFCVXB8hc", "t": "Chest Supported DB Row", "c": "Travis Tarrant"}, "cablerow": {"id": "XaHV_8Nbyug", "t": "Seated Close Grip Cable Row", "c": "Team Evolve"}, "dbrow": {"id": "8iMJWCAIV78", "t": "One-Arm Dumbbell Row", "c": "Mind Pump TV"}, "sapd": {"id": "wcVDItawocI", "t": "Straight Arm Pulldown", "c": "Bodybuilding.com"}, "pronet": {"id": "J-TvvTbMkkY", "t": "Prone T Raise", "c": "Alpha Coach"}, "hammer": {"id": "CFBZ4jN1CMI", "t": "Dumbbell Hammer Curl", "c": "NASM"}, "cablecurl": {"id": "OsQupgowb00", "t": "Standing Biceps Cable Curl", "c": "Fitness Arabia"}, "goblet": {"id": "JO7D6GJ98wY", "t": "Goblet Squat", "c": "Jack Hanrahan Fitness"}, "bss": {"id": "-IpkZv8tZYM", "t": "DB Bulgarian Split Squat", "c": "Horton Barbell"}, "legext": {"id": "xAUvXdHu1sI", "t": "Leg Extension", "c": "Tim Bullici"}, "pallof": {"id": "Te5VAYXy0wQ", "t": "Pallof Press", "c": "MuscleWiki"}, "rope": {"id": "K--j4Qh9d2s", "t": "Rope Triceps Pushdown", "c": "Germain Craddock's EVA"}, "kick": {"id": "ShCYaoHmWmk", "t": "Dumbbell Kickback", "c": "LivestrongWoman"}, "revcurl": {"id": "aIrvcBlNHBA", "t": "EZ Bar Reverse Curl", "c": "FITASTIC"}, "thrust": {"id": "eutQE64svRE", "t": "Barbell Hip Thrust", "c": "Ben Yanes"}, "lcurl": {"id": "SbSNUXPRkc8", "t": "Lying Leg Curl", "c": "PureGym"}, "mrow": {"id": "QpLTp2AJ_cI", "t": "Machine Chest Supported Row", "c": "Fox Body Fitness"}, "inv": {"id": "hXTc1mDnZCw", "t": "Inverted Row", "c": "BarBend"}, "sacr": {"id": "NwyhyKyFgf4", "t": "Single Arm Seated Cable Row", "c": "Rob Riches"}, "pup": {"id": "RR5xJ1mXEV4", "t": "Push-Up Plus", "c": "Matthew Stevens"}, "floor": {"id": "T0Y3OBF1bNI", "t": "Dumbbell Floor Press", "c": "PureGym"}, "rgpd": {"id": "byN9-8JOKD0", "t": "Single Arm Reverse Grip Pushdown", "c": "SET FOR SET"}, "lpress": {"id": "uRFWe2nOUjg", "t": "Leg Press", "c": "Tim Bullici"}, "lunge": {"id": "MpfeGnBFEo8", "t": "Dumbbell Reverse Lunge", "c": "IronmasterPro"}, "slcurl": {"id": "Z5pRnXaCjpM", "t": "Seated Leg Curl", "c": "Hammer Fitness"}, "walk": {"id": "Ii71nAaRc_8", "t": "Incline Treadmill Walking", "c": "Team Evolve"}, "backext": {"id": "OMb1VFQK9Tk", "t": "45 Degree Hip Extension", "c": "Physique Development"}, "sler": {"id": "20v3G-odF5c", "t": "Sidelying Shoulder External Rotation", "c": "Release Physical Therapy"}, "proneext": {"id": "KvY2S9UdDY0", "t": "Prone Shoulder Extensions", "c": "Myokinetix Physical Therapy"}, "hipabd": {"id": "TKtB6RWTTNc", "t": "Machine Hip Abduction", "c": "Ryan Treadaway"}, "cablecrunch": {"id": "jBtiDLz0y7s", "t": "Kneeling Cable Rope Crunch", "c": "Sean Nalewanyj"}};
 const NAMES={};SESSIONS.forEach(s=>s.ex.forEach(e=>{if(!NAMES[e.k])NAMES[e.k]=e.n}));
 const sesBy=c=>SESSIONS.find(s=>s.code===c)||SESSIONS[0];
 const setsFor=(e,wk)=>Array.isArray(e.sets)?e.sets[wk-1]:e.sets;
@@ -369,9 +369,9 @@ function rowBody(e,l,s,nk){
   h+='<p class="cue">'+esc(e.cue)+'</p><div class="ctl"><div class="sets">';
   for(let i=0;i<n;i++)h+='<button class="set" data-set="'+e.k+'" data-i="'+i+'" aria-pressed="'+(!!a[i])+'" aria-label="'+esc(e.n)+', set '+(i+1)+'">'+(i+1)+'</button>';
   h+='</div>';
-  if(e.w){h+='<div class="wrow"><button class="step" data-step="-1" data-k="'+e.k+'" aria-label="Less weight">−</button><input class="wt" id="wt-'+e.k+'" data-wt="'+e.k+'" inputmode="decimal" placeholder="'+(prev?esc(prev.w):'—')+'" value="'+esc(w)+'" aria-label="'+esc(e.n)+' weight in pounds"><button class="step" data-step="1" data-k="'+e.k+'" aria-label="More weight">+</button><span class="u">lb</span>'+
-    (prev&&!w?'<button class="uselast" data-use="'+e.k+'" data-v="'+esc(prev.w)+'">Use '+esc(prev.w)+'</button>':'')+'</div>'}
-  h+='<div class="foot"><span class="last">'+(e.w?(prev?'Last: <b>'+esc(prev.w)+' lb</b> · '+esc(pretty(prev.d)):'First time logging this'):'Bodyweight')+'</span><span class="btns"><button class="pill felt" data-felt="'+e.k+'" aria-pressed="'+!!f.on+'">Felt it</button>'+demoBtn(e)+'</span></div>';
+  if(e.w){h+='<div class="wrow"><button class="step" data-step="-1" data-k="'+e.k+'" aria-label="Less weight">−</button><input class="wt" id="wt-'+e.k+'" data-wt="'+e.k+'" inputmode="decimal" placeholder="'+(prev?esc(prev.w):(e.start||'—'))+'" value="'+esc(w)+'" aria-label="'+esc(e.n)+' weight in pounds"><button class="step" data-step="1" data-k="'+e.k+'" aria-label="More weight">+</button><span class="u">lb</span>'+
+    (!w&&(prev||e.start)?'<button class="uselast" data-use="'+e.k+'" data-v="'+esc(prev?prev.w:e.start)+'">Use '+esc(prev?prev.w:e.start)+'</button>':'')+'</div>'}
+  h+='<div class="foot"><span class="last">'+(e.w?(prev?'Last: <b>'+esc(prev.w)+' lb</b> · '+esc(pretty(prev.d)):(e.start?'Week 1 start: <b>'+e.start+' lb</b>':'First time logging this')):'Bodyweight')+'</span><span class="btns"><button class="pill felt" data-felt="'+e.k+'" aria-pressed="'+!!f.on+'">Felt it</button>'+demoBtn(e)+'</span></div>';
   if(f.on){h+='<div class="where" role="group" aria-label="Where did you feel it"><span class="label">Where?</span>'+WHERE.map(x=>'<button class="wh" data-where="'+e.k+'" data-x="'+esc(x)+'" aria-pressed="'+((f.where||[]).includes(x))+'">'+esc(x)+'</button>').join('')+'</div>'}
   h+='</div>';
   return {h,done,col};
