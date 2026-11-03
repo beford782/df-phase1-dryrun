@@ -1,6 +1,6 @@
 // Keep the lifts app available offline. Change this version whenever app files change.
 const CACHE_PREFIX = 'lifts-app-';
-const CACHE = CACHE_PREFIX + 'v2';
+const CACHE = CACHE_PREFIX + 'v3';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png'];
 const SCOPE = new URL(self.registration.scope);
 const ASSET_URLS = new Set(ASSETS.map(path => new URL(path, SCOPE).href));

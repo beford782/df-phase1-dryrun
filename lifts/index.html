@@ -114,6 +114,15 @@ section.block{margin-top:18px}
 .demo[aria-expanded="true"]{background:var(--tape);color:var(--tape-ink)}
 .demo svg{width:12px;height:12px}
 .felt{color:var(--muted);background:var(--sunk)}
+.pt{color:var(--muted);background:var(--sunk);padding:0 10px;min-width:44px;justify-content:center}
+.pt.yes[aria-pressed="true"]{background:var(--go);color:var(--surface)}
+.pt.no[aria-pressed="true"]{background:var(--stop);color:var(--surface)}
+.row.declined .rname>span:last-child{text-decoration:line-through;color:var(--muted)}
+.row.declined .sets,.row.declined .wrow{display:none}
+.decl{font-size:13.5px;color:var(--stop);font-weight:600;margin:0}
+.ptlist td.v{white-space:nowrap}
+.ptlist .vv{font-weight:700}
+.ptlist .vv.ok{color:var(--go)} .ptlist .vv.no{color:var(--stop)} .ptlist .vv.na{color:var(--muted)}
 .felt[aria-pressed="true"]{background:var(--stop);color:var(--surface)}
 .where{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .wh{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;height:36px;padding:0 12px;font-size:13px;font-weight:600;cursor:pointer}
@@ -330,6 +339,8 @@ function lastWeight(k,l){
   return null;
 }
 const openDemos=new Set(), expanded=new Set();
+let pt=lsGet('ssl-pt',{})||{}; // exercise key -> 'ok' | 'no'
+function setPT(k,v){if(pt[k]===v)delete pt[k];else pt[k]=v;lsSet('ssl-pt',pt)}
 
 /* ================= demos ================= */
 const vidKey=e=>e.vid||e.k;
@@ -361,32 +372,33 @@ function renderHead(){
   h+='</div>';
   $('#sesshead').innerHTML=h;
 }
-function nextKey(l,s){const wk=l.week||week;for(const e of exFor(s,wk)){const n=setsFor(e,wk);if((l.sets[e.k]||[]).slice(0,n).filter(Boolean).length<n)return e.k}return null}
+function nextKey(l,s){const wk=l.week||week;for(const e of exFor(s,wk)){if(pt[e.k]==='no')continue;const n=setsFor(e,wk);if((l.sets[e.k]||[]).slice(0,n).filter(Boolean).length<n)return e.k}return null}
 function rowBody(e,l,s,nk){
   const wk=l.week||week,n=setsFor(e,wk),a=(l.sets[e.k]||[]),done=a.slice(0,n).filter(Boolean).length===n;
-  const col=done&&!expanded.has(e.k), f=(l.felt||{})[e.k]||{}, w=(l.weights||{})[e.k]||'', prev=e.w?lastWeight(e.k,l):null;
+  const col=done&&!expanded.has(e.k), f=(l.felt||{})[e.k]||{}, w=(l.weights||{})[e.k]||'', prev=e.w?lastWeight(e.k,l):null, dec=pt[e.k]==='no';
   let h='<button class="rtop'+(done?' tog':'')+'" '+(done?'data-expand="'+e.k+'" aria-expanded="'+!col+'"':'tabindex="-1"')+'><span class="rname">'+(done?'<span class="ok">'+ICON_OK+'</span>':'')+'<span>'+(e.k===nk?'<span class="upnext">Up next</span>':'')+esc(e.n)+(col&&w?' <span class="num" style="color:var(--muted);font-weight:500">· '+esc(w)+' lb</span>':'')+(f.on?' <span class="fl">· felt it</span>':'')+'</span></span><span class="rx">'+n+' × '+esc(e.reps)+'</span></button>';
-  h+='<p class="cue">'+esc(e.cue)+'</p><div class="ctl"><div class="sets">';
+  h+=dec?'<p class="decl">Declined by PT. Skip this one; a substitute is coming.</p>':'<p class="cue">'+esc(e.cue)+'</p>';
+  h+='<div class="ctl"><div class="sets">';
   for(let i=0;i<n;i++)h+='<button class="set" data-set="'+e.k+'" data-i="'+i+'" aria-pressed="'+(!!a[i])+'" aria-label="'+esc(e.n)+', set '+(i+1)+'">'+(i+1)+'</button>';
   h+='</div>';
   if(e.w){h+='<div class="wrow"><button class="step" data-step="-1" data-k="'+e.k+'" aria-label="Less weight">−</button><input class="wt" id="wt-'+e.k+'" data-wt="'+e.k+'" inputmode="decimal" placeholder="'+(prev?esc(prev.w):(e.start||'—'))+'" value="'+esc(w)+'" aria-label="'+esc(e.n)+' weight in pounds"><button class="step" data-step="1" data-k="'+e.k+'" aria-label="More weight">+</button><span class="u">lb</span>'+
     (!w&&(prev||e.start)?'<button class="uselast" data-use="'+e.k+'" data-v="'+esc(prev?prev.w:e.start)+'">Use '+esc(prev?prev.w:e.start)+'</button>':'')+'</div>'}
-  h+='<div class="foot"><span class="last">'+(e.w?(prev?'Last: <b>'+esc(prev.w)+' lb</b> · '+esc(pretty(prev.d)):(e.start?'Week 1 start: <b>'+e.start+' lb</b>':'First time logging this')):'Bodyweight')+'</span><span class="btns"><button class="pill felt" data-felt="'+e.k+'" aria-pressed="'+!!f.on+'">Felt it</button>'+demoBtn(e)+'</span></div>';
+  h+='<div class="foot"><span class="last">'+(e.w?(prev?'Last: <b>'+esc(prev.w)+' lb</b> · '+esc(pretty(prev.d)):(e.start?'Week 1 start: <b>'+e.start+' lb</b>':'First time logging this')):'Bodyweight')+'</span><span class="btns"><button class="pill pt yes" data-pt="ok" data-k="'+e.k+'" aria-pressed="'+(pt[e.k]==='ok')+'" aria-label="PT approved">PT ✓</button><button class="pill pt no" data-pt="no" data-k="'+e.k+'" aria-pressed="'+dec+'" aria-label="PT declined">PT ✕</button><button class="pill felt" data-felt="'+e.k+'" aria-pressed="'+!!f.on+'">Felt it</button>'+demoBtn(e)+'</span></div>';
   if(f.on){h+='<div class="where" role="group" aria-label="Where did you feel it"><span class="label">Where?</span>'+WHERE.map(x=>'<button class="wh" data-where="'+e.k+'" data-x="'+esc(x)+'" aria-pressed="'+((f.where||[]).includes(x))+'">'+esc(x)+'</button>').join('')+'</div>'}
   h+='</div>';
-  return {h,done,col};
+  return {h,done,col,dec};
 }
 function renderWorkout(){
   const s=sesBy(selCode),l=cur(),wk=l.week||week,nk=nextKey(l,s);
   let h='<section class="block"><div class="bhead"><h2>Workout</h2><span class="label">Tap a box per set</span></div><div class="list">';
   exFor(s,wk).forEach(e=>{const r=rowBody(e,l,s,nk);
-    h+='<div class="row'+(r.done?' complete':'')+(r.col?' collapsed':'')+(e.k===nk?' next':'')+'" id="row-'+e.k+'"><div class="rbody" id="rb-'+e.k+'">'+r.h+'</div><div class="vslot" id="vs-'+e.k+'">'+demoBox(e)+'</div></div>'});
+    h+='<div class="row'+(r.done?' complete':'')+(r.col?' collapsed':'')+(e.k===nk?' next':'')+(r.dec?' declined':'')+'" id="row-'+e.k+'"><div class="rbody" id="rb-'+e.k+'">'+r.h+'</div><div class="vslot" id="vs-'+e.k+'">'+demoBox(e)+'</div></div>'});
   h+='</div></section>';
   $('#workout').innerHTML=h;
 }
 function refreshRow(k){const s=sesBy(selCode),l=cur(),e=s.ex.find(x=>x.k===k);if(!e)return;const nk=nextKey(l,s);
   const r=rowBody(e,l,s,nk),row=document.getElementById('row-'+k);if(!row)return;
-  row.className='row'+(r.done?' complete':'')+(r.col?' collapsed':'')+(k===nk?' next':'');
+  row.className='row'+(r.done?' complete':'')+(r.col?' collapsed':'')+(k===nk?' next':'')+(r.dec?' declined':'');
   document.getElementById('rb-'+k).innerHTML=r.h;}
 function refreshNext(){const s=sesBy(selCode),l=cur(),nk=nextKey(l,s);
   exFor(s,l.week||week).forEach(e=>{const row=document.getElementById('row-'+e.k);if(!row)return;
@@ -435,6 +447,14 @@ function renderPlan(){
    '<li>Shrugs, heavy farmer’s carries, heavy dumbbells hanging at your sides.</li><li>Lateral raises, dips, wide-grip bench.</li>'+
    '<li>Incline curls and preacher curls.</li><li>Straight-bar back squat and heavy conventional deadlift.</li>'+
    '<li>Assault bike and rower.</li></ul></div></section>';
+  {const rows=[];const seen=new Set();SESSIONS.forEach(s=>s.ex.forEach(e=>{if(seen.has(e.k))return;seen.add(e.k);rows.push({e,codes:SESSIONS.filter(x=>x.ex.some(y=>y.k===e.k)).map(x=>x.code).join('')})}));
+   const nOk=rows.filter(r=>pt[r.e.k]==='ok').length,nNo=rows.filter(r=>pt[r.e.k]==='no').length;
+   h+='<section class="block"><div class="bhead"><h2>PT review</h2><span class="label num">'+nOk+' ok · '+nNo+' declined · '+(rows.length-nOk-nNo)+' open</span></div>'+
+    '<div class="prose" style="margin-bottom:8px;display:grid;gap:10px"><p class="note">Go through this with Elizabeth. Tap PT ✓ or PT ✕ on any exercise in a session, or here. Declined exercises grey out until they’re swapped.</p>'+
+    '<div class="bbtns"><button class="bb primary" id="copypt">Copy review</button></div></div>'+
+    '<div class="list tbl ptlist"><table><thead><tr><th>Exercise</th><th>Days</th><th>Verdict</th></tr></thead><tbody>'+
+    rows.map(r=>{const v=pt[r.e.k];return '<tr><td>'+esc(r.e.n)+'</td><td class="n">'+r.codes+'</td><td class="v"><button class="pill pt yes" data-pt="ok" data-k="'+r.e.k+'" aria-pressed="'+(v==='ok')+'">✓</button> <button class="pill pt no" data-pt="no" data-k="'+r.e.k+'" aria-pressed="'+(v==='no')+'">✕</button></td></tr>'}).join('')+
+    '</tbody></table></div></section>'}
   h+='<section class="block"><div class="bhead"><h2>Ask Elizabeth</h2></div><div class="prose"><ul>'+
    '<li>OK with the side-lying external rotation and prone extension in the gym?</li><li>OK to swap the dumbbell RDL for back extensions, and to add the inverted row in week 3?</li>'+
    '<li>When can I add landmine press and a neutral-grip lat pulldown?</li><li>When can I go back to a straight-bar squat and heavier deadlifts?</li>'+
@@ -522,6 +542,10 @@ document.addEventListener('click',ev=>{
     let v=parseFloat(inp.value);if(isNaN(v))v=parseFloat(inp.placeholder)||0;v=Math.max(0,Math.round((v+(+d.step)*e.step)*10)/10);
     inp.value=v;setWeight(k,String(v));return}
   if(d.use){const inp=document.getElementById('wt-'+d.use);inp.value=d.v;setWeight(d.use,d.v);b.remove();return}
+  if(d.pt){setPT(d.k,d.pt);if(curTab==='today')refreshRow(d.k);else renderToday();refreshNext();renderPlan();return}
+  if(b.id==='copypt'){const seen=new Set(),lines=[];SESSIONS.forEach(s=>s.ex.forEach(e=>{if(seen.has(e.k))return;seen.add(e.k);const v=pt[e.k];lines.push((v==='ok'?'OK  ':v==='no'?'NO  ':'--  ')+e.n)}));
+    const txt='PT review '+todayISO()+'\n'+lines.join('\n');
+    (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('Copied. Paste it to Claude for substitutes.')).catch(()=>{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Copied')}catch(e){toast('Couldn’t copy')}ta.remove()});return}
   if(d.felt){const l=ensure();l.felt=l.felt||{};const f=l.felt[d.felt]||{on:false,where:[]};f.on=!f.on;l.felt[d.felt]=f;save(l);refreshRow(d.felt);renderLog();return}
   if(d.where){const l=ensure();const f=l.felt[d.where];const w=new Set(f.where||[]);w.has(d.x)?w.delete(d.x):w.add(d.x);f.where=WHERE.filter(x=>w.has(x));save(l);refreshRow(d.where);renderLog();return}
   if(d.demo){const k=d.demo,e=sesBy(selCode).ex.find(x=>x.k===k);if(openDemos.has(k))openDemos.delete(k);else openDemos.add(k);
