@@ -120,7 +120,7 @@ footer{color:var(--muted);font-size:.82rem}
 
 <div class="wrap">
   <header class="top">
-    <span class="eyebrow">Bercutt PT · Care Plan 1 · updated Nov 3</span>
+    <span class="eyebrow">Bercutt PT · Care Plan 1 · updated Nov 10</span>
     <h1>Shoulder home program</h1>
     <p class="who">Prescribed by Elizabeth Ford, PT, DPT. Doses and comments below are copied from her plan. Her demo video is on each card.</p>
     <div class="actions">
@@ -208,7 +208,7 @@ const EX = [
    steps:["Lie lengthwise on the foam roller so your head and spine are supported, feet flat.",
           "Pec stretch: arms straight out to the sides in a T, palms up. Relax into it.",
           "Scapular punches: fists toward the ceiling, elbows locked. Punch up so only your shoulder blades lift off the roller, then let them sink back."],
-   note:null},
+   note:"Hold both: at the top of each punch and with arms out in the T. You can hold longer with arms out (her reply, Oct 29)."},
   {id:"needle", video:"3595_1653697560.mp4", yt:"thread the needle sky rotation thoracic mobility", name:"Thread the needle with sky rotation", dose:"1 × 10–12", freq:"daily", hold:0,
    steps:["Start on hands and knees.",
           "Reach one hand under and across your body; let your head and shoulders follow.",
@@ -243,9 +243,14 @@ const EX = [
    steps:["Same setup as the T's: on your stomach, working arm off the edge of the bed, forehead on your other hand.",
           "Pull the shoulder blade down and back and raise the arm, palm facing the floor.",
           "Stop when the arm is parallel to the floor and slowly lower. Check her video for the arm angle."],
-   note:null, extra:"<b>From the plan:</b> front-of-shoulder pain means squeeze the shoulder blade harder, otherwise stop. Don't shrug."}
+   note:null, extra:"<b>From the plan:</b> if you feel pain at the front of the shoulder, squeeze the shoulder blade harder. If that doesn't fix it, stop. Don't shrug."},
+  {id:"pronew", video:"10525.mp4", yt:"prone W scapular retraction lift arms physical therapy", name:"Prone W's", dose:"2–3 × 12 · hold 3 sec", freq:"3-4", hold:3, holdLabel:"3-sec hold",
+   steps:["Lie face down on the floor with a small towel roll under your forehead.",
+          "Place your arms on the floor in a W, hands about 12 inches out from each side of your head.",
+          "Lift your arms off the floor, hold 3 seconds, then lower back down."],
+   note:"No foam roller. Use a small towel roll under your forehead to keep contact."}
 ];
-const FREQ = {daily:{label:"Daily", target:7, show:"7"}, "4-5":{label:"4–5× / week", target:4, show:"4–5"}, "3":{label:"3× / week", target:3, show:"3"}, unset:{label:"Frequency not set", target:null}};
+const FREQ = {daily:{label:"Daily", target:7, show:"7"}, "4-5":{label:"4–5× / week", target:4, show:"4–5"}, "3":{label:"3× / week", target:3, show:"3"}, "3-4":{label:"3–4× / week", target:3, show:"3–4"}, unset:{label:"Frequency not set", target:null}};
 
 const KEY="shoulder-hep-v4";
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
