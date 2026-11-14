@@ -73,6 +73,8 @@ header.top .who{color:var(--muted);font-size:.92rem}
 .chip.daily{border-color:var(--accent);color:var(--accent)}
 .chip.unset{border-style:dashed}
 .vid{border-radius:10px;overflow:hidden;background:var(--line);aspect-ratio:16/9;max-width:100%}
+.vid iframe{width:100%;height:100%;border:0;display:block}
+.ytwrap{display:flex;flex-direction:column;gap:6px}
 .vid video{width:100%;height:100%;display:block;object-fit:contain;background:#000}
 .vid-fallback{display:flex;flex-direction:column;gap:6px;justify-content:center;align-items:flex-start;height:100%;padding:12px;font-size:.92rem}
 .xhead{display:flex;flex-direction:column;gap:6px;padding-top:14px}
@@ -254,13 +256,13 @@ const EX = [
 ];
 const STOPX="<b>Not from Elizabeth's plan.</b> Keep it to a mild pull, about 3 out of 10. Stop if you get tingling into your hand, dizziness, or sharp pain.";
 const EXTRA = [
-  {id:"x-lev-seated", yt:"levator scapulae stretch seated physical therapy", name:"Seated nose-to-armpit (right levator)", dose:"2–3 × 30 sec", freq:"asneeded", hold:30, holdLabel:"30-sec hold",
+  {id:"x-lev-seated", ytid:"J1HOO3scStQ", ytby:"MedBridge", yt:"levator scapulae stretch seated physical therapy", name:"Seated nose-to-armpit (right levator)", dose:"2–3 × 30 sec", freq:"asneeded", hold:30, holdLabel:"30-sec hold",
    steps:["Sit tall and hold the edge of the chair seat with your right hand to anchor the shoulder blade down.",
           "Turn your head about 45° to the left, then tuck your chin and look toward your left armpit.",
           "Rest your left hand on the back of your head and let its weight add the stretch. Don't pull.",
           "You should feel it from the top corner of the right shoulder blade up the back of the neck."],
    note:null, extra:STOPX},
-  {id:"x-lev-cr", yt:"levator scapulae contract relax stretch", name:"Contract-relax levator stretch", dose:"3–4 rounds · 5-sec press", freq:"asneeded", hold:5, holdLabel:"5-sec press",
+  {id:"x-lev-cr", ytid:"bWBatjZ4lgo", ytby:"Eldon Thieu", yt:"levator scapulae contract relax stretch", name:"Contract-relax levator stretch", dose:"3–4 rounds · 5-sec press", freq:"asneeded", hold:5, holdLabel:"5-sec press",
    steps:["Get into the seated nose-to-armpit position.",
           "Press your head gently back into your hand at about 20% effort for 5 seconds. Nothing should move.",
           "Exhale, relax, and let your head sink slightly further.",
@@ -271,7 +273,7 @@ const EXTRA = [
           "Turn your head toward the left and tuck your chin toward the left armpit, guiding it with your left hand.",
           "Hold with slow belly breaths. The floor takes the weight of your head so the neck can relax."],
    note:null, extra:STOPX},
-  {id:"x-lev-ball", yt:"levator scapulae tennis ball release wall", name:"Tennis ball release", dose:"30–60 sec", freq:"asneeded", hold:60, holdLabel:"60-sec hold",
+  {id:"x-lev-ball", ytid:"vpAAkdxRv1I", ytby:"Dr. Joe Jaime", yt:"levator scapulae tennis ball release wall", name:"Tennis ball release", dose:"30–60 sec", freq:"asneeded", hold:60, holdLabel:"60-sec hold",
    steps:["Put a tennis ball between the wall and the top inner corner of your right shoulder blade.",
           "Lean in until you feel firm pressure, not pain.",
           "Stay there and breathe slowly."],
@@ -296,8 +298,14 @@ const VBASE="https://prescribe-assets.strivehub.com/production/videos/";
 const vidEls={};
 function videoFor(ex){
   if(vidEls[ex.id])return vidEls[ex.id];
-  if(!ex.video){const l=document.createElement("div");l.className="week";
-    l.innerHTML=`<a href="https://www.youtube.com/results?search_query=${encodeURIComponent(ex.yt)}" target="_blank" rel="noopener">Find a demo on YouTube ↗</a>`;
+  if(!ex.video){const l=document.createElement("div");
+    const canEmbed=/github\.io$|^localhost$/.test(location.hostname);
+    if(ex.ytid&&canEmbed){l.className="ytwrap";
+      l.innerHTML=`<div class="vid"><iframe src="https://www.youtube-nocookie.com/embed/${ex.ytid}?rel=0&playsinline=1" title="Demo video: ${ex.name}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe></div><span class="week">Demo by ${ex.ytby} on YouTube. Not from Elizabeth. <a href="https://www.youtube.com/watch?v=${ex.ytid}" target="_blank" rel="noopener">Open in YouTube ↗</a></span>`;
+    }else if(ex.ytid){l.className="week";
+      l.innerHTML=`<a href="https://www.youtube.com/watch?v=${ex.ytid}" target="_blank" rel="noopener">Watch the demo on YouTube (${ex.ytby}) ↗</a>`;
+    }else{l.className="week";
+      l.innerHTML=`No matching demo video found. <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(ex.yt)}" target="_blank" rel="noopener">Search YouTube ↗</a>`;}
     vidEls[ex.id]=l;return l}
   const box=document.createElement("div");box.className="vid";
   const v=document.createElement("video");v.controls=true;v.playsInline=true;v.preload="metadata";v.src=VBASE+ex.video+"#t=0.5";
@@ -315,7 +323,7 @@ function render(){
   list.innerHTML="";
   EX.forEach((ex,i)=>addCard(ex,i+1));
   const xh=document.createElement("div");xh.className="xhead";
-  xh.innerHTML=`<h2>Extra: levator stretches</h2><p>For the tight muscle from your neck to the top of the shoulder blade. These are not part of Elizabeth's plan and don't count toward today's total. Show them to her before making them a habit.</p>`;
+  xh.innerHTML=`<h2>Extra: levator stretches</h2><p>For the tight muscle from your neck to the top of the shoulder blade. These are not part of Elizabeth's plan and don't count toward today's total. The demo videos are public YouTube clips, not hers. Show them to her before making them a habit.</p>`;
   list.appendChild(xh);
   EXTRA.forEach((ex,i)=>addCard(ex,"+"));
   const n=EX.filter(e=>isDone(e.id)).length;
