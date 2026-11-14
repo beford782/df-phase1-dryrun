@@ -75,6 +75,8 @@ header.top .who{color:var(--muted);font-size:.92rem}
 .vid{border-radius:10px;overflow:hidden;background:var(--line);aspect-ratio:16/9;max-width:100%}
 .vid video{width:100%;height:100%;display:block;object-fit:contain;background:#000}
 .vid-fallback{display:flex;flex-direction:column;gap:6px;justify-content:center;align-items:flex-start;height:100%;padding:12px;font-size:.92rem}
+.xhead{display:flex;flex-direction:column;gap:6px;padding-top:14px}
+.xhead p{color:var(--muted);font-size:.92rem}
 .note{background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:.95rem}
 .note b{display:block;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
 .steps{margin:0;padding-left:1.15rem;display:flex;flex-direction:column;gap:4px;color:var(--ink);font-size:.95rem}
@@ -250,7 +252,33 @@ const EX = [
           "Lift your arms off the floor, hold 3 seconds, then lower back down."],
    note:"No foam roller. Use a small towel roll under your forehead to keep contact."}
 ];
-const FREQ = {daily:{label:"Daily", target:7, show:"7"}, "4-5":{label:"4–5× / week", target:4, show:"4–5"}, "3":{label:"3× / week", target:3, show:"3"}, "3-4":{label:"3–4× / week", target:3, show:"3–4"}, unset:{label:"Frequency not set", target:null}};
+const STOPX="<b>Not from Elizabeth's plan.</b> Keep it to a mild pull, about 3 out of 10. Stop if you get tingling into your hand, dizziness, or sharp pain.";
+const EXTRA = [
+  {id:"x-lev-seated", yt:"levator scapulae stretch seated physical therapy", name:"Seated nose-to-armpit (right levator)", dose:"2–3 × 30 sec", freq:"asneeded", hold:30, holdLabel:"30-sec hold",
+   steps:["Sit tall and hold the edge of the chair seat with your right hand to anchor the shoulder blade down.",
+          "Turn your head about 45° to the left, then tuck your chin and look toward your left armpit.",
+          "Rest your left hand on the back of your head and let its weight add the stretch. Don't pull.",
+          "You should feel it from the top corner of the right shoulder blade up the back of the neck."],
+   note:null, extra:STOPX},
+  {id:"x-lev-cr", yt:"levator scapulae contract relax stretch", name:"Contract-relax levator stretch", dose:"3–4 rounds · 5-sec press", freq:"asneeded", hold:5, holdLabel:"5-sec press",
+   steps:["Get into the seated nose-to-armpit position.",
+          "Press your head gently back into your hand at about 20% effort for 5 seconds. Nothing should move.",
+          "Exhale, relax, and let your head sink slightly further.",
+          "Repeat for 3–4 rounds."],
+   note:null, extra:STOPX},
+  {id:"x-lev-supine", yt:"supine levator scapulae stretch", name:"Lying-down levator stretch", dose:"30–45 sec", freq:"asneeded", hold:45, holdLabel:"45-sec hold",
+   steps:["Lie on your back with your head on a thin pillow. Tuck your right hand under your right hip to anchor the shoulder.",
+          "Turn your head toward the left and tuck your chin toward the left armpit, guiding it with your left hand.",
+          "Hold with slow belly breaths. The floor takes the weight of your head so the neck can relax."],
+   note:null, extra:STOPX},
+  {id:"x-lev-ball", yt:"levator scapulae tennis ball release wall", name:"Tennis ball release", dose:"30–60 sec", freq:"asneeded", hold:60, holdLabel:"60-sec hold",
+   steps:["Put a tennis ball between the wall and the top inner corner of your right shoulder blade.",
+          "Lean in until you feel firm pressure, not pain.",
+          "Stay there and breathe slowly."],
+   note:null, extra:STOPX}
+];
+const ALL = EX.concat(EXTRA);
+const FREQ = {asneeded:{label:"As needed", target:null}, daily:{label:"Daily", target:7, show:"7"}, "4-5":{label:"4–5× / week", target:4, show:"4–5"}, "3":{label:"3× / week", target:3, show:"3"}, "3-4":{label:"3–4× / week", target:3, show:"3–4"}, unset:{label:"Frequency not set", target:null}};
 
 const KEY="shoulder-hep-v4";
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
@@ -268,6 +296,9 @@ const VBASE="https://prescribe-assets.strivehub.com/production/videos/";
 const vidEls={};
 function videoFor(ex){
   if(vidEls[ex.id])return vidEls[ex.id];
+  if(!ex.video){const l=document.createElement("div");l.className="week";
+    l.innerHTML=`<a href="https://www.youtube.com/results?search_query=${encodeURIComponent(ex.yt)}" target="_blank" rel="noopener">Find a demo on YouTube ↗</a>`;
+    vidEls[ex.id]=l;return l}
   const box=document.createElement("div");box.className="vid";
   const v=document.createElement("video");v.controls=true;v.playsInline=true;v.preload="metadata";v.src=VBASE+ex.video+"#t=0.5";
   v.setAttribute("aria-label","Video: "+ex.name);
@@ -282,7 +313,17 @@ let timers={};
 
 function render(){
   list.innerHTML="";
-  EX.forEach((ex,i)=>{
+  EX.forEach((ex,i)=>addCard(ex,i+1));
+  const xh=document.createElement("div");xh.className="xhead";
+  xh.innerHTML=`<h2>Extra: levator stretches</h2><p>For the tight muscle from your neck to the top of the shoulder blade. These are not part of Elizabeth's plan and don't count toward today's total. Show them to her before making them a habit.</p>`;
+  list.appendChild(xh);
+  EXTRA.forEach((ex,i)=>addCard(ex,"+"));
+  const n=EX.filter(e=>isDone(e.id)).length;
+  document.getElementById("todayCount").textContent=`${n} / ${EX.length} done`;
+  document.getElementById("todayBar").style.width=(n/EX.length*100)+"%";
+  document.getElementById("todayLabel").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"});
+}
+function addCard(ex,num){{
     const f=FREQ[ex.freq]; const wc=weekCount(ex.id); const done=isDone(ex.id);
     const goalMet = f.target && wc>=f.target && ex.freq!=="daily";
     const metWeek = goalMet && !done;
@@ -290,7 +331,7 @@ function render(){
     card.className="card"+(done?" is-done":"")+(metWeek?" not-today":"");
     card.innerHTML=`
       <div class="card-head">
-        <span class="num">${i+1}</span>
+        <span class="num">${num}</span>
         <div class="head-text">
           <h3>${ex.name}</h3>
           <div class="chips">
@@ -310,11 +351,7 @@ function render(){
       </div>`;
     card.querySelector('.vid-slot').replaceWith(videoFor(ex));
     list.appendChild(card);
-  });
-  const n=EX.filter(e=>isDone(e.id)).length;
-  document.getElementById("todayCount").textContent=`${n} / ${EX.length} done`;
-  document.getElementById("todayBar").style.width=(n/EX.length*100)+"%";
-  document.getElementById("todayLabel").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"});
+  }
 }
 function fmt(s){return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
 
@@ -327,7 +364,7 @@ list.addEventListener("click",e=>{
   const d=e.target.closest("[data-done]");
   if(d){const id=d.dataset.done;state.done[today]=state.done[today]||{};state.done[today][id]=!state.done[today][id];save();render();return}
   const t=e.target.closest("[data-timer]");
-  if(t){const id=t.dataset.timer;const ex=EX.find(x=>x.id===id);
+  if(t){const id=t.dataset.timer;const ex=ALL.find(x=>x.id===id);
     try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();actx.resume()}catch(_){}
     if(timers[id]){clearInterval(timers[id].iv);delete timers[id];render();return}
     const end=Date.now()+ex.hold*1000; lock();
@@ -358,7 +395,7 @@ document.getElementById("copySummary").addEventListener("click",()=>{
   const lines=["Shoulder HEP — last 14 days",""];
   last14().forEach(k=>{const d=state.done[k]||{};const names=EX.filter(e=>d[e.id]).map(e=>e.name.split(" (")[0]);
     const p=state.pain[k];const n=(state.notes[k]||"").trim();
-    if(names.length||p!=null||n)lines.push(`${k}: pain ${p!=null?p+"/10":"—"} · ${names.length}/${EX.length} done${n?` · "${n}"`:""}`)});
+    if(names.length||p!=null||n)lines.push(`${k}: pain ${p!=null?p+"/10":"—"} · ${names.length}/${EX.length} done${EXTRA.filter(e=>d[e.id]).length?` · ${EXTRA.filter(e=>d[e.id]).length} extra levator stretch(es)`:""}${n?` · "${n}"`:""}`)});
   if(lines.length===2)lines.push("No entries yet.");
   const txt=lines.join("\n"), msg=document.getElementById("copyMsg"), fb=document.getElementById("summaryFallback");
   const fallback=()=>{fb.hidden=false;fb.value=txt;fb.focus();fb.select();msg.textContent="Select and copy the text below."};
