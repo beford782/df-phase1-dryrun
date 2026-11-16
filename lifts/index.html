@@ -244,43 +244,43 @@ nav.tabs .in{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;width:100%
 const X=(k,n,sets,reps,cue,o={})=>Object.assign({k,n,sets,reps,cue,w:true,step:5},o);
 const SESSIONS=[
  {code:'A',short:'Back hvy',name:'Back (heavy) + biceps',time:'65 min',load:'Moderate',ex:[
-  X('csrow','Chest-supported DB row, neutral grip',[4,4,4,2],'6–8','Top lift of the day. Elbows drive toward the hips, not the ears. 2–3 min rest.'),
+  X('csrow','Chest-supported DB row, neutral grip',[4,4,4,2],'6–8','Top lift of the day. Elbows drive toward the hips, not the ears. 2–3 min rest.',{light:true}),
   X('cablerow','Seated cable row, neutral handle',[4,4,4,2],'8–10','Pull to the lower ribs; shoulder blades back and down first.'),
   X('dbrow','Single-arm DB row',[3,3,3,2],'8–10 / side','Brace on the bench; no shrug at the top.'),
   X('sapd','Straight-arm pulldown, shoulder height to hips',[3,3,3,2],'12','Blade drops into the back pocket. Cable or band.'),
-  X('facepull','Face pull to lower chest',[3,3,3,2],'15','Rope pulled to the sternum, not the face. Elbows stay below the shoulders; squeeze the blades.',{start:30}),
+  X('facepull','Face pull to lower chest',[3,3,3,2],'15','Rope pulled to the sternum, not the face. Elbows stay below the shoulders; squeeze the blades.',{start:20,light:true}),
   X('hammer','DB hammer curl',[3,3,3,2],'10–12','Elbows pinned at the sides.',{step:2.5}),
-  X('cablecurl','Cable curl',[3,3,3,2],'12–15','Stop the set if the front of the shoulder joins in.')]},
+  X('cablecurl','Cable curl',[3,3,3,2],'12–15','Stop the set if the front of the shoulder joins in.',{light:true})]},
  {code:'B',short:'Push+tri',name:'Push + triceps',time:'60 min',load:'Moderate',note:'Pushing rules: neutral grip, elbows about 45°, hands never above shoulder height, no incline, no dips.',ex:[
   X('floor','DB floor press, neutral grip',[4,4,4,2],'6–8','Top lift of the day. Elbows touch the floor and pause; the floor limits the range for you.'),
-  X('chestpress','Machine chest press, neutral handles',[3,3,3,2],'10','Set the seat so the handles sit at mid-chest, not the shoulders. Blades back into the pad.',{start:60,step:10}),
-  X('cablefly','Cable fly, low-to-mid',[3,3,3,2],'12','Pulleys set at hip to waist height, hands finish at sternum height. Soft elbows; stop the stretch short.',{start:15,step:2.5}),
+  X('chestpress','Machine chest press, neutral handles',[3,3,3,2],'10','Set the seat so the handles sit at mid-chest, not the shoulders. Blades back into the pad.',{start:40,step:10,light:true}),
+  X('cablefly','Cable fly, low-to-mid',[3,3,3,2],'12','Pulleys set at hip to waist height, hands finish at sternum height. Soft elbows; stop the stretch short.',{start:10,step:2.5,light:true}),
   X('pup','Push-up plus, plate on the back when 10 is easy',[3,3,3,2],'10','Push the floor away at the top to spread the blades.',{w:false}),
   X('rope','Rope triceps pushdown',[4,4,4,2],'10–12','Elbows at the sides; spread the rope at the bottom.'),
-  X('barpushdown','Straight-bar pushdown',[3,3,3,2],'12','Elbows pinned, wrists straight. Replaces the reverse-grip pushdown.',{start:40}),
+  X('barpushdown','Straight-bar pushdown',[3,3,3,2],'12','Elbows pinned, wrists straight. Replaces the reverse-grip pushdown.',{start:30,light:true}),
   X('kick','DB triceps kickback',[2,2,2,1],'15','Upper arm parallel to the floor; only the forearm moves.',{step:2.5})]},
  {code:'C',short:'Legs sq',name:'Legs (squat)',time:'55 min',load:'None',ex:[
-  X('hack','Hack squat (or safety-bar / belt squat)',[4,4,4,2],'6–8','Top lift of the day. Hands rest on the handles; don’t shrug into the pads. No straight bar on your back.',{start:90,step:10}),
+  X('hack','Hack squat (or safety-bar / belt squat)',[4,4,4,2],'6–8','Top lift of the day. Hands rest on the handles; don’t shrug into the pads. No straight bar on your back.',{start:70,step:10,light:true}),
   X('lpress','Leg press',[4,4,4,2],'10','Full depth your low back allows.',{step:10}),
   X('bss','Bulgarian split squat, DB at chest',[3,3,3,2],'8 / side','Torso tall.'),
   X('legext','Leg extension',[3,3,3,2],'12','2-second lower.'),
   X('hipabd','Hip abduction machine',[3,3,3,2],'15','Lean slightly forward, pause at the widest point. Shoulders relaxed.')]},
  {code:'D',short:'Back vol',name:'Back (volume) + scap + biceps',time:'65 min',load:'Moderate',ex:[
   X('mrow','Machine row, neutral grip',[4,4,4,2],'10','Chest stays on the pad.'),
-  X('inv','Inverted row',[3,3,3,2],'8–10','Bar to lower chest. Feet on a bench once 10 is easy.',{w:false}),
+  X('inv','Inverted row',[3,3,3,2],'8–10','Bar to lower chest. Feet on a bench once 10 is easy.',{w:false,light:true}),
   X('sacr','Single-arm cable row',[3,3,3,2],'12 / side','Let the blade reach forward, then pull it back first.'),
-  X('kneelpull','Kneeling cable lat pulldown',[3,3,3,2],'12','Kneel facing the stack with the pulley set so the arms START at shoulder height, never overhead. Pull the elbows to the ribs.',{start:40}),
+  X('kneelpull','Kneeling cable lat pulldown',[3,3,3,2],'12','Kneel facing the stack with the pulley set so the arms START at shoulder height, never overhead. Pull the elbows to the ribs.',{start:30,light:true}),
   X('pronet','Prone T raise, thumbs up',[3,3,3,2],'12','Mid-trap, not upper.',{step:1}),
   X('sler','Side-lying DB external rotation',[2,2,2,1],'15','Towel under the elbow. Light.',{step:1}),
-  X('ezcurl','EZ-bar curl, light',[3,3,3,2],'10','CAUTION: palms-up loads the biceps tendon. Light bar, elbows pinned, stop the set the moment the front of the shoulder joins in. Sore next morning → swap to hammer curls for a week.',{start:35}),
+  X('ezcurl','EZ-bar curl, light',[3,3,3,2],'10','CAUTION: palms-up loads the biceps tendon. Light bar, elbows pinned, stop the set the moment the front of the shoulder joins in. Sore next morning → swap to hammer curls for a week.',{start:25,light:true}),
   X('ropeham','Rope cable hammer curl',[3,3,3,2],'12–15','Elbows pinned.',{start:30})]},
  {code:'E',short:'Push+tri',name:'Push + triceps (DB bench)',time:'55 min',load:'Moderate',note:'Same pushing rules as B. The DB bench is a trial: progress it only when the next morning is 0–2.',ex:[
-  X('dbbench','Flat DB bench, neutral grip, VERY light',[3,3,3,2],'10','CAUTION: new movement. Elbows about 45°, stop the dumbbells an inch above the chest — never sink into the stretch. Start at floor-press weight minus 10 lb. Any pinch at the front → back to floor press.',{start:20}),
+  X('dbbench','Flat DB bench, neutral grip, VERY light',[3,3,3,2],'10','CAUTION: new movement. Elbows about 45°, stop the dumbbells an inch above the chest — never sink into the stretch. Start at floor-press weight minus 10 lb. Any pinch at the front → back to floor press.',{start:20,light:true}),
   X('cgpushup','Close-grip push-up, hands on a bench',[3,3,3,2],'12','Hands under the shoulders, elbows brush the ribs. Move to the floor when 12 is easy.',{w:false}),
-  X('cablefly','Cable fly, low-to-mid',[3,3,3,2],'15','Hands finish at sternum height. Stop the stretch short.',{start:15,step:2.5}),
+  X('cablefly','Cable fly, low-to-mid',[3,3,3,2],'15','Hands finish at sternum height. Stop the stretch short.',{start:10,step:2.5,light:true}),
   X('rope','Rope triceps pushdown',[3,3,3,2],'12','Elbows at the sides.'),
   X('kick','DB triceps kickback',[3,3,3,2],'15','Only the forearm moves.',{step:2.5}),
-  X('barpushdown','Straight-bar pushdown',[2,2,2,1],'15','Elbows pinned.',{start:40})]},
+  X('barpushdown','Straight-bar pushdown',[2,2,2,1],'15','Elbows pinned.',{start:30,light:true})]},
  {code:'F',short:'Legs hinge',name:'Legs (hinge) + biceps',time:'60 min',load:'Light',ex:[
   X('thrust','Barbell hip thrust',[4,4,4,2],'6–8','Top lift of the day. Hands only steady the bar; chin tucked.',{step:10}),
   X('pullthrough','Cable pull-through',[3,3,3,2],'12','Rope between the legs, hinge at the hips, arms stay relaxed and straight. Squeeze the glutes to stand.',{start:50}),
@@ -394,6 +394,7 @@ function nextKey(l,s){const wk=l.week||week;for(const e of exFor(s,wk,l)){if(pt[
 function rowBody(e,l,s,nk){
   const wk=l.week||week,n=setsFor(e,wk),a=(l.sets[e.k]||[]),done=a.slice(0,n).filter(Boolean).length===n;
   const col=done&&!expanded.has(e.k), f=(l.felt||{})[e.k]||{}, w=(l.weights||{})[e.k]||'', prev=e.w?lastWeight(e.k,l):null, dec=pt[e.k]==='no';
+  const lite=e.light&&wk===1, sug=prev?(lite?String(Math.max(e.step||5,Math.round(parseFloat(prev.w)*0.8/(e.step||5))*(e.step||5))):prev.w):(e.start?String(e.start):null);
   let h='<button class="rtop'+(done?' tog':'')+'" '+(done?'data-expand="'+e.k+'" aria-expanded="'+!col+'"':'tabindex="-1"')+'><span class="rname">'+(done?'<span class="ok">'+ICON_OK+'</span>':'')+'<span>'+(e.k===nk?'<span class="upnext">Up next</span>':'')+esc(e.n)+(col&&w?' <span class="num" style="color:var(--muted);font-weight:500">· '+esc(w)+' lb</span>':'')+(f.on?' <span class="fl">· felt it</span>':'')+'</span></span><span class="rx">'+n+' × '+esc(e.reps)+'</span></button>';
   h+=dec?'<p class="decl">Declined by PT. Skip this one; a substitute is coming.</p>':'<p class="cue">'+esc(e.cue)+'</p>';
   if(e.orig)h+='<p class="altline">Swapped in for '+esc(NAMES[e.orig]||e.orig)+' today. <button class="linkbtn" data-unswap="'+e.orig+'">Undo</button></p>';
@@ -401,9 +402,9 @@ function rowBody(e,l,s,nk){
   h+='<div class="ctl"><div class="sets">';
   for(let i=0;i<n;i++)h+='<button class="set" data-set="'+e.k+'" data-i="'+i+'" aria-pressed="'+(!!a[i])+'" aria-label="'+esc(e.n)+', set '+(i+1)+'">'+(i+1)+'</button>';
   h+='</div>';
-  if(e.w){h+='<div class="wrow"><button class="step" data-step="-1" data-k="'+e.k+'" aria-label="Less weight">−</button><input class="wt" id="wt-'+e.k+'" data-wt="'+e.k+'" inputmode="decimal" placeholder="'+(prev?esc(prev.w):(e.start||'—'))+'" value="'+esc(w)+'" aria-label="'+esc(e.n)+' weight in pounds"><button class="step" data-step="1" data-k="'+e.k+'" aria-label="More weight">+</button><span class="u">lb</span>'+
-    (!w&&(prev||e.start)?'<button class="uselast" data-use="'+e.k+'" data-v="'+esc(prev?prev.w:e.start)+'">Use '+esc(prev?prev.w:e.start)+'</button>':'')+'</div>'}
-  h+='<div class="foot"><span class="last">'+(e.w?(prev?'Last: <b>'+esc(prev.w)+' lb</b> · '+esc(pretty(prev.d)):(e.start?'Week 1 start: <b>'+e.start+' lb</b>':'First time logging this')):'Bodyweight')+'</span><span class="btns"><button class="pill pt yes" data-pt="ok" data-k="'+e.k+'" aria-pressed="'+(pt[e.k]==='ok')+'" aria-label="PT approved">PT ✓</button><button class="pill pt no" data-pt="no" data-k="'+e.k+'" aria-pressed="'+dec+'" aria-label="PT declined">PT ✕</button><button class="pill felt" data-felt="'+e.k+'" aria-pressed="'+!!f.on+'">Felt it</button>'+demoBtn(e)+'</span></div>';
+  if(e.w){h+='<div class="wrow"><button class="step" data-step="-1" data-k="'+e.k+'" aria-label="Less weight">−</button><input class="wt" id="wt-'+e.k+'" data-wt="'+e.k+'" inputmode="decimal" placeholder="'+(sug?esc(sug):'—')+'" value="'+esc(w)+'" aria-label="'+esc(e.n)+' weight in pounds"><button class="step" data-step="1" data-k="'+e.k+'" aria-label="More weight">+</button><span class="u">lb</span>'+
+    (!w&&sug?'<button class="uselast" data-use="'+e.k+'" data-v="'+esc(sug)+'">Use '+esc(sug)+'</button>':'')+'</div>'}
+  h+='<div class="foot"><span class="last">'+(e.w?(prev?'Last: <b>'+esc(prev.w)+' lb</b> · '+esc(pretty(prev.d))+(lite?' · <span style="color:var(--warn)">start light: '+esc(sug)+'</span>':''):(e.start?(lite?'Start light: ':'Week 1 start: ')+'<b>'+e.start+' lb</b>':'First time logging this')):(lite?'Bodyweight · start light, easy version':'Bodyweight'))+'</span><span class="btns"><button class="pill pt yes" data-pt="ok" data-k="'+e.k+'" aria-pressed="'+(pt[e.k]==='ok')+'" aria-label="PT approved">PT ✓</button><button class="pill pt no" data-pt="no" data-k="'+e.k+'" aria-pressed="'+dec+'" aria-label="PT declined">PT ✕</button><button class="pill felt" data-felt="'+e.k+'" aria-pressed="'+!!f.on+'">Felt it</button>'+demoBtn(e)+'</span></div>';
   if(f.on){h+='<div class="where" role="group" aria-label="Where did you feel it"><span class="label">Where?</span>'+WHERE.map(x=>'<button class="wh" data-where="'+e.k+'" data-x="'+esc(x)+'" aria-pressed="'+((f.where||[]).includes(x))+'">'+esc(x)+'</button>').join('')+'</div>'}
   h+='</div>';
   return {h,done,col,dec};
