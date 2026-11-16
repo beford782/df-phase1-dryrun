@@ -120,6 +120,8 @@ section.block{margin-top:18px}
 .row.declined .rname>span:last-child{text-decoration:line-through;color:var(--muted)}
 .row.declined .sets,.row.declined .wrow{display:none}
 .decl{font-size:13.5px;color:var(--stop);font-weight:600;margin:0}
+.altline{font-size:13px;color:var(--muted);margin:0;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.linkbtn{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;height:32px;padding:0 11px;font-size:12.5px;font-weight:700;color:var(--tape);cursor:pointer}
 .ptlist td.v{white-space:nowrap}
 .ptlist .vv{font-weight:700}
 .ptlist .vv.ok{color:var(--go)} .ptlist .vv.no{color:var(--stop)} .ptlist .vv.na{color:var(--muted)}
@@ -288,6 +290,19 @@ const SESSIONS=[
   X('hammer','DB hammer curl',[3,3,3,2],'10','Elbows pinned.',{step:2.5}),
   X('cablecurl','Cable curl',[2,2,2,1],'15','Stop if the front of the shoulder joins in.')]}
 ];
+const ALT={
+ floor:X('floor','DB floor press, neutral grip',0,'8–10','The floor limits the range. Elbows pause on the floor.'),
+ hammer:X('hammer','DB hammer curl',0,'10–12','Neutral grip takes the biceps tendon out of it.',{step:2.5}),
+ pup:X('pup','Push-up plus, hands on a bench',0,'10–12','Push the floor away at the top.',{w:false}),
+ pronet:X('pronet','Prone T raise, thumbs up',0,'12–15','Mid-trap, not upper.',{step:1}),
+ sapd:X('sapd','Straight-arm pulldown, shoulder height to hips',0,'12','Blade drops into the back pocket.'),
+ ropeham:X('ropeham','Rope cable hammer curl',0,'12–15','Elbows pinned.',{start:30}),
+ lpress:X('lpress','Leg press',0,'10','Full depth your low back allows.',{step:10}),
+ mrow:X('mrow','Machine row, neutral grip',0,'10','Chest stays on the pad.'),
+ rope:X('rope','Rope triceps pushdown',0,'12','Elbows at the sides.'),
+ cablerow:X('cablerow','Seated cable row, neutral handle',0,'10','Pull to the lower ribs.')
+};
+const ALTS={dbbench:'floor',chestpress:'floor',cablefly:'pup',ezcurl:'hammer',cablecurl:'ropeham',facepull:'pronet',kneelpull:'sapd',hack:'lpress',inv:'mrow',barpushdown:'rope',csrow:'cablerow'};
 const ROTATION=['A','B','C','D','E','F'];
 const WEEKS={
  1:{rir:'2 reps left',back:'Start from your last logged weights. Add 5 lb when you hit the top of the rep range on every set.',arms:'Start where you left off. +2.5–5 lb at the top of the range.',legs:'Add 10 lb at the top of the range.'},
@@ -298,9 +313,10 @@ const WEEKS={
 const WHERE=['Front','Top / side','Back','Neck','Down the arm'];
 const VID={"csrow": {"id": "f0bFCVXB8hc", "t": "Chest Supported DB Row", "c": "Travis Tarrant"}, "cablerow": {"id": "XaHV_8Nbyug", "t": "Seated Close Grip Cable Row", "c": "Team Evolve"}, "dbrow": {"id": "8iMJWCAIV78", "t": "One-Arm Dumbbell Row", "c": "Mind Pump TV"}, "sapd": {"id": "wcVDItawocI", "t": "Straight Arm Pulldown", "c": "Bodybuilding.com"}, "pronet": {"id": "J-TvvTbMkkY", "t": "Prone T Raise", "c": "Alpha Coach"}, "hammer": {"id": "CFBZ4jN1CMI", "t": "Dumbbell Hammer Curl", "c": "NASM"}, "cablecurl": {"id": "OsQupgowb00", "t": "Standing Biceps Cable Curl", "c": "Fitness Arabia"}, "goblet": {"id": "JO7D6GJ98wY", "t": "Goblet Squat", "c": "Jack Hanrahan Fitness"}, "bss": {"id": "-IpkZv8tZYM", "t": "DB Bulgarian Split Squat", "c": "Horton Barbell"}, "legext": {"id": "xAUvXdHu1sI", "t": "Leg Extension", "c": "Tim Bullici"}, "pallof": {"id": "Te5VAYXy0wQ", "t": "Pallof Press", "c": "MuscleWiki"}, "rope": {"id": "K--j4Qh9d2s", "t": "Rope Triceps Pushdown", "c": "Germain Craddock's EVA"}, "kick": {"id": "ShCYaoHmWmk", "t": "Dumbbell Kickback", "c": "LivestrongWoman"}, "revcurl": {"id": "aIrvcBlNHBA", "t": "EZ Bar Reverse Curl", "c": "FITASTIC"}, "thrust": {"id": "eutQE64svRE", "t": "Barbell Hip Thrust", "c": "Ben Yanes"}, "lcurl": {"id": "SbSNUXPRkc8", "t": "Lying Leg Curl", "c": "PureGym"}, "mrow": {"id": "QpLTp2AJ_cI", "t": "Machine Chest Supported Row", "c": "Fox Body Fitness"}, "inv": {"id": "hXTc1mDnZCw", "t": "Inverted Row", "c": "BarBend"}, "sacr": {"id": "NwyhyKyFgf4", "t": "Single Arm Seated Cable Row", "c": "Rob Riches"}, "pup": {"id": "RR5xJ1mXEV4", "t": "Push-Up Plus", "c": "Matthew Stevens"}, "floor": {"id": "T0Y3OBF1bNI", "t": "Dumbbell Floor Press", "c": "PureGym"}, "rgpd": {"id": "byN9-8JOKD0", "t": "Single Arm Reverse Grip Pushdown", "c": "SET FOR SET"}, "lpress": {"id": "uRFWe2nOUjg", "t": "Leg Press", "c": "Tim Bullici"}, "lunge": {"id": "MpfeGnBFEo8", "t": "Dumbbell Reverse Lunge", "c": "IronmasterPro"}, "slcurl": {"id": "Z5pRnXaCjpM", "t": "Seated Leg Curl", "c": "Hammer Fitness"}, "walk": {"id": "Ii71nAaRc_8", "t": "Incline Treadmill Walking", "c": "Team Evolve"}, "backext": {"id": "OMb1VFQK9Tk", "t": "45 Degree Hip Extension", "c": "Physique Development"}, "sler": {"id": "20v3G-odF5c", "t": "Sidelying Shoulder External Rotation", "c": "Release Physical Therapy"}, "proneext": {"id": "KvY2S9UdDY0", "t": "Prone Shoulder Extensions", "c": "Myokinetix Physical Therapy"}, "hipabd": {"id": "TKtB6RWTTNc", "t": "Machine Hip Abduction", "c": "Ryan Treadaway"}, "cablecrunch": {"id": "jBtiDLz0y7s", "t": "Kneeling Cable Rope Crunch", "c": "Sean Nalewanyj"}, "ropeham": {"id": "PslvRTdHJHY", "t": "Rope Cable Hammer Curls", "c": "Jeremy Reid"}};
 const NAMES={};SESSIONS.forEach(s=>s.ex.forEach(e=>{if(!NAMES[e.k])NAMES[e.k]=e.n}));
+Object.values(ALT).forEach(e=>{if(!NAMES[e.k])NAMES[e.k]=e.n});
 const sesBy=c=>SESSIONS.find(s=>s.code===c)||{code:c,short:c,name:c==='W'?'Zone 2 walk':'Retired session',time:'',load:'None',ex:[]};
 const setsFor=(e,wk)=>Array.isArray(e.sets)?e.sets[wk-1]:e.sets;
-const exFor=(s,wk)=>s.ex.filter(e=>setsFor(e,wk)>0);
+const exFor=(s,wk,l)=>s.ex.filter(e=>setsFor(e,wk)>0).map(e=>{const sw=l&&l.swaps&&l.swaps[e.k];if(!sw||!ALT[sw])return e;const a=Object.assign({},ALT[sw]);a.sets=e.sets;a.orig=e.k;return a});
 
 /* ================= helpers ================= */
 const $=s=>document.querySelector(s);
@@ -325,7 +341,7 @@ if(!logs){ // migrate v1 (keyed by date, tied to weekdays)
     logs[l.date+'_'+code]={date:l.date,code,week:l.week||1,sets:l.sets||{},weights:l.weights||{},felt:{},pain:l.pain??null,tingle:l.tingle??null,morning:null,note:l.note||'',updated:l.updated||0}});
   lsSet('ssl-logs-v2',logs);
 }
-const blank=(date,code)=>({date,code,week,sets:{},weights:{},felt:{},pain:null,tingle:null,morning:null,note:'',updated:0});
+const blank=(date,code)=>({date,code,week,sets:{},weights:{},felt:{},swaps:{},pain:null,tingle:null,morning:null,note:'',updated:0});
 const keyOf=(date,code)=>date+'_'+code;
 function active(l){return !!l&&(Object.values(l.sets||{}).some(a=>a&&a.some(Boolean))||Object.keys(l.weights||{}).length>0||l.pain!=null||l.morning!=null||(l.note||'').trim()!==''||Object.values(l.felt||{}).some(f=>f&&f.on))}
 function entries(){return Object.values(logs).filter(active).sort((a,b)=>a.date===b.date?(b.updated||0)-(a.updated||0):(a.date<b.date?1:-1))}
@@ -360,7 +376,7 @@ function renderStrip(){
 }
 
 /* ================= render: session ================= */
-function totals(l,s){const ex=exFor(s,l.week||week);let t=0,d=0;ex.forEach(e=>{const n=setsFor(e,l.week||week);t+=n;d+=((l.sets[e.k]||[]).slice(0,n).filter(Boolean).length)});return{t,d}}
+function totals(l,s){const ex=exFor(s,l.week||week,l);let t=0,d=0;ex.forEach(e=>{const n=setsFor(e,l.week||week);t+=n;d+=((l.sets[e.k]||[]).slice(0,n).filter(Boolean).length)});return{t,d}}
 function renderHead(){
   const s=sesBy(selCode),l=cur(),wk=l.updated?l.week:week,W=WEEKS[wk],isToday=selDate===todayISO();
   const {t,d}=totals(l,s);
@@ -374,12 +390,14 @@ function renderHead(){
   h+='</div>';
   $('#sesshead').innerHTML=h;
 }
-function nextKey(l,s){const wk=l.week||week;for(const e of exFor(s,wk)){if(pt[e.k]==='no')continue;const n=setsFor(e,wk);if((l.sets[e.k]||[]).slice(0,n).filter(Boolean).length<n)return e.k}return null}
+function nextKey(l,s){const wk=l.week||week;for(const e of exFor(s,wk,l)){if(pt[e.k]==='no')continue;const n=setsFor(e,wk);if((l.sets[e.k]||[]).slice(0,n).filter(Boolean).length<n)return e.k}return null}
 function rowBody(e,l,s,nk){
   const wk=l.week||week,n=setsFor(e,wk),a=(l.sets[e.k]||[]),done=a.slice(0,n).filter(Boolean).length===n;
   const col=done&&!expanded.has(e.k), f=(l.felt||{})[e.k]||{}, w=(l.weights||{})[e.k]||'', prev=e.w?lastWeight(e.k,l):null, dec=pt[e.k]==='no';
   let h='<button class="rtop'+(done?' tog':'')+'" '+(done?'data-expand="'+e.k+'" aria-expanded="'+!col+'"':'tabindex="-1"')+'><span class="rname">'+(done?'<span class="ok">'+ICON_OK+'</span>':'')+'<span>'+(e.k===nk?'<span class="upnext">Up next</span>':'')+esc(e.n)+(col&&w?' <span class="num" style="color:var(--muted);font-weight:500">· '+esc(w)+' lb</span>':'')+(f.on?' <span class="fl">· felt it</span>':'')+'</span></span><span class="rx">'+n+' × '+esc(e.reps)+'</span></button>';
   h+=dec?'<p class="decl">Declined by PT. Skip this one; a substitute is coming.</p>':'<p class="cue">'+esc(e.cue)+'</p>';
+  if(e.orig)h+='<p class="altline">Swapped in for '+esc(NAMES[e.orig]||e.orig)+' today. <button class="linkbtn" data-unswap="'+e.orig+'">Undo</button></p>';
+  else if(ALTS[e.k]&&ALT[ALTS[e.k]])h+='<p class="altline">If it bites: <b>'+esc(ALT[ALTS[e.k]].n)+'</b> <button class="linkbtn" data-swap="'+e.k+'">Swap for today</button></p>';
   h+='<div class="ctl"><div class="sets">';
   for(let i=0;i<n;i++)h+='<button class="set" data-set="'+e.k+'" data-i="'+i+'" aria-pressed="'+(!!a[i])+'" aria-label="'+esc(e.n)+', set '+(i+1)+'">'+(i+1)+'</button>';
   h+='</div>';
@@ -393,17 +411,17 @@ function rowBody(e,l,s,nk){
 function renderWorkout(){
   const s=sesBy(selCode),l=cur(),wk=l.week||week,nk=nextKey(l,s);
   let h='<section class="block"><div class="bhead"><h2>Workout</h2><span class="label">Tap a box per set</span></div><div class="list">';
-  exFor(s,wk).forEach(e=>{const r=rowBody(e,l,s,nk);
+  exFor(s,wk,l).forEach(e=>{const r=rowBody(e,l,s,nk);
     h+='<div class="row'+(r.done?' complete':'')+(r.col?' collapsed':'')+(e.k===nk?' next':'')+(r.dec?' declined':'')+'" id="row-'+e.k+'"><div class="rbody" id="rb-'+e.k+'">'+r.h+'</div><div class="vslot" id="vs-'+e.k+'">'+demoBox(e)+'</div></div>'});
   h+='</div></section>';
   $('#workout').innerHTML=h;
 }
-function refreshRow(k){const s=sesBy(selCode),l=cur(),e=s.ex.find(x=>x.k===k);if(!e)return;const nk=nextKey(l,s);
+function refreshRow(k){const s=sesBy(selCode),l=cur(),e=exFor(s,l.week||week,l).find(x=>x.k===k);if(!e)return;const nk=nextKey(l,s);
   const r=rowBody(e,l,s,nk),row=document.getElementById('row-'+k);if(!row)return;
   row.className='row'+(r.done?' complete':'')+(r.col?' collapsed':'')+(k===nk?' next':'')+(r.dec?' declined':'');
   document.getElementById('rb-'+k).innerHTML=r.h;}
 function refreshNext(){const s=sesBy(selCode),l=cur(),nk=nextKey(l,s);
-  exFor(s,l.week||week).forEach(e=>{const row=document.getElementById('row-'+e.k);if(!row)return;
+  exFor(s,l.week||week,l).forEach(e=>{const row=document.getElementById('row-'+e.k);if(!row)return;
     const was=row.classList.contains('next'),is=e.k===nk;if(was!==is)refreshRow(e.k)});return nk}
 function refreshProgress(){const s=sesBy(selCode),l=cur(),{t,d}=totals(l,s);const p=$('#prog'),x=$('#progtxt');
   if(p)p.style.width=(t?Math.round(d/t*100):0)+'%';if(x)x.textContent=d+' of '+t+' sets done'}
@@ -501,8 +519,8 @@ function renderLog(){
     const pp=v=>v==null?'<span class="pp na">–</span>':'<span class="pp '+(v>3?'hi':'ok')+'">'+v+'</span>';
     h+='<details class="ent"><summary><span class="st">'+s.code+' · '+esc(s.name)+'</span><span class="sr"><span class="label">Pain</span>'+pp(l.pain)+'<span class="label">AM</span>'+pp(l.morning)+'</span><span class="sd">'+esc(pretty(l.date))+' · Wk '+wk+' · '+d+'/'+t+' sets'+(felt.length?' · <span class="fl">'+felt.length+' flagged</span>':'')+(l.tingle?' · <span class="fl">tingling</span>':'')+'</span></summary><div class="ebody">';
     h+='<div class="tbl"><table><thead><tr><th>Exercise</th><th>Weight</th><th>Sets</th></tr></thead><tbody>';
-    exFor(s,wk).forEach(e=>{const n=setsFor(e,wk),dn=(l.sets[e.k]||[]).slice(0,n).filter(Boolean).length,f=(l.felt||{})[e.k];
-      h+='<tr><td>'+esc(e.n)+(f&&f.on?'<br><span class="fl">Felt it'+((f.where||[]).length?': '+esc(f.where.join(', ')):'')+'</span>':'')+'</td><td class="n">'+(l.weights[e.k]?esc(l.weights[e.k])+' lb':(e.w?'–':'BW'))+'</td><td class="n">'+dn+'/'+n+'</td></tr>'});
+    exFor(s,wk,l).forEach(e=>{const n=setsFor(e,wk),dn=(l.sets[e.k]||[]).slice(0,n).filter(Boolean).length,f=(l.felt||{})[e.k];
+      h+='<tr><td>'+esc(e.n)+(e.orig?' <span class="label">(swap)</span>':'')+(f&&f.on?'<br><span class="fl">Felt it'+((f.where||[]).length?': '+esc(f.where.join(', ')):'')+'</span>':'')+'</td><td class="n">'+(l.weights[e.k]?esc(l.weights[e.k])+' lb':(e.w?'–':'BW'))+'</td><td class="n">'+dn+'/'+n+'</td></tr>'});
     h+='</tbody></table></div><p class="note">Pain during: <b>'+(l.pain??'–')+'</b> · Next morning: <b>'+(l.morning??'–')+'</b> · Tingling: <b>'+(l.tingle===true?'yes':l.tingle===false?'no':'–')+'</b></p>'+
       (l.note?'<p class="note">“'+esc(l.note)+'”</p>':'')+'<div><button class="pill demo" data-open="'+esc(l.date)+'|'+l.code+'">Open this session</button></div></div></details>'});
   h+='</div></section>';
@@ -544,6 +562,7 @@ document.addEventListener('click',ev=>{
     let v=parseFloat(inp.value);if(isNaN(v))v=parseFloat(inp.placeholder)||0;v=Math.max(0,Math.round((v+(+d.step)*e.step)*10)/10);
     inp.value=v;setWeight(k,String(v));return}
   if(d.use){const inp=document.getElementById('wt-'+d.use);inp.value=d.v;setWeight(d.use,d.v);b.remove();return}
+  if(d.swap||d.unswap){const l=ensure();l.swaps=l.swaps||{};if(d.swap)l.swaps[d.swap]=ALTS[d.swap];else delete l.swaps[d.unswap];save(l);renderToday();renderLog();return}
   if(d.pt){setPT(d.k,d.pt);if(curTab==='today')refreshRow(d.k);else renderToday();refreshNext();renderPlan();return}
   if(b.id==='copypt'){const seen=new Set(),lines=[];SESSIONS.forEach(s=>s.ex.forEach(e=>{if(seen.has(e.k))return;seen.add(e.k);const v=pt[e.k];lines.push((v==='ok'?'OK  ':v==='no'?'NO  ':'--  ')+e.n)}));
     const txt='PT review '+todayISO()+'\n'+lines.join('\n');
